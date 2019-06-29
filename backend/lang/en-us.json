@@ -1,0 +1,5 @@
+{
+  "CONFIRMATION_NOT_FOUND": "The confirmation link is not valid.",
+  "CONFIRMATION_EXPIRED": "This confirmation link has been expired.",
+  "CONFIRMATION_ALREADY_CONFIRMED": "This user has already been confirmed"
+}
