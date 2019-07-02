@@ -9,9 +9,10 @@ from schemas.fermentables import fermentables_schema, fermentable_schema
 
 ERROR_INSERTING = "An error occurred while inserting the recipe."
 RECIPE_NOT_FOUND = "No recipes with this name was found."
+NO_RECIPES_FOUND = "There are no recipes"
 
 
-class Recipes(Resource):
+class RecipesByName(Resource):
 
     @classmethod
     @jwt_required
@@ -32,6 +33,17 @@ class Recipes(Resource):
     @classmethod
     def get(cls, name):
         recipes = RecipeModel.find_by_name(name=name)
+
         if recipes:
             return recipes_schema.dump(recipes)
         return {"message": RECIPE_NOT_FOUND}
+
+
+class Recipes(Resource):
+    @classmethod
+    def get(cls, page):
+        recipes = RecipeModel.query.paginate(page=page, per_page=2)
+        print(recipes.next_num)
+        if recipes.items:
+            return recipes_schema.dump(recipes.items)
+        return {"message": NO_RECIPES_FOUND}

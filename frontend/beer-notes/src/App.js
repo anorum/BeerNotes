@@ -1,26 +1,43 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import React, { Component } from "react";
+import "./App.css";
 
-function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+class App extends Component {
+  constructor() {
+    super();
+    this.state = {
+      recipes: []
+    };
+  }
+
+  componentDidMount() {
+    fetch("http://127.0.0.1:1050/recipes/Urban Farmhouse")
+      .then(results => {
+        return results.json();
+      })
+      .then(data => {
+        let recipes = data.map(recipe => {
+          return (
+            <div key={recipe.id}>
+              <h1>{recipe.name}</h1>
+              <h2> Grains:</h2>
+              <div> {recipe.grains.map(grain => grain.grain.name)}</div>
+              <div> {recipe.hops.map(hop => hop.hop.name)}</div>
+            </div>
+          );
+        });
+        this.setState({ recipes: recipes });
+        console.log("state", this.state.recipes);
+      });
+  }
+
+  render() {
+    return (
+      <div className="App">
+        <header className="App-header">Beer Notes</header>
+        <div>{this.state.recipes}</div>
+      </div>
+    );
+  }
 }
 
 export default App;

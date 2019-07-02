@@ -7,6 +7,7 @@ from flask_uploads import configure_uploads, patch_request_class
 
 from flask_jwt_extended import (JWTManager, get_jwt_claims, verify_jwt_in_request,
                                 jwt_refresh_token_required, get_jwt_identity, create_access_token)
+from flask_cors import CORS
 
 from ma import ma
 from db import db
@@ -18,7 +19,7 @@ from resources.grains import Grains
 from resources.fermentables import Fermentables
 from resources.confirmation import Confirmation, ConfirmationByUser
 from resources.image import AvatarUpload, Avatar
-from resources.recipes import Recipes
+from resources.recipes import RecipesByName, Recipes
 from models.user import UserModel
 from libs.image_helper import IMAGE_SET
 
@@ -61,7 +62,7 @@ configure_uploads(app, IMAGE_SET)
 
 api = Api(app)
 jwt = JWTManager(app)
-
+cors = CORS(app, resources={r"*": {"origins": "http://localhost:3000"}})
 ########### End of Configurations ###########
 
 
@@ -85,7 +86,8 @@ api.add_resource(Confirmation, '/confirm/<string:confirmation_id>')
 api.add_resource(ConfirmationByUser, '/confirmation/user/<string:user_id>')
 api.add_resource(AvatarUpload, "/upload/profilepicture")
 api.add_resource(Avatar, "/avatar/<string:user_id>")
-api.add_resource(Recipes, "/recipes/<string:name>")
+api.add_resource(RecipesByName, "/recipes/<string:name>")
+api.add_resource(Recipes, "/recipes/<int:page>")
 # Refresh token endpoint. This will generate a new access token from
 # the refresh token, but will mark that access token as non-fresh,
 # as we do not actually verify a password in this endpoint.
