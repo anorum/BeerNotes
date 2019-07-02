@@ -1,5 +1,7 @@
 import os
 import uuid
+from os.path import join, dirname
+from dotenv import load_dotenv
 from flask import Flask, jsonify, json
 from flask_restful import Api
 from marshmallow import ValidationError
@@ -9,10 +11,17 @@ from flask_jwt_extended import (JWTManager, get_jwt_claims, verify_jwt_in_reques
                                 jwt_refresh_token_required, get_jwt_identity, create_access_token)
 from flask_cors import CORS
 
+# Create .env file path.
+dotenv_path = join(dirname(__file__), '.env')
+
+# Load file from the path.
+load_dotenv(dotenv_path)
+
 from ma import ma
 from db import db
 from mail import mail
-from resources.user import UserRegister, UsersList, UserLogin, UserDelete
+from oa import oauth
+from resources.user import UserRegister, UsersList, UserLogin, UserDelete, SetPassword
 from resources.hops import Hop
 from resources.yeast import Yeast
 from resources.grains import Grains
@@ -20,20 +29,11 @@ from resources.fermentables import Fermentables
 from resources.confirmation import Confirmation, ConfirmationByUser
 from resources.image import AvatarUpload, Avatar
 from resources.recipes import RecipesByName, Recipes
+from resources.github_login import GithubLogin, GithubAuthorize
 from models.user import UserModel
 from libs.image_helper import IMAGE_SET
 
-### This code loads the .env file using dotenv python package ###
-from os.path import join, dirname
-from dotenv import load_dotenv
 
-# Create .env file path.
-dotenv_path = join(dirname(__file__), '.env')
-
-# Load file from the path.
-load_dotenv(dotenv_path)
-
-########### End of .env config ###########
 
 
 class CustomJSONEncoder(json.JSONEncoder):
@@ -78,6 +78,7 @@ api.add_resource(UserRegister, '/register')
 api.add_resource(UsersList, '/users')
 api.add_resource(UserLogin, '/login')
 api.add_resource(UserDelete, '/deregister')
+api.add_resource(SetPassword, '/user/resetpassword')
 api.add_resource(Hop, '/hop/<string:name>')
 api.add_resource(Yeast, '/yeast/<string:name>')
 api.add_resource(Grains, '/grains/<string:name>')
@@ -88,6 +89,8 @@ api.add_resource(AvatarUpload, "/upload/profilepicture")
 api.add_resource(Avatar, "/avatar/<string:user_id>")
 api.add_resource(RecipesByName, "/recipes/<string:name>")
 api.add_resource(Recipes, "/recipes/<int:page>")
+api.add_resource(GithubLogin, "/login/github")
+api.add_resource(GithubAuthorize, "/login/github/authorized", endpoint="github.authorize")
 # Refresh token endpoint. This will generate a new access token from
 # the refresh token, but will mark that access token as non-fresh,
 # as we do not actually verify a password in this endpoint.
@@ -115,4 +118,5 @@ if __name__ == "__main__":
     db.init_app(app)
     ma.init_app(app)
     mail.init_app(app)
+    oauth.init_app(app)
     app.run(port=1050)

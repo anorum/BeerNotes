@@ -20,7 +20,7 @@ USER_DELETED = "User for email {} successfully deleted"
 USER_FAILED_TO_CREATE = "An error occurred during creation of account."
 USER_NOT_CONFIRMED = "This user is not confirmed. Please confirm"
 INVALID_LOGIN = "The username or password is incorrect."
-
+USER_PASSWORD_UPDATED = "Your password has been changed."
 
 class UserRegister(Resource):
     """Register a new user for the beer app"""
@@ -62,7 +62,7 @@ class UserLogin(Resource):
         user = UserModel.find_by_email(data.email)
         if not user:
             return {"message": INVALID_LOGIN}, 401
-        if user.check_password(data.password):
+        if user.password and user.check_password(data.password):
             confirmation = user.most_recent_confirmation
             if confirmation and confirmation.confirmed:
                 access_token = create_access_token(
@@ -81,3 +81,23 @@ class UsersList(Resource):
     def get(cls):
         users = UserModel.find_all_users()
         return users_schema.dump(users)
+
+
+class SetPassword(Resource):
+    @classmethod
+    @fresh_jwt_required
+    def post(cls):
+        user_json = request.get_json()
+        user_data = user_schema.load(user_json)
+        user = UserModel.find_by_email(user_data.email)
+
+        if not user:
+            return {"message": USER_DOES_NOT_EXIST}, 400
+        
+        user.password = user.set_password(user_data.password)
+        user.save_to_db()
+
+        #TODO SEND AN EMAIL TO USER THAT THEIR PASSWORD CHANGED.
+
+
+        return {"message": USER_PASSWORD_UPDATED}, 201
