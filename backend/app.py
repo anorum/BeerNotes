@@ -8,7 +8,8 @@ from marshmallow import ValidationError
 from flask_uploads import configure_uploads, patch_request_class
 
 from flask_jwt_extended import (JWTManager, get_jwt_claims, verify_jwt_in_request,
-                                jwt_refresh_token_required, get_jwt_identity, create_access_token)
+                                jwt_refresh_token_required, get_jwt_identity, create_access_token, 
+                                set_access_cookies, unset_jwt_cookies)
 from flask_cors import CORS
 
 # Create .env file path.
@@ -53,6 +54,7 @@ class CustomJSONEncoder(json.JSONEncoder):
 ### Flask Application Conifguration ###
 app = Flask(__name__)
 app.config.from_object(os.environ['APP_SETTINGS'])
+print("Running in " + os.environ['APP_SETTINGS'])
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 app.config["PROPAGATE_EXCEPTIONS"] = True
 # restrict max upload image size to 10MB
@@ -99,8 +101,19 @@ api.add_resource(GithubAuthorize, "/login/github/authorized", endpoint="github.a
 def refresh():
     current_user = get_jwt_identity()
     new_token = create_access_token(identity=current_user, fresh=False)
-    ret = {'access_token': new_token}
-    return jsonify(ret), 200
+    ret = jsonify({'access_token': new_token})
+    set_access_cookies(ret, new_token)
+    ret.status_code = 200
+
+
+    return ret
+
+@app.route('/logout', methods=['POST'])
+def logout():
+    resp = jsonify({'message': "You have been logged out."})
+    unset_jwt_cookies(resp)
+    resp.status_code = 200
+    return resp
 ########### End of Resources ###########
 
 

@@ -1,12 +1,15 @@
 import traceback
 
 from flask_restful import Resource
-from flask import request
+from flask import request, jsonify
 from flask_jwt_extended import (jwt_required,
                                 create_access_token,
                                 create_refresh_token,
                                 get_jwt_claims,
-                                fresh_jwt_required)
+                                fresh_jwt_required,
+                                set_access_cookies,
+                                set_refresh_cookies,
+                                get_jwt_identity)
 
 from models.user import UserModel
 from models.confirmation import ConfirmationModel
@@ -21,6 +24,7 @@ USER_FAILED_TO_CREATE = "An error occurred during creation of account."
 USER_NOT_CONFIRMED = "This user is not confirmed. Please confirm"
 INVALID_LOGIN = "The username or password is incorrect."
 USER_PASSWORD_UPDATED = "Your password has been changed."
+
 
 class UserRegister(Resource):
     """Register a new user for the beer app"""
@@ -69,15 +73,21 @@ class UserLogin(Resource):
                     identity=user.id, fresh=True)
                 refresh_token = create_refresh_token(identity=user.id)
 
-                return {"access token": access_token, "refresh_token": refresh_token}, 200
+                resp = jsonify({"access token": access_token,
+                                "refresh_token": refresh_token})
+
+                set_access_cookies(resp, access_token)
+                set_refresh_cookies(resp, refresh_token)
+                resp.status_code = 200
+                return resp
             else:
                 return {"message": USER_NOT_CONFIRMED}
         return {"message": INVALID_PASSWORD}, 401
 
 
 class UsersList(Resource):
-
     @classmethod
+    @jwt_required
     def get(cls):
         users = UserModel.find_all_users()
         return users_schema.dump(users)
@@ -87,17 +97,18 @@ class SetPassword(Resource):
     @classmethod
     @fresh_jwt_required
     def post(cls):
-        user_json = request.get_json()
-        user_data = user_schema.load(user_json)
-        user = UserModel.find_by_email(user_data.email)
-
+        user = get_jwt_identity()
+        user = UserModel.find_by_id(user)
         if not user:
-            return {"message": USER_DOES_NOT_EXIST}, 400
-        
-        user.password = user.set_password(user_data.password)
+            return {"message": USER_DOES_NOT_EXIST.format(user)}, 400
+        print(user)
+        user_passwords = request.get_json()
+        print(user_passwords['password'])
+        if not user.check_password(user_passwords['password']):
+            return {"message": INVALID_PASSWORD}
+        user.set_password(user_passwords['newpassword'])
         user.save_to_db()
 
-        #TODO SEND AN EMAIL TO USER THAT THEIR PASSWORD CHANGED.
-
+        # TODO SEND AN EMAIL TO USER THAT THEIR PASSWORD CHANGED.
 
         return {"message": USER_PASSWORD_UPDATED}, 201

@@ -1,17 +1,31 @@
-import App, { Container } from 'next/app'
-import Page from '../components/Page'
+import App, { Container } from "next/app";
+import Page from "../components/Page";
 
 class MyApp extends App {
-    render() {
-        const { Component } = this.props
-        return (
-            <Container>
-            <Page>
-                <Component />
-            </Page>
-            </Container>
-        )
+  static async getInitialProps({ Component, ctx }) {
+    let pageProps = {};
+
+    if (Component.getInitialProps) {
+      pageProps = await Component.getInitialProps(ctx);
     }
+
+    pageProps.query = ctx.query;
+
+    console.log(pageProps);
+
+    return { pageProps };
+  }
+
+  render() {
+    const { Component, pageProps } = this.props;
+    return (
+      <Container>
+        <Page>
+          <Component {...pageProps} />
+        </Page>
+      </Container>
+    );
+  }
 }
 
-export default MyApp
+export default MyApp;
