@@ -1,11 +1,13 @@
 from uuid import uuid4
 from db import db
 from models.basemodel import BaseModel
+from models.searchableMixIn import SearchableMixin
 from sqlalchemy.dialects.postgresql import UUID
 
 
-class HopsModel(db.Model, BaseModel):
+class HopsModel(db.Model, BaseModel, SearchableMixin):
     __tablename__ = "hop"
+    __searchable__ = ['brand', 'name','alpha', 'aroma', 'typical_beer', 'hop_type']
 
     id = db.Column(UUID(as_uuid=True), unique=True,
                    nullable=False, primary_key=True, default=uuid4)

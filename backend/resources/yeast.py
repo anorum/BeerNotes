@@ -33,3 +33,11 @@ class Yeast(Resource):
         if yeast:
             return yeasts_schema.dump(yeast)
         return {"message": YEAST_NOT_FOUND}
+
+class YeastSearch(Resource):
+    @classmethod
+    def get(cls):
+        q = request.args['q']
+        query, total = YeastModel.search(q, 1, 5)
+        return yeasts_schema.dump(query.all())
+       

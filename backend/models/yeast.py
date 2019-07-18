@@ -3,10 +3,13 @@ from sqlalchemy.dialects.postgresql import UUID
 
 from db import db
 from models.basemodel import BaseModel
+from models.searchableMixIn import SearchableMixin
 
-
-class YeastModel(db.Model, BaseModel):
+class YeastModel(db.Model, BaseModel, SearchableMixin):
     __tablename__ = "yeast"
+    __searchable__ = ['brand','name','yeast_style', 'yeast_format', \
+        'min_attenuation_temp', 'max_attenuation_temp', \
+            'min_fermenting_temp', 'max_fermenting_temp']
 
     id = db.Column(UUID(as_uuid=True), unique=True,
                    nullable=False, primary_key=True, default=uuid4)

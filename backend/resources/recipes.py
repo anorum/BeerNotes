@@ -1,4 +1,4 @@
-from flask import request
+from flask import request, current_app
 from flask_restful import Resource
 from flask_jwt_extended import jwt_required, get_jwt_identity, jwt_refresh_token_required
 from db import db
@@ -21,13 +21,13 @@ class RecipesByName(Resource):
         data["name"] = name
         data["user_id"] = get_jwt_identity()
         recipe = recipe_schema.load(data, session=db.session)
-
         try:
             recipe.save_to_db()
+            
         except Exception as e:
             print(e)
             return {"message": ERROR_INSERTING}, 500
-
+        current_app.elasticsearch.index(index="recipe", doc_type="recipe", id=recipe.id, body=recipe_schema.dump(recipe))
         return recipe_schema.dump(recipe), 201
 
     @classmethod
@@ -47,3 +47,10 @@ class Recipes(Resource):
         if recipes.items:
             return recipes_schema.dump(recipes.items)
         return {"message": NO_RECIPES_FOUND}
+
+class RecipeSearch(Resource):
+    @classmethod
+    def get(cls):
+        q = request.args['q']
+        query, total = RecipeModel.search(q, 1, 5)
+        return recipes_schema.dump(query.all())

@@ -2,6 +2,7 @@ from uuid import uuid4
 from db import db
 from models.basemodel import BaseModel
 from models.fermentables import FermentablesModel
+from models.searchableMixIn import SearchableMixin
 from sqlalchemy.dialects.postgresql import UUID
 
 
@@ -46,8 +47,9 @@ class RecipeYeasts(db.Model, BaseModel):
     pitch_time = db.Column(db.String(128))
 
 
-class RecipeModel(db.Model, BaseModel):
+class RecipeModel(db.Model, BaseModel, SearchableMixin):
     __tablename__ = "recipe"
+
 
     id = db.Column(UUID(as_uuid=True), nullable=False,
                    primary_key=True, default=uuid4)

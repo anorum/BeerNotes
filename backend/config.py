@@ -19,6 +19,7 @@ class Config(object):
     JWT_COOKIE_CSRF_PROTECT = False
     UPLOADED_IMAGES_DEST = os.path.join(
         "static", "images")  # manage root folder
+    ELASTICSEARCH_URL = os.environ['ELASTICSEARCH_URL']
 
 
 """     MAIL_USE_SSL = True """

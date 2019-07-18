@@ -11,6 +11,8 @@ from flask_jwt_extended import (JWTManager, get_jwt_claims, verify_jwt_in_reques
                                 jwt_refresh_token_required, get_jwt_identity, create_access_token, 
                                 set_access_cookies, unset_jwt_cookies)
 from flask_cors import CORS
+from elasticsearch import Elasticsearch
+
 
 # Create .env file path.
 dotenv_path = join(dirname(__file__), '.env')
@@ -23,13 +25,13 @@ from db import db
 from mail import mail
 from oa import oauth
 from resources.user import UserRegister, UsersList, UserLogin, UserDelete, SetPassword
-from resources.hops import Hop
-from resources.yeast import Yeast
+from resources.hops import Hop, HopsSearch
+from resources.yeast import Yeast, YeastSearch
 from resources.grains import Grains
 from resources.fermentables import Fermentables
 from resources.confirmation import Confirmation, ConfirmationByUser
 from resources.image import AvatarUpload, Avatar
-from resources.recipes import RecipesByName, Recipes
+from resources.recipes import RecipesByName, Recipes, RecipeSearch
 from resources.github_login import GithubLogin, GithubAuthorize
 from models.user import UserModel
 from libs.image_helper import IMAGE_SET
@@ -62,6 +64,9 @@ patch_request_class(app, 10 * 1024 * 1024)
 configure_uploads(app, IMAGE_SET)
 #app.json_encoder = CustomJSONEncoder
 
+app.elasticsearch = Elasticsearch([app.config['ELASTICSEARCH_URL']]) \
+        if app.config['ELASTICSEARCH_URL'] else None
+
 api = Api(app)
 jwt = JWTManager(app)
 cors = CORS(app, resources={r"*": {"origins": "http://localhost:3000"}})
@@ -82,7 +87,9 @@ api.add_resource(UserLogin, '/login')
 api.add_resource(UserDelete, '/deregister')
 api.add_resource(SetPassword, '/user/resetpassword')
 api.add_resource(Hop, '/hop/<string:name>')
+api.add_resource(HopsSearch, '/hop/search')
 api.add_resource(Yeast, '/yeast/<string:name>')
+api.add_resource(YeastSearch, '/yeast/search')
 api.add_resource(Grains, '/grains/<string:name>')
 api.add_resource(Fermentables, '/fermentables/<string:name>')
 api.add_resource(Confirmation, '/confirm/<string:confirmation_id>')
@@ -91,6 +98,7 @@ api.add_resource(AvatarUpload, "/upload/profilepicture")
 api.add_resource(Avatar, "/avatar/<string:user_id>")
 api.add_resource(RecipesByName, "/recipes/<string:name>")
 api.add_resource(Recipes, "/recipes/<int:page>")
+api.add_resource(RecipeSearch, "/recipes/search")
 api.add_resource(GithubLogin, "/login/github")
 api.add_resource(GithubAuthorize, "/login/github/authorized", endpoint="github.authorize")
 # Refresh token endpoint. This will generate a new access token from
