@@ -15,15 +15,25 @@ Router.onRouteChangeError = () => {
 };
 
 const StyledHeader = styled.header`
-  display: grid;
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  background-color: #fedc00;
+`;
+
+const Logo = styled.h1`
+  font-size: 2.4rem;
+  font-family: "Racing Sans One", cursive;
 `;
 
 const Header = () => (
   <StyledHeader>
     <h1>
-      <Link href="/">
-        <a>Beer Notes</a>
-      </Link>
+      <Logo>
+        <Link href="/">
+          <a>Brewcipes</a>
+        </Link>
+      </Logo>
     </h1>
     <Nav />
   </StyledHeader>

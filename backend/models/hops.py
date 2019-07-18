@@ -5,9 +5,8 @@ from models.searchableMixIn import SearchableMixin
 from sqlalchemy.dialects.postgresql import UUID
 
 
-class HopsModel(db.Model, BaseModel, SearchableMixin):
+class HopsModel(db.Model, BaseModel):
     __tablename__ = "hop"
-    __searchable__ = ['brand', 'name','alpha', 'aroma', 'typical_beer', 'hop_type']
 
     id = db.Column(UUID(as_uuid=True), unique=True,
                    nullable=False, primary_key=True, default=uuid4)

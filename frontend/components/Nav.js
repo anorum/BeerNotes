@@ -1,7 +1,15 @@
 import React from "react";
 import Link from "next/link";
 
-const links = [{ href: "localhost:3000", label: "Home" }].map(link => {
+const link_items = [
+  { href: "localhost:3000/search", label: "Search" },
+  { href: "/recipes", label: "Recipe" },
+  { href: "/hops", label: "Hops" },
+  { href: "/fermentables", label: "Fermentables" },
+  { href: "/yeast", label: "Yeast" }
+];
+
+const links = link_items.map(link => {
   link.key = `nav-link-${link.href}-${link.label}`;
   return link;
 });

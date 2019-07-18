@@ -47,9 +47,8 @@ class RecipeYeasts(db.Model, BaseModel):
     pitch_time = db.Column(db.String(128))
 
 
-class RecipeModel(db.Model, BaseModel, SearchableMixin):
+class RecipeModel(db.Model, BaseModel):
     __tablename__ = "recipe"
-    __searchable__ = ['name', 'description', 'target_abv', 'actual_abv', 'target_og', 'target_fg', 'actual_fg', 'IBU', 'SRM', 'method']
 
     id = db.Column(UUID(as_uuid=True), nullable=False,
                    primary_key=True, default=uuid4)
