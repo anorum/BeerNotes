@@ -27,7 +27,7 @@ class RecipesByName(Resource):
         except Exception as e:
             print(e)
             return {"message": ERROR_INSERTING}, 500
-        current_app.elasticsearch.index(index="recipe", doc_type="recipe", id=recipe.id, body=recipe_schema.dump(recipe))
+        #current_app.elasticsearch.index(index="recipe", doc_type="recipe", id=recipe.id, body=recipe_schema.dump(recipe))
         return recipe_schema.dump(recipe), 201
 
     @classmethod

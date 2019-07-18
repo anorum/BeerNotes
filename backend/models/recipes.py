@@ -49,7 +49,7 @@ class RecipeYeasts(db.Model, BaseModel):
 
 class RecipeModel(db.Model, BaseModel, SearchableMixin):
     __tablename__ = "recipe"
-
+    __searchable__ = ['name', 'description', 'target_abv', 'actual_abv', 'target_og', 'target_fg', 'actual_fg', 'IBU', 'SRM', 'method']
 
     id = db.Column(UUID(as_uuid=True), nullable=False,
                    primary_key=True, default=uuid4)
@@ -65,6 +65,7 @@ class RecipeModel(db.Model, BaseModel, SearchableMixin):
     IBU = db.Column(db.Integer())
     SRM = db.Column(db.Integer())
     description = db.Column(db.UnicodeText())
+    method = db.Column(db.String(240))
     instructions = db.Column(db.UnicodeText())
     private = db.Column(db.Boolean(), nullable=False, default=False)
 
