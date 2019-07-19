@@ -4,12 +4,14 @@ import Head from "./Head";
 import Header from "./Header";
 
 const theme = {
+  mainColor: "#FEDC00",
   red: "#FF0000",
   black: "#393939",
   grey: "#3A3A3A",
   lightGrey: "#E1E1E1",
   offWhite: "#EDEDED",
   maxWidth: "1000px",
+  loadingBarColor: "#FFFFFF",
   bs: "0 12px 24px 0 rgba(0, 0, 0, 0.09)"
 };
 
@@ -21,7 +23,6 @@ const StyledPage = styled.div`
 const Inner = styled.div`
   max-width: ${props => props.theme.maxWidth};
   margin: 0 auto;
-  padding: 2rem;
 `;
 
 const GlobalStyle = createGlobalStyle`
@@ -42,6 +43,9 @@ const GlobalStyle = createGlobalStyle`
     a {
         text-decoration: none;
         color: ${theme.black};
+    }
+    #nprogress .bar {
+      background: ${props => props.theme.loadingBarColor}
     }
 `;
 

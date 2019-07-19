@@ -15,27 +15,41 @@ Router.onRouteChangeError = () => {
 };
 
 const StyledHeader = styled.header`
-  display: flex;
-  flex-direction: row;
-  flex-wrap: nowrap;
-  background-color: #fedc00;
+  .bar {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    justify-content: space-between;
+    background-color: ${props => props.theme.mainColor};
+    align-items: baseline;
+  }
 `;
 
 const Logo = styled.h1`
   font-size: 2.4rem;
   font-family: "Racing Sans One", cursive;
+  margin-left: 2rem;
+  position: relative;
+
+  a {
+    padding: 0.5rem 1rem;
+    text-decoration: none;
+
+    &:hover {
+      color: white;
+    }
+  }
 `;
 
 const Header = () => (
   <StyledHeader>
-    <h1>
+    <div className="bar">
       <Logo>
         <Link href="/">
           <a>Brewcipes</a>
         </Link>
       </Logo>
-    </h1>
-    <Nav />
+      <Nav />
+    </div>
   </StyledHeader>
 );
 
