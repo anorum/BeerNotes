@@ -3,11 +3,12 @@ from sqlalchemy.dialects.postgresql import UUID
 
 from db import db
 from models.basemodel import BaseModel
+from models.searchableMixIn import SearchableMixin
 
-
-class FermentablesModel(BaseModel, db.Model):
+class FermentablesModel(BaseModel, db.Model, SearchableMixin):
     """ holds grain database table """
     __tablename__ = "fermentable"
+    __searchable__ = ['brand', 'name']
 
     id = db.Column(UUID(as_uuid=True), unique=True,
                    nullable=False, primary_key=True, default=uuid4)

@@ -12,7 +12,7 @@ from flask_jwt_extended import (JWTManager, get_jwt_claims, verify_jwt_in_reques
                                 set_access_cookies, unset_jwt_cookies)
 from flask_cors import CORS
 from elasticsearch import Elasticsearch
-
+from elasticsearch.serializer import JSONSerializer
 
 # Create .env file path.
 dotenv_path = join(dirname(__file__), '.env')
@@ -25,32 +25,20 @@ from db import db
 from mail import mail
 from oa import oauth
 from resources.user import UserRegister, UsersList, UserLogin, UserDelete, SetPassword
-from resources.hops import Hop, HopsSearch
-from resources.yeast import Yeast, YeastSearch
 from resources.grains import Grains
 from resources.fermentables import Fermentables
+from resources.hops import Hop, HopsSearch
+from resources.yeast import Yeast, YeastSearch
 from resources.confirmation import Confirmation, ConfirmationByUser
 from resources.image import AvatarUpload, Avatar
 from resources.recipes import RecipesByName, Recipes, RecipeSearch
 from resources.github_login import GithubLogin, GithubAuthorize
 from models.user import UserModel
+from models.recipes import RecipeModel, RecipeYeasts, RecipeGrains, RecipeHops, RecipeFermentables
+from schemas.recipes import recipes_schema
 from libs.image_helper import IMAGE_SET
 
 
-
-
-class CustomJSONEncoder(json.JSONEncoder):
-    """
-    Override Flask's JSONEncoder with the single method `default`, which 
-    is called when the encoder doesn't know how to encode a specific type.
-    """
-
-    def default(self, obj):
-        if type(obj) is uuid.UUID:
-            return str(obj)
-        else:
-            # raises TypeError: obj not JSON serializable
-            return json.JSONEncoder.default(self, obj)
 
 
 ### Flask Application Conifguration ###
@@ -62,10 +50,10 @@ app.config["PROPAGATE_EXCEPTIONS"] = True
 # restrict max upload image size to 10MB
 patch_request_class(app, 10 * 1024 * 1024)
 configure_uploads(app, IMAGE_SET)
-#app.json_encoder = CustomJSONEncoder
 
-app.elasticsearch = Elasticsearch([app.config['ELASTICSEARCH_URL']]) \
-        if app.config['ELASTICSEARCH_URL'] else None
+
+app.elasticsearch = Elasticsearch([app.config['ELASTICSEARCH_URL']], http_auth=os.environ['APPBASE_API_WRITE']) \
+#        if app.config['ELASTICSEARCH_URL'] else None
 
 api = Api(app)
 jwt = JWTManager(app)

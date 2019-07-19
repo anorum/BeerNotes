@@ -1,6 +1,6 @@
 from search import add_to_index, remove_from_index, query_index
 from db import db
-from uuid import uuid4
+
 
 class SearchableMixin(object):
     @classmethod

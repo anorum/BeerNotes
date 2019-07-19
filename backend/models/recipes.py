@@ -1,7 +1,6 @@
 from uuid import uuid4
 from db import db
 from models.basemodel import BaseModel
-from models.fermentables import FermentablesModel
 from models.searchableMixIn import SearchableMixin
 from sqlalchemy.dialects.postgresql import UUID
 
@@ -16,6 +15,8 @@ class RecipeFermentables(db.Model, BaseModel):
     fermentable = db.relationship("FermentablesModel")
 
 
+#TODO Check to make the primary key the combination of recipe, 
+# hops, and hop_schedule so that you can add same hop on different schedule.
 class RecipeHops(db.Model, BaseModel):
     __tablename__ = "recipes_hops"
     recipe_id = db.Column(UUID(as_uuid=True), db.ForeignKey(
@@ -45,11 +46,12 @@ class RecipeYeasts(db.Model, BaseModel):
         'yeast.id'), primary_key=True)
     pitch_temp = db.Column(db.Integer())
     pitch_time = db.Column(db.String(128))
+    yeast = db.relationship("YeastModel")
 
 
 class RecipeModel(db.Model, BaseModel, SearchableMixin):
     __tablename__ = "recipe"
-    __searchable__ = ['name', 'description', 'target_abv', 'actual_abv', 'target_og', 'target_fg', 'actual_fg', 'IBU', 'SRM', 'method']
+    __searchable__ = ['name', 'target_abv', 'fermentables', 'hops', 'grains', 'yeasts']
 
     id = db.Column(UUID(as_uuid=True), nullable=False,
                    primary_key=True, default=uuid4)

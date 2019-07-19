@@ -7,6 +7,10 @@ from schemas.hops import HopsSchema
 from schemas.grains import GrainsSchema
 from schemas.yeast import YeastSchema
 
+class RecipeSearchSchema(ma.ModelSchema):
+    pass
+
+
 
 class RecipeFermentablesSchema(ma.ModelSchema):
     recipe_id = fields.UUID()

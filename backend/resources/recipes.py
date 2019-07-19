@@ -6,6 +6,9 @@ from models.recipes import RecipeModel
 from models.fermentables import FermentablesModel
 from schemas.recipes import recipe_schema, recipes_schema, recipe_fermentable_schema, recipe_fermentables_schmea
 from schemas.fermentables import fermentables_schema, fermentable_schema
+from libs.clean_recipe_elastic import clean_recipe_elastic
+
+
 
 ERROR_INSERTING = "An error occurred while inserting the recipe."
 RECIPE_NOT_FOUND = "No recipes with this name was found."
@@ -23,11 +26,11 @@ class RecipesByName(Resource):
         recipe = recipe_schema.load(data, session=db.session)
         try:
             recipe.save_to_db()
-            
         except Exception as e:
             print(e)
             return {"message": ERROR_INSERTING}, 500
-        #current_app.elasticsearch.index(index="recipe", doc_type="recipe", id=recipe.id, body=recipe_schema.dump(recipe))
+        current_app.elasticsearch.index(index="brewcipes", \
+            id=recipe.id, body=clean_recipe_elastic(recipe_schema.dump(recipe)))
         return recipe_schema.dump(recipe), 201
 
     @classmethod

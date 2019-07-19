@@ -1,19 +1,20 @@
 from flask import current_app
-from sqlalchemy.orm.collections import InstrumentedList
 
 def add_to_index(index, model):
     if not current_app.elasticsearch:
         return
+
     payload = {}
     try:
         for field in model.__searchable__:
             payload[field] = getattr(model, field)
+        payload["type"] = index
+        current_app.elasticsearch.index(index="brewcipes", id=model.id,
+                                    body=payload)
     except:
         return
     
     
-    current_app.elasticsearch.index(index=index, doc_type=index, id=model.id, body=payload)
-
 def remove_from_index(index, model):
     if not current_app.elasticsearch:
         return
