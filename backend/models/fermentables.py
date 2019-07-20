@@ -25,7 +25,7 @@ class FermentablesModel(BaseModel, db.Model, SearchableMixin):
         arr = []
         for id in ids:
             try:
-                obj = cls.find_by_id(id)[0]
+                obj = cls.find_by_id(id)
             except:
                 continue
             arr.append(obj)

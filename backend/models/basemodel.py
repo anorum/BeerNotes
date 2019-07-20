@@ -1,4 +1,5 @@
 from db import db
+from sqlalchemy.exc import DataError
 
 
 class BaseModel():
@@ -10,7 +11,17 @@ class BaseModel():
 
     @classmethod
     def find_by_id(cls, id):
-        return cls.query.filter_by(id=id).all()
+        try:
+            return cls.query.filter_by(id=id).first()
+        except DataError:
+            return None
+    
+    @classmethod
+    def update_by_id(cls, id, payload):
+        """ Take in ID of object and a dictonary payload and update the object"""
+        return cls.query.filter_by(id=id).update(payload)
+
+
 
     def save_to_db(self):
         db.session.add(self)

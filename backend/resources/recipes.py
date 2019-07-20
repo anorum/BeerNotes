@@ -11,34 +11,36 @@ from libs.clean_recipe_elastic import clean_recipe_elastic
 
 
 ERROR_INSERTING = "An error occurred while inserting the recipe."
-RECIPE_NOT_FOUND = "No recipes with this name was found."
+RECIPE_NOT_FOUND = "Recipe was not found."
 NO_RECIPES_FOUND = "There are no recipes"
 
 
-class RecipesByName(Resource):
+class RecipesByID(Resource):
 
     @classmethod
     @jwt_required
-    def put(cls, name):
+    def put(cls, recipeid):
+        recipe = RecipeModel.find_by_id(recipeid)
+        if not recipe:
+            return {"msg": RECIPE_NOT_FOUND}, 404
         data = request.get_json()
-        data["name"] = name
-        data["user_id"] = get_jwt_identity()
-        recipe = recipe_schema.load(data, session=db.session)
+
+        recipe = recipe_schema.load(data, instance=recipe)
+
         try:
             recipe.save_to_db()
         except Exception as e:
-            print(e)
             return {"message": ERROR_INSERTING}, 500
         current_app.elasticsearch.index(index="brewcipes", \
             id=recipe.id, body=clean_recipe_elastic(recipe_schema.dump(recipe)))
         return recipe_schema.dump(recipe), 201
 
     @classmethod
-    def get(cls, name):
-        recipes = RecipeModel.find_by_name(name=name)
+    def get(cls, recipeid):
+        recipes = RecipeModel.find_by_id(recipeid)
 
         if recipes:
-            return recipes_schema.dump(recipes)
+            return recipe_schema.dump(recipes)
         return {"message": RECIPE_NOT_FOUND}
 
 

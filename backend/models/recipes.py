@@ -72,7 +72,7 @@ class RecipeModel(db.Model, BaseModel, SearchableMixin):
     private = db.Column(db.Boolean(), nullable=False, default=False)
 
     user = db.relationship("UserModel")
-    fermentables = db.relationship("RecipeFermentables")
-    hops = db.relationship("RecipeHops")
-    grains = db.relationship("RecipeGrains")
-    yeasts = db.relationship("RecipeYeasts")
+    fermentables = db.relationship("RecipeFermentables", cascade="all, delete-orphan")
+    hops = db.relationship("RecipeHops", cascade="all, delete-orphan")
+    grains = db.relationship("RecipeGrains", cascade="all, delete-orphan")
+    yeasts = db.relationship("RecipeYeasts", cascade="all, delete-orphan")
