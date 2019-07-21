@@ -9,6 +9,7 @@ class HopsModel(db.Model, BaseModel, SearchableMixin):
     __tablename__ = "hop"
     __searchable__ = ['brand', 'name','alpha', 'aroma', 'typical_beer', 'hop_type', 'user_id']
 
+
     id = db.Column(UUID(as_uuid=True), unique=True,
                    nullable=False, primary_key=True, default=uuid4)
     brand = db.Column(db.String(80))

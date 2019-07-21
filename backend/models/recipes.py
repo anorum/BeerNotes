@@ -49,9 +49,8 @@ class RecipeYeasts(db.Model, BaseModel):
     yeast = db.relationship("YeastModel")
 
 
-class RecipeModel(db.Model, BaseModel, SearchableMixin):
+class RecipeModel(db.Model, BaseModel):
     __tablename__ = "recipe"
-    __searchable__ = ['name', 'target_abv', 'fermentables', 'hops', 'grains', 'yeasts']
 
     id = db.Column(UUID(as_uuid=True), nullable=False,
                    primary_key=True, default=uuid4)
