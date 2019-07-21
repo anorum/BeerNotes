@@ -83,7 +83,12 @@ class RecipeSchema(ma.ModelSchema):
     class Meta:
         model = RecipeModel
         fields = ("id", "name", "user_id",
-                  "target_abv", "fermentables", "hops", "grains", "yeasts")
+                  "target_abv", "fermentables", 
+                  "hops", "grains", "yeasts",
+                  "target_abv", "actual_abv", "target_og",
+                  "actual_og", "target_fg", "actual_fg", "IBU", "SRM",
+                  "description", "method", "instructions", "private"
+                  )
         include_fk = True
 
 

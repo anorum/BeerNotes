@@ -1,9 +1,10 @@
-from flask import request
+from flask import request, current_app
 from flask_restful import Resource
 from flask_jwt_extended import jwt_required, get_jwt_identity
 from db import db
 from models.yeast import YeastModel
 from schemas.yeast import yeast_schema, yeasts_schema
+from elasticsearch_dsl import MultiSearch, Q, Search, query
 
 ERROR_INSERTING = "An error occurred while inserting the yeast."
 YEAST_NOT_FOUND = "No yeast with this names was found."
@@ -38,6 +39,8 @@ class YeastSearch(Resource):
     @classmethod
     def get(cls):
         q = request.args['q']
-        query, total = YeastModel.search(q, 1, 5)
+        que = Q("multi_match", query=q, fields=['name', 'brand'])
+    
+        query, total = YeastModel.search(que, 1, 5)
         return yeasts_schema.dump(query.all())
        

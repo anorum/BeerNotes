@@ -1,4 +1,6 @@
 from flask import current_app
+from elasticsearch_dsl import Search
+
 
 def add_to_index(index, model):
     if not current_app.elasticsearch:
@@ -15,20 +17,21 @@ def add_to_index(index, model):
         return
     
     
-def remove_from_index(index, model):
+def remove_from_index(model):
     if not current_app.elasticsearch:
         return
-    current_app.elasticsearch.delete(index=index, doc_type=index, id=model.id)
+    current_app.elasticsearch.delete(index="brewcipes", id=model.id)
 
-def query_index(index, query, page, per_page):
+def query_index(index, dsl_query, page, per_page):
     if not current_app.elasticsearch:
         return [], 0
-    search = current_app.elasticsearch.search(
-        index=index, 
-        body={'query': {'query_string': {'query': '*'+query+'*', 'type': "phrase", 'fields': ['*']}},
-              'from': (page - 1) * per_page, 'size': per_page})
+    s = Search(index="brewcipes", using=current_app.elasticsearch).query(dsl_query)
+
+    search = s.execute()
+
     ids = [hit['_id'] for hit in search['hits']['hits']]
     return ids, search['hits']['total']
+
 
 """ def recursive_serialize_field(field):
     if not (isinstance(field, InstrumentedList) or (hasattr(field,'__dict__') or hasattr(field,'__slots__'))):

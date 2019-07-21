@@ -12,7 +12,7 @@ from flask_jwt_extended import (JWTManager, get_jwt_claims, verify_jwt_in_reques
                                 set_access_cookies, unset_jwt_cookies)
 from flask_cors import CORS
 from elasticsearch import Elasticsearch
-from elasticsearch.serializer import JSONSerializer
+from elasticsearch_dsl import connections
 
 # Create .env file path.
 dotenv_path = join(dirname(__file__), '.env')
@@ -52,8 +52,10 @@ patch_request_class(app, 10 * 1024 * 1024)
 configure_uploads(app, IMAGE_SET)
 
 
-app.elasticsearch = Elasticsearch([app.config['ELASTICSEARCH_URL']], http_auth=os.environ['APPBASE_API_WRITE']) \
+app.elasticsearch = Elasticsearch([app.config['ELASTICSEARCH_URL']], http_auth=os.environ['APPBASE_API_ADMIN']) \
 #        if app.config['ELASTICSEARCH_URL'] else None
+
+
 
 api = Api(app)
 jwt = JWTManager(app)

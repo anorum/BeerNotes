@@ -31,8 +31,11 @@ class RecipesByID(Resource):
             recipe.save_to_db()
         except Exception as e:
             return {"message": ERROR_INSERTING}, 500
-        current_app.elasticsearch.index(index="brewcipes", \
-            id=recipe.id, body=clean_recipe_elastic(recipe_schema.dump(recipe)))
+        if recipe.private:
+            current_app.elasticsearch.delete(index="brewcipes", id=recipe.id)
+        else:
+            current_app.elasticsearch.index(index="brewcipes", \
+                id=recipe.id, body=clean_recipe_elastic(recipe_schema.dump(recipe)))
         return recipe_schema.dump(recipe), 201
 
     @classmethod
@@ -40,7 +43,7 @@ class RecipesByID(Resource):
         recipes = RecipeModel.find_by_id(recipeid)
 
         if recipes:
-            return recipes_schema.dump(recipes)
+            return recipe_schema.dump(recipes)
         return {"message": RECIPE_NOT_FOUND}
 
 

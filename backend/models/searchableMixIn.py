@@ -1,12 +1,14 @@
+
 from search import add_to_index, remove_from_index, query_index
+from flask import current_app
+
 from db import db
 
 
 class SearchableMixin(object):
     @classmethod
-    def search(cls, expression, page, per_page):
-        ids, total = query_index(cls.__tablename__, expression, page, per_page)
-        print(ids, total)
+    def search(cls, dsl_query, page, per_page):
+        ids, total = query_index(cls.__tablename__, dsl_query, page, per_page)
         if total['value'] == 0:
             #Return a fake UUID for zero results
             return cls.query.filter_by(id="3ba90a8e-e81b-4133-9b59-c1bf946401b3"), 0
@@ -15,6 +17,7 @@ class SearchableMixin(object):
             when.append((ids[i], i))
         return cls.query.filter(cls.id.in_(ids)).order_by(
             db.case(when, value=cls.id)), total
+    
 
     @classmethod
     def before_commit(cls, session):
@@ -35,7 +38,7 @@ class SearchableMixin(object):
                     add_to_index(obj.__tablename__, obj)
             for obj in session._changes['delete']:
                 if isinstance(obj, SearchableMixin):
-                    remove_from_index(obj.__tablename__, obj)
+                    remove_from_index(obj)
             session._changes = None
         except:
             return
