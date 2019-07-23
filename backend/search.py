@@ -22,7 +22,7 @@ def remove_from_index(model):
         return
     current_app.elasticsearch.delete(index="brewcipes", id=model.id)
 
-def query_index(index, dsl_query, page, per_page):
+def query_index(dsl_query, page=1, per_page=10):
     if not current_app.elasticsearch:
         return [], 0
     s = Search(index="brewcipes", using=current_app.elasticsearch).query(dsl_query)

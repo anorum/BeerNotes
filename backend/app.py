@@ -26,7 +26,7 @@ from mail import mail
 from oa import oauth
 from resources.user import UserRegister, UsersList, UserLogin, UserDelete, SetPassword
 from resources.grains import Grains
-from resources.fermentables import Fermentables
+from resources.fermentables import Fermentables, FermentablesCreate, FermentablesByID
 from resources.hops import Hop, HopsSearch
 from resources.yeast import Yeast, YeastSearch
 from resources.confirmation import Confirmation, ConfirmationByUser
@@ -81,7 +81,9 @@ api.add_resource(HopsSearch, '/hop/search')
 api.add_resource(Yeast, '/yeast/<string:name>')
 api.add_resource(YeastSearch, '/yeast/search')
 api.add_resource(Grains, '/grains/<string:name>')
-api.add_resource(Fermentables, '/fermentables/<string:name>')
+api.add_resource(Fermentables, '/fermentables/<string:fermentableid>')
+api.add_resource(FermentablesCreate, '/fermentables/create')
+api.add_resource(FermentablesByID, '/fermentables/<string:fermentableid>')
 api.add_resource(Confirmation, '/confirm/<string:confirmation_id>')
 api.add_resource(ConfirmationByUser, '/confirmation/user/<string:user_id>')
 api.add_resource(AvatarUpload, "/upload/profilepicture")

@@ -1,6 +1,7 @@
 
 from search import add_to_index, remove_from_index, query_index
 from flask import current_app
+from elasticsearch_dsl import Q
 
 from db import db
 
@@ -8,7 +9,7 @@ from db import db
 class SearchableMixin(object):
     @classmethod
     def search(cls, dsl_query, page, per_page):
-        ids, total = query_index(cls.__tablename__, dsl_query, page, per_page)
+        ids, total = query_index(dsl_query, page, per_page)
         if total['value'] == 0:
             #Return a fake UUID for zero results
             return cls.query.filter_by(id="3ba90a8e-e81b-4133-9b59-c1bf946401b3"), 0
@@ -17,6 +18,12 @@ class SearchableMixin(object):
             when.append((ids[i], i))
         return cls.query.filter(cls.id.in_(ids)).order_by(
             db.case(when, value=cls.id)), total
+    
+    @classmethod
+    def elastic_find_by_id(cls, inputid):
+        q= Q("terms", _id=[inputid])
+        ids, total = query_index(q)
+        return ids
     
 
     @classmethod

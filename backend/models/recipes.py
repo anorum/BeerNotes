@@ -49,7 +49,7 @@ class RecipeYeasts(db.Model, BaseModel):
     yeast = db.relationship("YeastModel")
 
 
-class RecipeModel(db.Model, BaseModel):
+class RecipeModel(db.Model, BaseModel, SearchableMixin):
     __tablename__ = "recipe"
 
     id = db.Column(UUID(as_uuid=True), nullable=False,

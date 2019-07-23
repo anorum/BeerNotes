@@ -2,6 +2,8 @@ from flask import request, current_app
 from flask_restful import Resource
 from flask_jwt_extended import jwt_required, get_jwt_identity, jwt_refresh_token_required
 from db import db
+from elasticsearch_dsl import Q
+
 from models.recipes import RecipeModel
 from models.fermentables import FermentablesModel
 from schemas.recipes import recipe_schema, recipes_schema, recipe_fermentable_schema, recipe_fermentables_schmea
@@ -9,9 +11,8 @@ from schemas.fermentables import fermentables_schema, fermentable_schema
 from libs.clean_recipe_elastic import clean_recipe_elastic
 
 
-
 ERROR_INSERTING = "An error occurred while inserting the recipe."
-RECIPE_NOT_FOUND = "No recipes with this name was found."
+RECIPE_NOT_FOUND = "Uh Oh. This recipe was not found."
 NO_RECIPES_FOUND = "There are no recipes"
 
 
@@ -23,20 +24,24 @@ class RecipesByID(Resource):
         recipe = RecipeModel.find_by_id(recipeid)
         if not recipe:
             return {"msg": RECIPE_NOT_FOUND}, 404
-        data = request.get_json()
 
-        recipe = recipe_schema.load(data, instance=recipe)
+        data = request.get_json()
+        loaded_data = recipe_schema.load(data, instance=recipe)
 
         try:
-            recipe.save_to_db()
+            loaded_data.save_to_db()
         except Exception as e:
             return {"message": ERROR_INSERTING}, 500
-        if recipe.private:
-            current_app.elasticsearch.delete(index="brewcipes", id=recipe.id)
+        if loaded_data.private:
+            if len(RecipeModel.elastic_find_by_id(recipe.id)) > 0:
+                current_app.elasticsearch.delete(index="brewcipes", id=loaded_data.id)
         else:
             current_app.elasticsearch.index(index="brewcipes", \
-                id=recipe.id, body=clean_recipe_elastic(recipe_schema.dump(recipe)))
+                id=loaded_data.id, body=clean_recipe_elastic(recipe_schema.dump(loaded_data)))
+
         return recipe_schema.dump(recipe), 201
+
+
 
     @classmethod
     def get(cls, recipeid):
@@ -68,14 +73,13 @@ class RecipeCreate(Resource):
     @jwt_required
     def post(cls):
         data = request.get_json()
-        data["id"] = id
         data["user_id"] = get_jwt_identity()
         recipe = recipe_schema.load(data, session=db.session)
         try:
             recipe.save_to_db()
         except Exception as e:
-            print(e)
             return {"message": ERROR_INSERTING}, 500
-        current_app.elasticsearch.index(index="brewcipes", \
-            id=recipe.id, body=clean_recipe_elastic(recipe_schema.dump(recipe)))
+        if not recipe.private:
+            current_app.elasticsearch.index(index="brewcipes", \
+                id=recipe.id, body=clean_recipe_elastic(recipe_schema.dump(recipe)))
         return recipe_schema.dump(recipe), 201
