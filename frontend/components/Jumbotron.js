@@ -5,9 +5,12 @@ const JumbotronContainer = styled.div`
   padding: 4rem 2rem;
   margin-bottom: 2rem;
   background-color: ${props => props.theme.mainColor};
-  min-width: 100vw;
-  position: absolute;
-  left: 0;
+  width: 100vw;
+  position: relative;
+  left: 50%;
+  right: 50%;
+  margin-left: -50vw;
+  margin-right: -50vw;
   display: flex;
   flex-direction: column;
   align-items: center;

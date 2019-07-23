@@ -6,6 +6,7 @@
     "start": "next start"
   },
   "dependencies": {
+    "@appbaseio/reactivesearch": "^3.0.0-rc.21",
     "next": "8.1.0",
     "nprogress": "^0.2.0",
     "react": "16.8.6",
