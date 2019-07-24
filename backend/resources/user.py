@@ -47,8 +47,26 @@ class UserRegister(Resource):
             return {"message": USER_FAILED_TO_CREATE}
 
 
+class GetUser(Resource):
+    @classmethod
+    @jwt_required
+    def get(cls):
+        user_id = get_jwt_identity()
+        user = UserModel.find_by_id(user_id)
+        confirmation = user.most_recent_confirmation
+        if user:
+            if confirmation and confirmation.confirmed:
+                return user_schema.dump(user), 200
+            else:
+                return {"message": "Please confirm your user account."}, 400
+        else:
+            return {"message": "No User Logged In"}, 400
+
+
+
 class UserDelete(Resource):
     @classmethod
+    @fresh_jwt_required
     def delete(cls):
         data = request.get_json()
         user = UserModel.find_by_email(data["email"].lower())

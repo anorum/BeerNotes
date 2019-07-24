@@ -24,7 +24,7 @@ from ma import ma
 from db import db
 from mail import mail
 from oa import oauth
-from resources.user import UserRegister, UsersList, UserLogin, UserDelete, SetPassword
+from resources.user import UserRegister, UsersList, UserLogin, UserDelete, SetPassword, GetUser
 from resources.grains import Grains
 from resources.fermentables import Fermentables, FermentablesCreate, FermentablesByID
 from resources.hops import Hop, HopsSearch
@@ -73,6 +73,7 @@ def add_claims_to_access_token(identity):
 ### Resources and end points ###
 api.add_resource(UserRegister, '/register')
 api.add_resource(UsersList, '/users')
+api.add_resource(GetUser, '/user')
 api.add_resource(UserLogin, '/login')
 api.add_resource(UserDelete, '/deregister')
 api.add_resource(SetPassword, '/user/resetpassword')
