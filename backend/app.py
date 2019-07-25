@@ -24,7 +24,7 @@ from ma import ma
 from db import db
 from mail import mail
 from oa import oauth
-from resources.user import UserRegister, UsersList, UserLogin, UserDelete, SetPassword
+from resources.user import UserRegister, UsersList, UserLogin, UserDelete, SetPassword, GetUser
 from resources.grains import Grains
 from resources.fermentables import Fermentables, FermentablesCreate, FermentablesByID
 from resources.hops import Hop, HopsSearch
@@ -59,7 +59,7 @@ app.elasticsearch = Elasticsearch([app.config['ELASTICSEARCH_URL']], http_auth=o
 
 api = Api(app)
 jwt = JWTManager(app)
-cors = CORS(app, resources={r"*": {"origins": "http://localhost:3000"}})
+cors = CORS(app, resources={r"*": {"origins": ["http://localhost:3000", "http://127.0.0.1:3000"]}}, supports_credentials=True)
 ########### End of Configurations ###########
 
 
@@ -73,6 +73,7 @@ def add_claims_to_access_token(identity):
 ### Resources and end points ###
 api.add_resource(UserRegister, '/register')
 api.add_resource(UsersList, '/users')
+api.add_resource(GetUser, '/user')
 api.add_resource(UserLogin, '/login')
 api.add_resource(UserDelete, '/deregister')
 api.add_resource(SetPassword, '/user/resetpassword')

@@ -2,6 +2,7 @@ import React, { Component } from "react";
 import styled, { ThemeProvider, createGlobalStyle } from "styled-components";
 import Head from "./Head";
 import Header from "./Header";
+import UserProvider from "./UserProvider"
 
 const theme = {
   mainColor: "#FEDC00",
@@ -52,7 +53,9 @@ const GlobalStyle = createGlobalStyle`
 class Page extends Component {
   render() {
     return (
+      <UserProvider>
       <ThemeProvider theme={theme}>
+      
         <StyledPage>
           <GlobalStyle />
           <Head title="Beer Notes" />
@@ -60,6 +63,7 @@ class Page extends Component {
           <Inner>{this.props.children}</Inner>
         </StyledPage>
       </ThemeProvider>
+      </UserProvider>
     );
   }
 }

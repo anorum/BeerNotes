@@ -47,9 +47,8 @@ class DevelopmentConfig(Config):
     DEBUG = True
     TESTING = True
     JWT_COOKIE_SECURE = False
-    CSRF_ENABLED = False
-    JWT_COOKIE_SECURE = False
-    JWT_COOKIE_CSRF_PROTECT = False
+    CSRF_ENABLED = True
+    JWT_COOKIE_CSRF_PROTECT = True
 
 
 class TestingConfig(Config):
