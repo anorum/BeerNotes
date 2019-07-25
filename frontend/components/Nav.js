@@ -2,8 +2,7 @@ import React, { useState, useContext } from "react";
 import Link from "next/link";
 import styled from "styled-components";
 import RedirectSearch from "./RedirectSearch";
-import { UserContext} from "./UserProvider"
-
+import { UserContext } from "./UserProvider";
 
 const link_items = [
   { href: "/search", label: "Search" },
@@ -62,7 +61,7 @@ const StyledNav = styled.ul`
 
 const Nav = () => {
   const [showSearch, setSearch] = useState(false);
-  const userContext = useContext(UserContext)
+  const userContext = useContext(UserContext);
   return (
     <StyledNav>
       {links.map(({ key, href, label }) => (
@@ -70,17 +69,17 @@ const Nav = () => {
           <a>{label}</a>
         </Link>
       ))}
-      {
-        userContext.user !== null ? (
-          <Link href="/account">
-            <a alt="Account">Account</a>
-          </Link>
-        ) : (<Link href="/login">
-            <a alt="login">Login / Sign Up</a>
-          </Link>)
-      }
+      {userContext.user !== null ? (
+        <Link href="/account">
+          <a alt="Account">Account</a>
+        </Link>
+      ) : (
+        <Link href="/login">
+          <a alt="login">Login / Sign Up</a>
+        </Link>
+      )}
       {showSearch && (
-        <div onBlur={() => setSearch(!showSearch)}>
+        <div onBlur={() => setSearch(!showSearch)} style={{ margin: "0 3rem" }}>
           <RedirectSearch />
         </div>
       )}
@@ -110,7 +109,6 @@ const Nav = () => {
           </svg>
         </div>
       )}
-
     </StyledNav>
   );
 };
