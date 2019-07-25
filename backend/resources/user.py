@@ -9,7 +9,8 @@ from flask_jwt_extended import (jwt_required,
                                 fresh_jwt_required,
                                 set_access_cookies,
                                 set_refresh_cookies,
-                                get_jwt_identity)
+                                get_jwt_identity,
+                                get_current_user)
 
 from models.user import UserModel
 from models.confirmation import ConfirmationModel
@@ -52,15 +53,16 @@ class GetUser(Resource):
     @jwt_required
     def get(cls):
         user_id = get_jwt_identity()
-        user = UserModel.find_by_id(user_id)
-        confirmation = user.most_recent_confirmation
-        if user:
-            if confirmation and confirmation.confirmed:
-                return user_schema.dump(user), 200
+        if user_id:
+            user = UserModel.find_by_id(user_id)
+            confirmation = user.most_recent_confirmation
+            if user:
+                if confirmation and confirmation.confirmed:
+                    return user_schema.dump(user), 200
+                else:
+                    return {"message": "Please confirm your user account."}, 400
             else:
-                return {"message": "Please confirm your user account."}, 400
-        else:
-            return {"message": "No User Logged In"}, 400
+                return None, 400
 
 
 
@@ -91,11 +93,12 @@ class UserLogin(Resource):
                     identity=user.id, fresh=True)
                 refresh_token = create_refresh_token(identity=user.id)
 
-                resp = jsonify({"access token": access_token,
+                resp = jsonify({"access_token": access_token,
                                 "refresh_token": refresh_token})
 
                 set_access_cookies(resp, access_token)
                 set_refresh_cookies(resp, refresh_token)
+                resp.set_cookie('test', value="swag", domain='127.0.0.1:3000')
                 resp.status_code = 200
                 return resp
             else:

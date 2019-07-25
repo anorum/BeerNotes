@@ -9,7 +9,7 @@ from models.basemodel import BaseModel
 class GrainsModel(BaseModel, db.Model, SearchableMixin):
     """ holds grain database table """
     __tablename__ = "grain"
-    __searchable__ = ['brand', 'name']
+    __searchable__ = ['id', 'brand', 'name']
 
     id = db.Column(UUID(as_uuid=True), unique=True,
                    nullable=False, primary_key=True, default=uuid4)
