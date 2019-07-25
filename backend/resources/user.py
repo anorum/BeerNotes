@@ -9,8 +9,7 @@ from flask_jwt_extended import (jwt_required,
                                 fresh_jwt_required,
                                 set_access_cookies,
                                 set_refresh_cookies,
-                                get_jwt_identity,
-                                get_current_user)
+                                get_jwt_identity)
 
 from models.user import UserModel
 from models.confirmation import ConfirmationModel
