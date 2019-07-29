@@ -31,7 +31,7 @@ from resources.hops import Hop, HopsSearch
 from resources.yeast import Yeast, YeastSearch
 from resources.confirmation import Confirmation, ConfirmationByUser
 from resources.image import AvatarUpload, Avatar
-from resources.recipes import RecipesByID, Recipes, RecipeSearch, RecipeCreate
+from resources.recipes import RecipesByID, Recipes, RecipeSearch, RecipeCreate, MyRecipes
 from resources.github_login import GithubLogin, GithubAuthorize
 from models.user import UserModel
 from models.recipes import RecipeModel, RecipeYeasts, RecipeGrains, RecipeHops, RecipeFermentables
@@ -92,6 +92,7 @@ api.add_resource(Avatar, "/avatar/<string:user_id>")
 api.add_resource(RecipesByID, "/recipe/<string:recipeid>")
 api.add_resource(RecipeCreate, "/recipe/create")
 api.add_resource(Recipes, "/recipes/<int:page>")
+api.add_resource(MyRecipes, "/myrecipes/<int:page>")
 api.add_resource(RecipeSearch, "/recipes/search")
 api.add_resource(GithubLogin, "/login/github")
 api.add_resource(GithubAuthorize, "/login/github/authorized", endpoint="github.authorize")

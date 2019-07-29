@@ -1,4 +1,5 @@
 from uuid import uuid4
+import datetime
 from db import db
 from models.basemodel import BaseModel
 from models.searchableMixIn import SearchableMixin
@@ -66,9 +67,11 @@ class RecipeModel(db.Model, BaseModel, SearchableMixin):
     IBU = db.Column(db.Integer())
     SRM = db.Column(db.Integer())
     description = db.Column(db.UnicodeText())
+    style = db.Column(db.String(240))
     method = db.Column(db.String(240))
     instructions = db.Column(db.UnicodeText())
     private = db.Column(db.Boolean(), nullable=False, default=False)
+    created_date = db.Column(db.DateTime, default=datetime.datetime.utcnow)
 
     user = db.relationship("UserModel")
     fermentables = db.relationship("RecipeFermentables", cascade="all, delete-orphan")

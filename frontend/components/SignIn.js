@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { apiEndpoint } from '../config'
+import axios from 'axios'
 
 
 class SignIn extends Component {
@@ -14,17 +14,12 @@ class SignIn extends Component {
       };
 
     signIn = async () => {
-        const signingIn = await fetch(`${apiEndpoint}/login`, {
-            method: 'POST',
-            headers: {
-                'accept': 'application/json',
-                'Content-Type': 'application/json'
-            },
-            credentials: 'include',
-            body: JSON.stringify(this.state)
-        })
-        const content = await signingIn.json();
-        return content
+        const req = await axios
+                            .post('/login', JSON.stringify(this.state))
+                            .then(res => (res.data))
+                            .catch(err => (err.response.data))
+
+        return req
     }
 
     render() {
@@ -34,7 +29,6 @@ class SignIn extends Component {
                 <form method="post" onSubmit={async e => {
                     e.preventDefault();
                     const res = await this.signIn();
-                    console.log(res);
                     this.setState({email: '', password: ''})
                 }}>
                     <label htmlFor="email">
@@ -63,5 +57,6 @@ class SignIn extends Component {
         );
     }
 }
+
 
 export default SignIn;

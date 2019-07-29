@@ -87,7 +87,7 @@ class RecipeSchema(ma.ModelSchema):
                   "hops", "grains", "yeasts",
                   "target_abv", "actual_abv", "target_og",
                   "actual_og", "target_fg", "actual_fg", "IBU", "SRM",
-                  "description", "method", "instructions", "private"
+                  "description", "method", "instructions", "private", "style"
                   )
         include_fk = True
 

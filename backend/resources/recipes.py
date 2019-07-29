@@ -56,7 +56,16 @@ class Recipes(Resource):
     @classmethod
     def get(cls, page):
         recipes = RecipeModel.query.paginate(page=page, per_page=2)
-        print(recipes.next_num)
+        if recipes.items:
+            return recipes_schema.dump(recipes.items)
+        return {"message": NO_RECIPES_FOUND}
+
+class MyRecipes(Resource):
+    @classmethod
+    @jwt_required
+    def get(cls, page):
+        user_id = get_jwt_identity()
+        recipes = RecipeModel.query.filter_by(user_id=user_id).paginate(page=page, per_page=40)
         if recipes.items:
             return recipes_schema.dump(recipes.items)
         return {"message": NO_RECIPES_FOUND}

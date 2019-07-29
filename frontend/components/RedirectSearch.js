@@ -17,9 +17,12 @@ const StyledDataSearch = styled(DataSearch)`
 
   .search-list {
     font-size: 1.5rem;
-    mark {
-      font-weight: bold;
-      background-color: ${props => props.theme.mainColor};
+    .trim span {
+      font-size: 1.5rem;
+      mark {
+        background-color: ${props => props.theme.mainColor} !important;
+
+      }
     }
   }
 `;
@@ -50,6 +53,7 @@ class RedirectSearch extends Component {
             list: "search-list",
             mic: "search-mic"
           }}
+          highlight
           onValueSelected={(value, cause, source) =>
             this.pushToRoute(value, cause, source)
           }
@@ -59,17 +63,16 @@ class RedirectSearch extends Component {
               suggestion.source.type.charAt(0).toUpperCase() +
               suggestion.source.type.slice(1),
             value: suggestion.source.name,
-            source: suggestion.source // for onValueSelected to work with parseSuggestion
+            source: suggestion.source
           })}
-          customHighlight={props => ({
-            highlight: {
-              pre_tag: ["<span>"],
-              post_tag: ["</span>"],
-              fields: {
-                name: {}
-              }
-            }
-          })}
+
+          renderNoSuggestion={() => (
+        <div className="search-list">
+            No suggestions found
+        </div>
+    )
+}
+
         />
       </ReactiveBase>
     );

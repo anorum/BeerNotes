@@ -1,5 +1,6 @@
-import React, { Component } from 'react';
-import {apiEndpoint} from "../config"
+import React, { Component } from 'react'
+import Cookies from 'js-cookie'
+import axios from 'axios'
 
 
 export const UserContext = React.createContext();
@@ -9,32 +10,55 @@ class UserProvider extends Component {
         super(props)
         this.state = {
             user: null,
-            expired: false,
-            fresh: false
+            loading: true
         }
     }
 
-    componentDidMount() {
+    componentWillMount() {
         this.checkLogin()
     }
+
+    requestUser = async () => {
+        const user = await axios
+            .get('/user')
+            .then(res => (res.data))
+            .catch(err => (err.response.data)
+            )
+        return user
+    }
+
+    refreshLogin = async () => {
+        const refresh = await axios
+            .post('/refresh', {} , {headers: {'X-CSRF-TOKEN': Cookies.get('csrf_refresh_token')}})
+            .then(res => res.data)
+            .catch(err => err.response.data)
+            return refresh
+    }   
     
     checkLogin = async () => {
-        const user = await fetch(`${apiEndpoint}/user`, {method: 'GET', 'Content-Type': 'application/json', credentials: 'include'})
-        if (user.status != 200) {
-            this.setState({
-                user: null
-            })
-            return
+        let user = null
+        if (Cookies.get('csrf_access_token') || Cookies.get('csrf_refresh_token')) {
+            user = await this.requestUser()
+            if (user.msg) {
+                if (user.msg === "Token has expired") {
+                    await this.refreshLogin()
+                }
+            }
         }
-        let userData = await user.text()
-        console.log(userData)
+
+        
         this.setState({
-            user: userData
+            user,
+            loading: false
         })
     }
 
 
     render() {
+        {if(this.state.loading) {
+            return (<div>Loading...</div>)
+        }
+    }
         return (
             <UserContext.Provider value={this.state}>
                 {this.props.children}
@@ -42,5 +66,4 @@ class UserProvider extends Component {
         );
     }
 }
-
 export default UserProvider;

@@ -2,7 +2,6 @@ import styled from "styled-components";
 import { Component } from "react";
 
 const JumbotronContainer = styled.div`
-  padding: 4rem 2rem;
   margin-bottom: 2rem;
   background-color: ${props => props.theme.mainColor};
   width: 100vw;
@@ -18,7 +17,7 @@ const JumbotronContainer = styled.div`
 `;
 
 const Jumbotron = props => (
-  <JumbotronContainer>{props.children}</JumbotronContainer>
+  <JumbotronContainer style={{background: props.color}}>{props.children}</JumbotronContainer>
 );
 
 export default Jumbotron;

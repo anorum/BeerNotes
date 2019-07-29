@@ -8,7 +8,7 @@ const User = (props) => {
 
     return (
         <React.Fragment>
-            {user && props.children}
+            {!user && props.children}
         </React.Fragment>
     )
 }
