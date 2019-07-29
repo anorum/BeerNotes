@@ -1,9 +1,8 @@
 import React, { useState } from "react";
 import Link from "next/link";
 import styled from "styled-components";
-import RedirectSearch from "./RedirectSearch";
-import SearchIcon from "./SearchIcon"
-import AccountMenu from "./AccountMenu"
+import SearchMenu from "./SearchMenu";
+import AccountMenu from "./AccountMenu";
 
 const link_items = [
   { href: "/search", label: "Search" },
@@ -21,7 +20,6 @@ const links = link_items.map(link => {
 const StyledNav = styled.ul`
   display: flex;
   flex-direction: row;
-  justify-self: end;
   font-size: 2rem;
   flex-wrap: nowrap;
 
@@ -61,7 +59,6 @@ const StyledNav = styled.ul`
 `;
 
 const Nav = () => {
-  const [showSearch, setSearch] = useState(false);
   return (
     <StyledNav>
       {links.map(({ key, href, label }) => (
@@ -69,22 +66,8 @@ const Nav = () => {
           <a>{label}</a>
         </Link>
       ))}
+      <SearchMenu />
       <AccountMenu />
-      {showSearch && (
-        <div onBlur={() => setSearch(!showSearch)} style={{ margin: "0 3rem" }}>
-          <RedirectSearch />
-        </div>
-      )}
-      {!showSearch && (
-        <div
-          tabIndex="0"
-          role="button"
-          style={{ cursor: "pointer" }}
-          onFocus={() => setSearch(!showSearch)}
-        >
-          <SearchIcon />
-        </div>
-      )}
     </StyledNav>
   );
 };
