@@ -1,8 +1,9 @@
 import React, { useState, useContext } from "react";
 import styled from "styled-components";
-import Link from "next/link";
-import { UserContext } from "./UserProvider";
+import UserContext from "./UserContext";
 import StyledButton from "./styles/StyledButton";
+import SearchMenu from "./SearchMenu";
+
 
 const ProfileContainer = styled.div`
   display: flex;
@@ -20,10 +21,13 @@ const AccountMenu = props => {
 
   return (
     <ProfileContainer>
+    <SearchMenu />
       {(user && (
-        <Link href="/account">
-          <a alt="Account">Account</a>
-        </Link>
+        <React.Fragment>
+        <StyledButton href="/account">
+          Account
+        </StyledButton>
+        </React.Fragment>
       )) || (
         <React.Fragment>
           <StyledButton href="/register" alt="sign up">

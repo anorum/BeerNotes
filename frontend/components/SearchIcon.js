@@ -3,10 +3,12 @@ import React from 'react';
 
 const SearchIcon = (props) => (
             <svg
+            style={{alignSelf: 'center', cursor: 'pointer'}}
             alt="Search"
-            height="16"
+            height="25"
             xmlns="http://www.w3.org/2000/svg"
             viewBox="0 0 16 16"
+            onClick={props.onFocus}
           >
             <title>Search</title>
             <path

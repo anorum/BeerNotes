@@ -1,9 +1,16 @@
 import React, { Component  } from "react";
-import Recipes from "./Recipes"
 import RecipeSideSlider from "./RecipesSideSlide"
 import axios from 'axios'
-import Recipe from "./Recipe";
 import Jumbotron from "./Jumbotron"
+import styled from "styled-components"
+
+
+const HomeGrid = styled.div`
+display: grid;
+grid-template-columns: 65% 1fr;
+grid-gap: 20px 20px;
+
+`
 
 
 export default class MyRecipes extends Component {
@@ -38,19 +45,24 @@ export default class MyRecipes extends Component {
   render() {
 
     return (
+      <HomeGrid>
       <div>
-        <h2>Your Recipe{this.state.recipes.length > 1 && 's'}</h2>
+        <h2>Your Recent Recipe{this.state.recipes.length > 1 && 's'}</h2>
         {this.state.isLoading && <div> Loading...</div>}
         {this.state.error && <div> {this.state.errorMessage} </div> ||
         ( <React.Fragment>
-          <Jumbotron color="#FFF">
+
+          
           <RecipeSideSlider recipes={this.state.recipes} />
-          </Jumbotron>
-          <Recipes recipes={this.state.recipes} />
-          </React.Fragment>
+
+        </React.Fragment>
           )
         }
-      </div>
+        </div>
+        <div>
+            <h2> Current Brews </h2>
+          </div>
+        </HomeGrid>
 
     )
       

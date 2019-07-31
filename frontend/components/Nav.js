@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 import Link from "next/link";
 import styled from "styled-components";
-import SearchMenu from "./SearchMenu";
 import AccountMenu from "./AccountMenu";
 
 const link_items = [
@@ -17,9 +16,11 @@ const links = link_items.map(link => {
   return link;
 });
 
-const StyledNav = styled.ul`
+const StyledNav = styled.nav`
   display: flex;
   flex-direction: row;
+  align-items: center;
+  flex-grow: 2;
   font-size: 2rem;
   flex-wrap: nowrap;
 
@@ -66,7 +67,6 @@ const Nav = () => {
           <a>{label}</a>
         </Link>
       ))}
-      <SearchMenu />
       <AccountMenu />
     </StyledNav>
   );

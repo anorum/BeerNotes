@@ -15,12 +15,19 @@ Router.onRouteChangeError = () => {
 };
 
 const StyledHeader = styled.header`
+    position: sticky;
+    top: -1px;
+    z-index: 20;
+    height: 73px;
+    
+
   .bar {
-    display: grid;
-    grid-template-columns: auto 1fr;
-    justify-content: space-between;
+    display: flex;
+    align-items: center;
+    height: 100%;
+    padding: 0px 2%;
     background-color: ${props => props.theme.mainColor};
-    align-items: baseline;
+    transition: all 0.6s cubic-bezier(0.785, 0.135, 0.15, 0.86) 0s;
   }
 `;
 
@@ -28,7 +35,8 @@ const Logo = styled.h1`
   font-size: 2.4rem;
   font-family: "Racing Sans One", cursive;
   margin-left: 2rem;
-  position: relative;
+  flex-shrink: 1;
+  margin: 0px;
 
   a {
     padding: 0.5rem 1rem;
