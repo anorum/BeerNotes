@@ -13,11 +13,11 @@ axios.defaults.headers.post['Content-Type'] = 'application/json'
 
 
 class MyApp extends App {
-state = {
-        user: null,
-        loading: true,
-        error: false
-    }
+  state = {
+    user: null,
+    loading: false,
+    error: false
+  }
 
   static async getInitialProps({ Component, ctx }) {
     let pageProps = {};
@@ -25,16 +25,35 @@ state = {
     if (Component.getInitialProps) {
       pageProps = await Component.getInitialProps(ctx);
     }
+  let user = null
+  if (Cookies.get('csrf_access_token') || Cookies.get('csrf_refresh_token')) {
+      user = await axios
+      .get('/user')
+      .then(res => (res.data))
+      .catch(err => (err.response.data || null)
+      )
+      if (user.msg) {
+          if (user.msg === "Token has expired") {
+            await axios
+            .post('/refresh', {} , {headers: {'X-CSRF-TOKEN': Cookies.get('csrf_refresh_token')}})
+            .then(res => res.data)
+            .catch(err => err.response.data)
+
+            user = await axios
+            .get('/user')
+            .then(res => (res.data))
+            .catch(err => (err.response.data || null)
+            )
+          }
+      }
+    }
+    user = {user, loading: false, error: false}
 
     pageProps.query = ctx.query;
     
-    return { pageProps };
+    return { pageProps, ...user };
   }
 
-
-  componentDidMount() {
-    this.checkLogin()
-}
 
 
 requestUser = async () => {
@@ -66,10 +85,7 @@ checkLogin = async () => {
     }
 
   
-  this.setState({
-      user,
-      loading: false
-  })
+  return {user, loading: false, error: false}
 }
 
 
@@ -80,10 +96,7 @@ checkLogin = async () => {
       <Container>
       <UserContext.Provider value={this.state}>
         <Page>
-        {this.state.loading ? <div> Loading..</div> :
           <Component {...pageProps} />
-        }
-          
         </Page>
         </UserContext.Provider>
       </Container>
