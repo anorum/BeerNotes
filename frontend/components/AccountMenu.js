@@ -1,7 +1,8 @@
 import React, { useState, useContext } from "react";
 import styled from "styled-components";
-import UserContext from "./UserContext";
-import StyledButton from "./styles/StyledButton";
+import User from "./User"
+import NotUser from "./NotUser"
+import StyledButton from "./styles/StyledButton"
 import SearchMenu from "./SearchMenu";
 
 
@@ -15,29 +16,23 @@ const ProfileContainer = styled.div`
 const AccountMenu = props => {
   const [showDropdown, setDropdown] = useState(false);
 
-  const userContext = useContext(UserContext);
-
-  const user = userContext.user;
 
   return (
     <ProfileContainer>
     <SearchMenu />
-      {(user && (
-        <React.Fragment>
+      <User>
         <StyledButton href="/account">
           Account
         </StyledButton>
-        </React.Fragment>
-      )) || (
-        <React.Fragment>
+        </User>
+        <NotUser>
           <StyledButton href="/register" alt="sign up">
             Sign Up
           </StyledButton>
           <StyledButton href="/login" alt="login" clear>
             Login
           </StyledButton>
-        </React.Fragment>
-      )}
+        </NotUser>
     </ProfileContainer>
   );
 };
