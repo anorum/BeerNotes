@@ -1,4 +1,5 @@
 import os
+import re
 import uuid
 from os.path import join, dirname
 from dotenv import load_dotenv
@@ -52,9 +53,20 @@ patch_request_class(app, 10 * 1024 * 1024)
 configure_uploads(app, IMAGE_SET)
 
 
-app.elasticsearch = Elasticsearch([app.config['ELASTICSEARCH_URL']], http_auth=os.environ['APPBASE_API_ADMIN']) \
-#        if app.config['ELASTICSEARCH_URL'] else None
+bonsai = os.environ['BONSAI_URL']
+auth = re.search('https\:\/\/(.*)\@', bonsai).group(1).split(':')
+host = bonsai.replace('https://%s:%s@' % (auth[0], auth[1]), '')
 
+# Connect to cluster over SSL using auth for best security:
+es_header = [{
+ 'host': host,
+ 'port': 443,
+ #'use_ssl': True,
+ 'http_auth': (auth[0],auth[1])
+}]
+
+# Instantiate the new Elasticsearch connection:
+app.elasticsearch = Elasticsearch(bonsai)
 
 
 api = Api(app)

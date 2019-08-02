@@ -87,6 +87,7 @@ class RecipeCreate(Resource):
         try:
             recipe.save_to_db()
         except Exception as e:
+            print(e)
             return {"message": ERROR_INSERTING}, 500
         if not recipe.private:
             current_app.elasticsearch.index(index="brewcipes", \
