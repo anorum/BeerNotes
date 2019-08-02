@@ -64,7 +64,7 @@ const Nav = () => {
     <StyledNav>
       {links.map(({ key, href, label }) => (
         <Link href={href} key={key}>
-          <a>{label}</a>
+          {label}
         </Link>
       ))}
       <AccountMenu />

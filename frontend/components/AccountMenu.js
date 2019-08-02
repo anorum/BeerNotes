@@ -13,9 +13,14 @@ const ProfileContainer = styled.div`
   margin: 0 3rem !important;
 `;
 
+
 const AccountMenu = props => {
   const [showDropdown, setDropdown] = useState(false);
 
+
+  const logOut = (e) => {
+    console.log(e)
+  }
 
   return (
     <ProfileContainer>
@@ -24,6 +29,9 @@ const AccountMenu = props => {
         <StyledButton href="/account">
           Account
         </StyledButton>
+        <span onClick={logOut}>
+          Log Out
+        </span>
         </User>
         <NotUser>
           <StyledButton href="/register" alt="sign up">

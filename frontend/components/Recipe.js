@@ -33,16 +33,17 @@ const Recipe = (props) => {
     const { id, name, style, description } = props.recipe
     return (
     <div>
-        <Link href={`/recipe/${id}`}>
-        <a  alt={name}>
+        
         <RecipeCard>
             <RecipeDetails>
                 <span>{ style }</span>
                 <StyledButton style={{zIndex: 20}} href={`/brew/${id}`}>Brew</StyledButton>
+                <Link href={`/recipe/${id}`}>
                 <RecipeName>
                     <h2>{name}</h2>
                     <p>{description}</p>
                 </RecipeName>
+                 </Link>
                 <span style={{alignSelf: "end"}}>
                     <svg version="1.1" id="Capa_1" xmlns="http://www.w3.org/2000/svg" x="0px" y="0px"
                         viewBox="0 0 297 297" style={{fill: "#D7D7D7", opacity: ".6"}}>
@@ -68,10 +69,8 @@ const Recipe = (props) => {
                 </span>
 
             </RecipeDetails>
-            
         </RecipeCard>
-        </a>
-        </Link>
+
     </div>
     );
 };

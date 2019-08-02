@@ -11,7 +11,7 @@ def add_to_index(index, model):
         for field in model.__searchable__:
             payload[field] = getattr(model, field)
         payload["type"] = index
-        current_app.elasticsearch.index(index="brewcipes", id=model.id,
+        current_app.elasticsearch.index(index="brewcipes", type=model.__tablename__, id=model.id,
                                     body=payload)
     except:
         return
@@ -20,7 +20,7 @@ def add_to_index(index, model):
 def remove_from_index(model):
     if not current_app.elasticsearch:
         return
-    current_app.elasticsearch.delete(index="brewcipes", id=model.id)
+    current_app.elasticsearch.delete(index="brewcipes", type=model.__tablename__, id=model.id)
 
 def query_index(dsl_query, page=1, per_page=10):
     if not current_app.elasticsearch:

@@ -36,7 +36,7 @@ class RecipesByID(Resource):
             if len(RecipeModel.elastic_find_by_id(recipe.id)) > 0:
                 current_app.elasticsearch.delete(index="brewcipes", id=loaded_data.id)
         else:
-            current_app.elasticsearch.index(index="brewcipes", \
+            current_app.elasticsearch.index(index="brewcipes", type="recipe", \
                 id=loaded_data.id, body=clean_recipe_elastic(recipe_schema.dump(loaded_data)))
 
         return recipe_schema.dump(recipe), 201
@@ -89,6 +89,6 @@ class RecipeCreate(Resource):
         except Exception as e:
             return {"message": ERROR_INSERTING}, 500
         if not recipe.private:
-            current_app.elasticsearch.index(index="brewcipes", \
+            current_app.elasticsearch.index(index="brewcipes", type="recipe", \
                 id=recipe.id, body=clean_recipe_elastic(recipe_schema.dump(recipe)))
         return recipe_schema.dump(recipe), 201

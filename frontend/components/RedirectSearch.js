@@ -2,30 +2,10 @@ import React, { Component } from "react";
 import styled, { withTheme } from "styled-components";
 import Router from "next/router";
 import {
-  ReactiveBase,
-  DataSearch,
-  CategorySearch
+  ReactiveBase
 } from "@appbaseio/reactivesearch";
+import StyledDataSearch from "./styles/StyledDataSearch"
 
-const StyledDataSearch = styled(DataSearch)`
-  width: 20vw;
-
-  .search-input {
-    border-radius: 10px;
-    font-size: 1.5rem;
-  }
-
-  .search-list {
-    font-size: 1.5rem;
-    .trim span {
-      font-size: 1.5rem;
-      mark {
-        background-color: ${props => props.theme.mainColor} !important;
-
-      }
-    }
-  }
-`;
 
 class RedirectSearch extends Component {
   pushToRoute(value, cause, source) {
