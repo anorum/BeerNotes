@@ -1,8 +1,10 @@
 import React, { useState, useContext } from "react";
 import styled from "styled-components";
-import Link from "next/link";
-import { UserContext } from "./UserProvider";
-import StyledButton from "./styles/StyledButton";
+import User from "./User"
+import NotUser from "./NotUser"
+import StyledButton from "./styles/StyledButton"
+import SearchMenu from "./SearchMenu";
+
 
 const ProfileContainer = styled.div`
   display: flex;
@@ -11,29 +13,34 @@ const ProfileContainer = styled.div`
   margin: 0 3rem !important;
 `;
 
+
 const AccountMenu = props => {
   const [showDropdown, setDropdown] = useState(false);
 
-  const userContext = useContext(UserContext);
 
-  const user = userContext.user;
+  const logOut = (e) => {
+    console.log(e)
+  }
 
   return (
     <ProfileContainer>
-      {(user && (
-        <Link href="/account">
-          <a alt="Account">Account</a>
-        </Link>
-      )) || (
-        <React.Fragment>
+    <SearchMenu />
+      <User>
+        <StyledButton href="/account">
+          Account
+        </StyledButton>
+        <span onClick={logOut}>
+          Log Out
+        </span>
+        </User>
+        <NotUser>
           <StyledButton href="/register" alt="sign up">
             Sign Up
           </StyledButton>
           <StyledButton href="/login" alt="login" clear>
             Login
           </StyledButton>
-        </React.Fragment>
-      )}
+        </NotUser>
     </ProfileContainer>
   );
 };

@@ -5,7 +5,7 @@ basedir = os.path.abspath(os.path.dirname(__file__))
 class Config(object):
     DEBUG = False
     TESTING = False
-    CSRF_ENABLED = False
+    CSRF_ENABLED = True
     SECRET_KEY = os.environ['SECRET_KEY']
     JWT_SECRET_KEY = os.environ['JWT_SECRET_KEY']
     SQLALCHEMY_DATABASE_URI = os.environ['DATABASE_URL']
@@ -16,7 +16,7 @@ class Config(object):
     JWT_ACCESS_COOKIE_PATH = '/'
     JWT_REFRESH_COOKIE_PATH = '/refresh'
     JWT_SESSION_COOKIE = 60*60*24*30
-    JWT_COOKIE_CSRF_PROTECT = False
+    JWT_COOKIE_CSRF_PROTECT = True
     UPLOADED_IMAGES_DEST = os.path.join(
         "static", "images")  # manage root folder
     ELASTICSEARCH_URL = os.environ['ELASTICSEARCH_URL']

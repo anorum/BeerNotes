@@ -5,22 +5,23 @@ import SearchIcon from "./SearchIcon";
 const SearchMenu = props => {
   const [showSearch, setSearch] = useState(false);
 
+  const toggleSearch = () => {
+    console.log(showSearch)
+    setSearch(!showSearch)
+  }
+
   return (
     <React.Fragment>
       {showSearch && (
-        <div onBlur={() => setSearch(!showSearch)} style={{ margin: "0 3rem" }}>
+        <div onBlur={toggleSearch} style={{ margin: "0 3rem" }}>
           <RedirectSearch />
         </div>
       )}
       {!showSearch && (
-        <div
+          <SearchIcon
           tabIndex="0"
           role="button"
-          style={{ cursor: "pointer" }}
-          onFocus={() => setSearch(!showSearch)}
-        >
-          <SearchIcon />
-        </div>
+          onFocus={toggleSearch} />
       )}
     </React.Fragment>
   );

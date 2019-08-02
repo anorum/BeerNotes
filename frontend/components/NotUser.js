@@ -1,5 +1,5 @@
 import React, { useContext } from "react";
-import { UserContext } from "./UserProvider";
+import UserContext from "./UserContext";
 
 const NotUser = props => {
   const userContext = useContext(UserContext);

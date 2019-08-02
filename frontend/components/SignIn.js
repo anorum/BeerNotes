@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import Router from "next/router"
 import axios from 'axios'
 
 
@@ -16,7 +17,9 @@ class SignIn extends Component {
     signIn = async () => {
         const req = await axios
                             .post('/login', JSON.stringify(this.state))
-                            .then(res => (res.data))
+                            .then(res => {
+                                Router.replace("/")
+                            })
                             .catch(err => (err.response.data))
 
         return req

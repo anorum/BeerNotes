@@ -20,7 +20,7 @@ const Image = styled.img`
   width: 33.33%;
 `;
 
-const Landing = props => {
+const LandingNewUser = props => {
   return (
     <Jumbotron
       style={{
@@ -30,11 +30,11 @@ const Landing = props => {
       <Container>
         <Content>
           <div>
-            <h2>Find or Share Great Beer</h2>
-            <p>
+            <h1>Find or Share Great Beer</h1>
+            <h3>
               Join today to make great brews and share them with your fellow
               homebrewers!
-            </p>
+            </h3>
 
             <StyledButton href="/register" alt="sign up">
               Sign Up
@@ -47,4 +47,4 @@ const Landing = props => {
   );
 };
 
-export default withTheme(Landing);
+export default withTheme(LandingNewUser);
