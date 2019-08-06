@@ -32,8 +32,6 @@ const RecipeName = styled.div`
 const Recipe = (props) => {
     const { id, name, style, description } = props.recipe
     return (
-    <div>
-        
         <RecipeCard>
             <RecipeDetails>
                 <span>{ style }</span>
@@ -70,8 +68,6 @@ const Recipe = (props) => {
 
             </RecipeDetails>
         </RecipeCard>
-
-    </div>
     );
 };
 

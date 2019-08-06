@@ -14,7 +14,7 @@ from flask_jwt_extended import (JWTManager, get_jwt_claims, verify_jwt_in_reques
 from flask_cors import CORS
 from elasticsearch import Elasticsearch
 from elasticsearch_dsl import connections
-
+from elastsearch_schema import Recipe
 # Create .env file path.
 dotenv_path = join(dirname(__file__), '.env')
 
@@ -67,7 +67,7 @@ es_header = [{
 
 # Instantiate the new Elasticsearch connection:
 app.elasticsearch = Elasticsearch(bonsai)
-
+connections.create_connection(hosts=[bonsai])
 
 api = Api(app)
 jwt = JWTManager(app)
@@ -147,4 +147,5 @@ if __name__ == "__main__":
     ma.init_app(app)
     mail.init_app(app)
     oauth.init_app(app)
+    Recipe.init()
     app.run(port=1050)
