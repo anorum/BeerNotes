@@ -1,13 +1,11 @@
 import React, {useState} from 'react';
 import PropTypes from 'prop-types';
 import { MultiList } from "@appbaseio/reactivesearch"
-import FilterButton from "../styles/FilterButton"
 
 const Yeasts = (props) => {
 
     return (
         <div>
-            <FilterButton>Yeasts</FilterButton>
             <MultiList 
             componentId="Yeasts" 
             dataField="yeasts.yeast.name"

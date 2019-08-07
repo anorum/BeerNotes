@@ -21,7 +21,7 @@ class MyApp extends App {
       }
         let { access_token_cookie, refresh_token_cookie, csrf_access_token, csrf_refresh_token } =  await cookies(ctx);
         if (ctx.req) {
-          var Cookie = ctx.req.headers.cookie;
+          var Cookie = ctx.req.headers.cookie || "";
         }
         else {
           var Cookie = ""

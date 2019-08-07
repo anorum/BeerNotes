@@ -9,8 +9,6 @@ import FilterButton from "../styles/FilterButton"
 const Fermentables = (props) => {
 
     return (
-        <div>
-            <FilterButton>Fermentables</FilterButton>
             <MultiList 
             componentId="Fermentables" 
             dataField="fermentables.fermentable.name"
@@ -22,7 +20,6 @@ const Fermentables = (props) => {
             }}
             queryFormat="and"
             />    
-        </div>   
     );
 };
 Fermentables.propTypes = {

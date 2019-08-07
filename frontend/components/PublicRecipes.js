@@ -64,7 +64,7 @@ const PublicRecipes = (props) => {
         <Filter>
             <RangeInput componentId="ABV" 
             dataField="target_abv" 
-            title="ABV" 
+            label="ABV" 
             react={["RecipeNameSearch"]} 
             range={{
               "start": 2,
@@ -76,10 +76,10 @@ const PublicRecipes = (props) => {
 						end: `${max}%`,
 					})}
             />
-            <Fermentables react={["RecipeNameSearch"]} />
-            <Hops react={["RecipeNameSearch"]} />
-            <Grains react={["RecipeNameSearch"]} />
-            <Yeasts react={["RecipeNameSearch"]} />
+            <Fermentables label="Fermentables" react={["RecipeNameSearch"]} />
+            <Hops label="Hops" react={["RecipeNameSearch"]} />
+            <Grains label="Grains" react={["RecipeNameSearch"]} />
+            <Yeasts label="Yeasts" react={["RecipeNameSearch"]} />
         </Filter>
         <RecipeContainer>
       <RecipeGrid>

@@ -28,8 +28,9 @@ const Form = styled.form`
   select {
     width: 100%;
     padding: 0.5rem;
-    font-size: 1.5rem;
-    border: 1px solid black;
+    outline: 0;
+    border-width: 0 0 2px;
+
     &:focus {
       outline: 0;
       border-color: ${props => props.theme.mainColor};
@@ -51,16 +52,7 @@ const Form = styled.form`
     &[disabled] {
       opacity: 0.5;
     }
-    &::before {
-      height: 10px;
-      content: '';
-      display: block;
-      background-image: linear-gradient(to right, ${props=> props.theme.mainColor} 0%, #e2b04a 50%, #FEDC60 100%);
-    }
-    &[aria-busy='true']::before {
-      background-size: 50% auto;
-      animation: ${loading} 0.5s linear infinite;
-    }
+    
   }
 `;
 
