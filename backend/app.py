@@ -27,7 +27,7 @@ from mail import mail
 from oa import oauth
 from resources.user import UserRegister, UsersList, UserLogin, UserDelete, SetPassword, GetUser
 from resources.grains import Grains
-from resources.fermentables import Fermentables, FermentablesCreate, FermentablesByID
+from resources.fermentables import Fermentable, Fermentables, FermentablesCreate, FermentablesByID
 from resources.hops import Hop, HopsSearch
 from resources.yeast import Yeast, YeastSearch
 from resources.confirmation import Confirmation, ConfirmationByUser
@@ -94,7 +94,8 @@ api.add_resource(HopsSearch, '/hop/search')
 api.add_resource(Yeast, '/yeast/<string:name>')
 api.add_resource(YeastSearch, '/yeast/search')
 api.add_resource(Grains, '/grains/<string:name>')
-api.add_resource(Fermentables, '/fermentables/<string:fermentableid>')
+api.add_resource(Fermentable, '/fermentables/<string:fermentableid>')
+api.add_resource(Fermentables, '/fermentables/')
 api.add_resource(FermentablesCreate, '/fermentables/create')
 api.add_resource(FermentablesByID, '/fermentables/<string:fermentableid>')
 api.add_resource(Confirmation, '/confirm/<string:confirmation_id>')
@@ -119,7 +120,6 @@ def refresh():
     ret = jsonify({'access_token': new_token})
     set_access_cookies(ret, new_token)
     ret.status_code = 200
-
 
     return ret
 

@@ -9,7 +9,7 @@ ERROR_INSERTING = "An error occurred while inserting the fermentables."
 FERMENTABLES_NOT_FOUND = "No fermentables was found."
 
 
-class Fermentables(Resource):
+class Fermentable(Resource):
 
     @classmethod
     def get(cls, fermentableid):
@@ -17,6 +17,14 @@ class Fermentables(Resource):
         if fermentables:
             return fermentable_schema.dump(fermentables)
         return {"message": FERMENTABLES_NOT_FOUND}
+
+class Fermentables(Resource):
+
+    @classmethod
+    def get(cls):
+        fermentables = FermentablesModel.query.all()
+        if fermentables:
+            return fermentables_schema.dump(fermentables)
 
 class FermentablesCreate(Resource):
     @classmethod

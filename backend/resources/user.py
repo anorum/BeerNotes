@@ -97,7 +97,6 @@ class UserLogin(Resource):
 
                 set_access_cookies(resp, access_token)
                 set_refresh_cookies(resp, refresh_token)
-                resp.set_cookie('test', value="swag", domain='127.0.0.1:3000')
                 resp.status_code = 200
                 return resp
             else:

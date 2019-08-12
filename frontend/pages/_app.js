@@ -24,8 +24,9 @@ class MyApp extends App {
           var Cookie = ctx.req.headers.cookie || "";
         }
         else {
-          var Cookie = ""
+          var Cookie = document.cookie
         }
+
       let user = await axios.get('/user', {
         withCredentials: true,
         headers: {
@@ -35,7 +36,7 @@ class MyApp extends App {
       })
         .then(res => (res.data))
         .catch(err =>(err.response.data))
-
+        
           if (user.msg) {
             if (user.msg === 'Missing cookie "access_token_cookie"') {
               user = null;
@@ -43,18 +44,20 @@ class MyApp extends App {
             }
             else {
               if (user.msg === "Token has expired") {
-                await axios
+                const refresh = await axios
                 .post('/refresh',{} ,{
                   withCredentials: true,
                   headers: {
                     Cookie: Cookie,
-                    "X-CSRF-TOKEN": csrf_refresh_token,
+                    "X-CSRF-TOKEN": csrf_refresh_token, 
                   }
                 })
                 .then(res => (res.data))
                 .catch(err => (err.response.data))
+                console.log(refresh)
+
               }
-  
+
               user = await axios
                 .get('/user', {
                   withCredentials: true,
@@ -64,7 +67,8 @@ class MyApp extends App {
                   }
                 })
                 .then(res => (res.data))
-                .catch(err => (null))
+                .catch(err => (err.response.data))
+
           }
         }
             

@@ -75,6 +75,7 @@ class RecipeModel(db.Model, BaseModel, SearchableMixin):
     instructions = db.Column(db.UnicodeText())
     private = db.Column(db.Boolean(), nullable=False, default=False)
     created_date = db.Column(db.DateTime, default=datetime.datetime.utcnow)
+    icon = db.Column(db.String(40))
 
     user = db.relationship("UserModel")
     fermentables = db.relationship("RecipeFermentables", cascade="all, delete-orphan")
