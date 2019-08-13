@@ -41,7 +41,7 @@ const TabColor = styled.div`
 const Ingredient = props => {
   const { name } = props.ingredient;
   const fieldNames = Object.keys(props.ingredient).filter(
-    val => !(val.includes("id") || val.includes("name"))
+    val => !(val.includes("id") || val.includes("name") || val.includes("__isNew__"))
   );
 
   return (

@@ -2,10 +2,10 @@ import React, { Component } from "react";
 import update from "immutability-helper";
 import styled from "styled-components";
 import Form from "./styles/Form";
-import PropTypes from "prop-types";
 import SectionContainer from "./styles/SectionContainer";
 import Dropdown from "./Dropdown";
-import FermentableInput from "./FermentableInput";
+import IngredientInput from "./IngredientInput";
+import FermentableForm from "./FermentableForm";
 
 const Name = styled.input`
   border-bottom: 1px solid black;
@@ -16,6 +16,29 @@ const Description = styled.textarea`
   height: 80px;
 `;
 
+const Add = styled.button`
+  cursor: pointer;
+  border-radius: 4px;
+  min-width: 85px;
+  text-align: center;
+  height: 40px;
+  background: #3ecf8e;
+  text-shadow: 0 1px 3px rgba(36, 180, 126, 0.4);
+  box-shadow: 0 4px 6px rgba(50, 50, 93, 0.11), 0 1px 3px rgba(0, 0, 0, 0.08);
+  display: inline-block;
+  line-height: 40px;
+  text-transform: uppercase;
+  color: #fff;
+  transition: all 0.15s ease;
+  font-size: 1.5rem;
+  margin: auto 23px;
+
+  :hover {
+    box-shadow: 0 7px 14px rgba(50, 50, 93, 0.1), 0 3px 6px rgba(0, 0, 0, 0.08);
+    transform: translateY(-1px);
+  }
+`;
+
 class CreateRecipe extends Component {
   constructor(props) {
     super(props);
@@ -23,7 +46,7 @@ class CreateRecipe extends Component {
       name: "",
       description: "",
       private: true,
-      icon: null,
+      icon: "pilsner",
       batch_size: 5,
       efficiency: 35,
       fermentables: [],
@@ -42,33 +65,26 @@ class CreateRecipe extends Component {
     this.setState({ [name]: val });
   };
 
-  addFermentable = e => {
-    let newFermentables = this.state.fermentables.concat([{}]);
-    this.setState({ fermentables: newFermentables });
+  addIngredient = ingredient => {
+    let newIngredient = this.state[ingredient].concat([{}]);
+    this.setState({ [ingredient]: newIngredient });
   };
 
-  updateIngredient = (e, ingredient, index, field) => {
-    if (e.target) {
-      var { value } = e.target;
-    }
-    else {
-      var value = e
-    }
-
+  updateIngredient = (value, ingredient, index, field) => {
     this.setState({
-      [ingredient]: update(this.state.fermentables, {
+      [ingredient]: update(this.state[ingredient], {
         [index]: { [field]: { $set: value } }
       })
     });
   };
 
-  deleteIngredient = (e, ingredient, index) => {
-    let ingredients = [...this.state[ingredient]]
+  deleteIngredient = (ingredient, index) => {
+    let ingredients = [...this.state[ingredient]];
     if (index !== -1) {
       ingredients.splice(index, 1);
-      this.setState({[ingredient]: ingredients})
+      this.setState({ [ingredient]: ingredients });
     }
-  }
+  };
 
   render() {
     return (
@@ -114,20 +130,54 @@ class CreateRecipe extends Component {
                   alt="grain"
                 />
                 <h2>Fermentables</h2>
+
                 {this.state.fermentables.map((fermentable, index) => (
-                  <FermentableInput
-                    amount={fermentable.amount}
-                    value = {fermentable.name}
-                    index={index}
+                  <IngredientInput
+                    for="fermentables"
+                    selectField="fermentables_id"
                     key={index}
-                    updateFermentable={this.updateIngredient}
-                    deleteFermentable={this.deleteIngredient}
-                  />
+                    updateFunction={(value, field) =>
+                      this.updateIngredient(value, "fermentables", index, field)
+                    }
+                    deleteFunction={() =>
+                      this.deleteIngredient("fermentables", index)
+                    }
+                    createForm={(name, createFunction) => (
+                      <FermentableForm
+                        name={name}
+                        handleCreate={createFunction}
+                      />
+                    )}
+                  >
+                  <div>
+                    <label for="fermentable_amount">Amount</label>
+                    <input
+                      type="number"
+                      id="fermentable_amount"
+                      name="amount"
+                      style={{ width: "75px", fontSize: "1.7rem" }}
+                      placeholder="0.0lbs"
+                      onChange={e =>
+                        this.updateIngredient(
+                          e.target.value,
+                          "fermentables",
+                          index,
+                          "amount"
+                        )
+                      }
+                      value={this.state.fermentables[index].amount}
+                      required
+                    />
+                    </div>
+                  </IngredientInput>
                 ))}
-                <button type="button" onClick={this.addFermentable}>
-                  Add Fermentable
-                </button>
               </div>
+              <Add
+                type="button"
+                onClick={() => this.addIngredient("fermentables")}
+              >
+                Add Fermentable
+              </Add>
             </SectionContainer>
             <SectionContainer>
               <div>
@@ -137,6 +187,69 @@ class CreateRecipe extends Component {
                   alt="hops"
                 />
                 <h2>Hops</h2>
+
+                {this.state.hops.map((hop, index) => (
+                  <IngredientInput
+                    for="hops"
+                    selectField="hops_id"
+                    key={index}
+                    updateFunction={(value, field) =>
+                      this.updateIngredient(value, "hops", index, field)
+                    }
+                    deleteFunction={() => this.deleteIngredient("hops", index)}
+                    createForm={(name, createFunction) => (
+                      <FermentableForm
+                        name={name}
+                        handleCreate={createFunction}
+                      />
+                    )}
+                  >
+                  <div>
+                    <label for="hops_amount">Amount</label>
+                    <input
+                      type="hops_amount"
+                      id="hops"
+                      name="amount"
+                      style={{ width: "75px", fontSize: "1.7rem" }}
+                      placeholder="0.0lbs"
+                      onChange={e =>
+                        this.updateIngredient(
+                          e.target.value,
+                          "hops",
+                          index,
+                          "amount"
+                        )
+                      }
+                      value={this.state.hops[index].amount}
+                      required
+                    />
+                    </div>
+                    <div>
+                    <label for="hops_schedule">Hop Schedule</label>
+                    <input
+                      type="hops_schedule"
+                      id="hops"
+                      name="hops_schedule"
+                      style={{ width: "75px", fontSize: "1.7rem" }}
+                      placeholder="0 mins"
+                      onChange={e =>
+                        this.updateIngredient(
+                          e.target.value,
+                          "hops",
+                          index,
+                          "hop_schedule"
+                        )
+                      }
+                      value={this.state.hops[index].hop_schedule}
+                      required
+                    />
+                    </div>
+                  </IngredientInput>
+                ))}
+
+                <Add type="button" onClick={() => this.addIngredient("hops")}>
+                  Add Hops
+                </Add>
               </div>
             </SectionContainer>
             <SectionContainer>
@@ -147,6 +260,9 @@ class CreateRecipe extends Component {
                   alt="yeast"
                 />
                 <h2>Yeasts</h2>
+                <Add type="button" onClick={() => this.addIngredient("yeasts")}>
+                  Add Yeast
+                </Add>
               </div>
             </SectionContainer>
           </fieldset>

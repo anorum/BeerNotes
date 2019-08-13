@@ -36,7 +36,7 @@ class MyApp extends App {
       })
         .then(res => (res.data))
         .catch(err =>(err.response.data))
-        
+        console.log(user)
           if (user.msg) {
             if (user.msg === 'Missing cookie "access_token_cookie"') {
               user = null;
