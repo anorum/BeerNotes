@@ -2,10 +2,10 @@ import React from "react";
 import styled from "styled-components";
 
 const color = {
-  "fermentables": "#EEAF4B",
-  "hops": "#5ED37F",
-  "yeast": "#FACA33"
-}
+  fermentables: "#EEAF4B",
+  hops: "#5ED37F",
+  yeasts: "#FACA33"
+};
 
 const Container = styled.div`
   position: relative;
@@ -42,28 +42,34 @@ const TabColor = styled.div`
     td {
       padding: 0 0 0 1.2rem;
     }
-
   }
 `;
 
 const Ingredient = props => {
   const { name } = props.ingredient;
   const fieldNames = Object.keys(props.ingredient).filter(
-    val => !(val.includes("id") || val.includes("name") || val.includes("__isNew__"))
-  ).map(word => {
-    let clean = word.replace("_", " ").split(" ").map((s) => s.charAt(0).toUpperCase() + s.substring(1)).join(' ')
-  
-    return clean
-  });
+    val =>
+      !(val.includes("id") || val.includes("name") || val.includes("__isNew__"))
+  );
 
   return (
     <Container>
       <h4>{name}</h4>
-      <TabColor style={{background: color[props.for]}}>
+      <TabColor style={{ background: color[props.for] }}>
         <table>
-          {fieldNames.map(field => (
-            <th>{field}</th>
-          ))}
+          {fieldNames
+            .map(word => {
+              let clean = word
+                .replace("_", " ")
+                .split(" ")
+                .map(s => s.charAt(0).toUpperCase() + s.substring(1))
+                .join(" ");
+
+              return clean;
+            })
+            .map(field => (
+              <th>{field}</th>
+            ))}
           <tbody>
             <tr>
               {fieldNames.map(field => (

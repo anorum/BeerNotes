@@ -31,7 +31,17 @@ const styles = {
   control: (provided, state) => {
     return {
       ...provided,
-      height: "90px"
+      height: "90px",
+      boxShadow: 0,
+      borderWidth: "0 0 1px 0",
+      borderColor: state.isFocused
+        ? "#FEDC00"
+        : provided.borderColor,
+      "&:hover": {
+        borderColor: state.isFocused
+          ? "#FEDC00"
+          : provided.borderColor
+      }
     };
   }
 };
@@ -53,19 +63,22 @@ class IngredientSelect extends Component {
   };
 
   handleCreateDone = (success, val) => {
-    success
-      ? this.setState({
-          isLoading: false,
-          showAdd: false,
-          newValue: null,
-          value: { ...val }
-        })
-      : this.setState({
-          isLoading: false,
-          showAdd: false,
-          newValue: null,
-          error: val
-        });
+    if (success) {
+      this.setState({
+        isLoading: false,
+        showAdd: false,
+        newValue: null,
+        value: { ...val }
+      });
+      this.props.onChange(val.id);
+    } else {
+      this.setState({
+        isLoading: false,
+        showAdd: false,
+        newValue: null,
+        error: val
+      });
+    }
   };
 
   handleChange = (value, { action }) => {
@@ -87,19 +100,22 @@ class IngredientSelect extends Component {
           options={this.props.options}
           getOptionLabel={option => option.name}
           getOptionValue={option => option.id}
-          formatOptionLabel={option => <Ingredient ingredient={option} for={this.props.for} />}
+          formatOptionLabel={option => (
+            <Ingredient ingredient={option} for={this.props.for} />
+          )}
           onChange={this.handleChange}
           onCreateOption={this.handleCreate}
           value={this.state.value}
           getNewOptionData={(inputValue, optionLabel) => ({
             id: inputValue,
             name: optionLabel,
-            brand: null,
             __isNew__: true
           })}
         />
         {this.state.showAdd && (
-          <FormContainer>{this.props.createForm(this.state.newValue, this.handleCreateDone)}</FormContainer>
+          <FormContainer>
+            {this.props.createForm(this.state.newValue, this.handleCreateDone)}
+          </FormContainer>
         )}
       </React.Fragment>
     );

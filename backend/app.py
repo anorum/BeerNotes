@@ -28,8 +28,8 @@ from oa import oauth
 from resources.user import UserRegister, UsersList, UserLogin, UserDelete, SetPassword, GetUser
 from resources.grains import Grains
 from resources.fermentables import Fermentable, Fermentables, FermentablesCreate, FermentablesByID
-from resources.hops import Hop, HopsSearch, Hops
-from resources.yeast import Yeast, YeastSearch
+from resources.hops import Hop, HopsSearch, Hops, HopsCreate
+from resources.yeast import Yeast, YeastSearch, Yeasts, YeastsCreate
 from resources.confirmation import Confirmation, ConfirmationByUser
 from resources.image import AvatarUpload, Avatar
 from resources.recipes import RecipesByID, Recipes, RecipeSearch, RecipeCreate, MyRecipes
@@ -91,9 +91,12 @@ api.add_resource(UserDelete, '/deregister')
 api.add_resource(SetPassword, '/user/resetpassword')
 api.add_resource(Hop, '/hop/<string:name>')
 api.add_resource(Hops, '/hops/')
+api.add_resource(HopsCreate, '/hops/create')
 api.add_resource(HopsSearch, '/hop/search')
 api.add_resource(Yeast, '/yeast/<string:name>')
 api.add_resource(YeastSearch, '/yeast/search')
+api.add_resource(Yeasts, '/yeasts/')
+api.add_resource(YeastsCreate, '/yeasts/create')
 api.add_resource(Grains, '/grains/<string:name>')
 api.add_resource(Fermentable, '/fermentables/<string:fermentableid>')
 api.add_resource(Fermentables, '/fermentables/')

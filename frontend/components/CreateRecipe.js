@@ -16,6 +16,17 @@ const Description = styled.textarea`
   height: 80px;
 `;
 
+const IngredientHeader = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+`;
+
+const IngredientLogo = styled.div`
+  display: flex;
+  align-items: center;
+`
+
 const Add = styled.button`
   cursor: pointer;
   border-radius: 4px;
@@ -124,17 +135,26 @@ class CreateRecipe extends Component {
             />
             <SectionContainer>
               <div>
-                <img
-                  id="logo"
-                  src="../../static/IngredientLogos/grain.svg"
-                  alt="grain"
-                />
-                <h2>Fermentables</h2>
-
+                <IngredientHeader>
+                <IngredientLogo>
+                  <img
+                    id="logo"
+                    src="../../static/IngredientLogos/grain.svg"
+                    alt="grain"
+                  />
+                  <h2>Fermentables</h2>
+                  </IngredientLogo>
+                    <Add
+                      type="button"
+                      onClick={() => this.addIngredient("fermentables")}
+                    >
+                      Add Fermentable
+                    </Add>
+                </IngredientHeader>
                 {this.state.fermentables.map((fermentable, index) => (
                   <IngredientInput
                     for="fermentables"
-                    selectField="fermentables_id"
+                    selectField="fermentable_id"
                     key={index}
                     updateFunction={(value, field) =>
                       this.updateIngredient(value, "fermentables", index, field)
@@ -153,49 +173,49 @@ class CreateRecipe extends Component {
                       />
                     )}
                   >
-                  <div>
-                    <label for="fermentable_amount">Amount</label>
-                    <input
-                      type="number"
-                      id="fermentable_amount"
-                      name="amount"
-                      style={{ width: "75px", fontSize: "1.7rem" }}
-                      placeholder="0.0lbs"
-                      onChange={e =>
-                        this.updateIngredient(
-                          e.target.value,
-                          "fermentables",
-                          index,
-                          "amount"
-                        )
-                      }
-                      value={this.state.fermentables[index].amount}
-                      required
-                    />
+                    <div>
+                      <label for="fermentable_amount">Amount (lbs)</label>
+                      <input
+                        type="number"
+                        id="fermentable_amount"
+                        name="amount"
+                        style={{ width: "75px", fontSize: "1.7rem" }}
+                        placeholder="0.0lbs"
+                        onChange={e =>
+                          this.updateIngredient(
+                            e.target.value,
+                            "fermentables",
+                            index,
+                            "amount"
+                          )
+                        }
+                        value={this.state.fermentables[index].amount}
+                        required
+                      />
                     </div>
                   </IngredientInput>
                 ))}
               </div>
-              <Add
-                type="button"
-                onClick={() => this.addIngredient("fermentables")}
-              >
-                Add Fermentable
-              </Add>
             </SectionContainer>
             <SectionContainer>
               <div>
+              <IngredientHeader>
+              <IngredientLogo>
                 <img
                   id="logo"
                   src="../../static/IngredientLogos/hop.svg"
                   alt="hops"
                 />
                 <h2>Hops</h2>
-
+                </IngredientLogo>
+                <Add type="button" onClick={() => this.addIngredient("hops")}>
+                  Add Hops
+                </Add>
+                </IngredientHeader>
                 {this.state.hops.map((hop, index) => (
                   <IngredientInput
                     for="hops"
-                    selectField="hops_id"
+                    selectField="hop_id"
                     key={index}
                     updateFunction={(value, field) =>
                       this.updateIngredient(value, "hops", index, field)
@@ -207,74 +227,126 @@ class CreateRecipe extends Component {
                         name={name}
                         handleCreate={createFunction}
                         fields={{
-                          "aroma": "text",
-                          "alpha": "number",
-                          "typical_beer": "text",
-                          "hop_type": "text",
-                          "brand": "text"
+                          aroma: "text",
+                          alpha: "number",
+                          typical_beer: "text",
+                          hop_type: "text",
+                          brand: "text"
                         }}
                       />
                     )}
                   >
-                  <div>
-                    <label for="hops_amount">Amount</label>
-                    <input
-                      type="hops_amount"
-                      id="hops"
-                      name="amount"
-                      style={{ width: "75px", fontSize: "1.7rem" }}
-                      placeholder="0.0lbs"
-                      onChange={e =>
-                        this.updateIngredient(
-                          e.target.value,
-                          "hops",
-                          index,
-                          "amount"
-                        )
-                      }
-                      value={this.state.hops[index].amount}
-                      required
-                    />
+                    <div>
+                      <label for="hops_amount">Amount (oz)</label>
+                      <input
+                        type="number"
+                        id="hops"
+                        name="amount"
+                        style={{ width: "75px", fontSize: "1.7rem" }}
+                        placeholder="0.0oz"
+                        onChange={e =>
+                          this.updateIngredient(
+                            e.target.value,
+                            "hops",
+                            index,
+                            "amount"
+                          )
+                        }
+                        value={this.state.hops[index].amount}
+                        required
+                      />
                     </div>
                     <div>
-                    <label for="hops_schedule">Hop Schedule</label>
-                    <input
-                      type="hops_schedule"
-                      id="hops"
-                      name="hops_schedule"
-                      style={{ width: "75px", fontSize: "1.7rem" }}
-                      placeholder="0 mins"
-                      onChange={e =>
-                        this.updateIngredient(
-                          e.target.value,
-                          "hops",
-                          index,
-                          "hop_schedule"
-                        )
-                      }
-                      value={this.state.hops[index].hop_schedule}
-                      required
-                    />
+                      <label for="hops_schedule">Hop Schedule</label>
+                      <input
+                        type="number"
+                        id="hops"
+                        name="hops_schedule"
+                        style={{ width: "75px", fontSize: "1.7rem" }}
+                        placeholder="0 mins"
+                        onChange={e =>
+                          this.updateIngredient(
+                            e.target.value,
+                            "hops",
+                            index,
+                            "hop_schedule"
+                          )
+                        }
+                        value={this.state.hops[index].hop_schedule}
+                        required
+                      />
                     </div>
                   </IngredientInput>
                 ))}
 
-                <Add type="button" onClick={() => this.addIngredient("hops")}>
-                  Add Hops
-                </Add>
               </div>
             </SectionContainer>
             <SectionContainer>
               <div>
+              <IngredientHeader>
+              <IngredientLogo>
                 <img
                   id="logo"
                   src="../../static/IngredientLogos/yeast.svg"
                   alt="yeast"
                 />
                 <h2>Yeasts</h2>
+                </IngredientLogo>
                 <Add type="button" onClick={() => this.addIngredient("yeasts")}>
                   Add Yeast
                 </Add>
+                </IngredientHeader>
+                {this.state.yeasts.map((yeast, index) => (
+                  <IngredientInput
+                    for="yeasts"
+                    selectField="yeast_id"
+                    key={index}
+                    updateFunction={(value, field) =>
+                      this.updateIngredient(value, "yeasts", index, field)
+                    }
+                    deleteFunction={() =>
+                      this.deleteIngredient("yeasts", index)
+                    }
+                    createForm={(name, createFunction) => (
+                      <CreateIngredient
+                        for="yeasts"
+                        name={name}
+                        handleCreate={createFunction}
+                        fields={{
+                          brand: "text",
+                          yeast_format: "text",
+                          yeast_style: "text",
+                          min_fermenting_temp: "number",
+                          max_fermenting_temp: "number",
+                          min_attenuation_temp: "number",
+                          max_attenuation_temp: "number"
+                        }}
+                      />
+                    )}
+                  >
+                    <div>
+                      <label for="pitch_temp">Pitch Temp</label>
+                      <input
+                        type="number"
+                        id="pitch_temp"
+                        name="pitch_temp"
+                        style={{ width: "75px", fontSize: "1.7rem" }}
+                        placeholder="F"
+                        onChange={e =>
+                          this.updateIngredient(
+                            e.target.value,
+                            "yeasts",
+                            index,
+                            "pitch_temp"
+                          )
+                        }
+                        value={this.state.yeasts[index].pitch_temp}
+                        required
+                      />
+                    </div>
+                  </IngredientInput>
+                ))}
+
               </div>
             </SectionContainer>
           </fieldset>
