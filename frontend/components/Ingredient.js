@@ -1,6 +1,12 @@
 import React from "react";
 import styled from "styled-components";
 
+const color = {
+  "fermentables": "#EEAF4B",
+  "hops": "#5ED37F",
+  "yeast": "#FACA33"
+}
+
 const Container = styled.div`
   position: relative;
   padding: 0.5rem;
@@ -13,8 +19,7 @@ const Container = styled.div`
 
 const TabColor = styled.div`
   position: absolute;
-  background: #efb700;
-  padding: 0.5rem 6rem 1rem 3rem;
+  padding: 0.5rem 10rem 1rem 3rem;
   top: 0;
   right: 0;
   height: 100%;
@@ -31,10 +36,13 @@ const TabColor = styled.div`
     vertical-align: center;
     th {
       text-align: left;
+      font-weight: 800;
+      padding: 0 2rem;
     }
     td {
       padding: 0 0 0 1.2rem;
     }
+
   }
 `;
 
@@ -42,12 +50,16 @@ const Ingredient = props => {
   const { name } = props.ingredient;
   const fieldNames = Object.keys(props.ingredient).filter(
     val => !(val.includes("id") || val.includes("name") || val.includes("__isNew__"))
-  );
+  ).map(word => {
+    let clean = word.replace("_", " ").split(" ").map((s) => s.charAt(0).toUpperCase() + s.substring(1)).join(' ')
+  
+    return clean
+  });
 
   return (
     <Container>
       <h4>{name}</h4>
-      <TabColor>
+      <TabColor style={{background: color[props.for]}}>
         <table>
           {fieldNames.map(field => (
             <th>{field}</th>

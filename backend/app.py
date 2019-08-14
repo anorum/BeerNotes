@@ -28,7 +28,7 @@ from oa import oauth
 from resources.user import UserRegister, UsersList, UserLogin, UserDelete, SetPassword, GetUser
 from resources.grains import Grains
 from resources.fermentables import Fermentable, Fermentables, FermentablesCreate, FermentablesByID
-from resources.hops import Hop, HopsSearch
+from resources.hops import Hop, HopsSearch, Hops
 from resources.yeast import Yeast, YeastSearch
 from resources.confirmation import Confirmation, ConfirmationByUser
 from resources.image import AvatarUpload, Avatar
@@ -90,6 +90,7 @@ api.add_resource(UserLogin, '/login')
 api.add_resource(UserDelete, '/deregister')
 api.add_resource(SetPassword, '/user/resetpassword')
 api.add_resource(Hop, '/hop/<string:name>')
+api.add_resource(Hops, '/hops/')
 api.add_resource(HopsSearch, '/hop/search')
 api.add_resource(Yeast, '/yeast/<string:name>')
 api.add_resource(YeastSearch, '/yeast/search')

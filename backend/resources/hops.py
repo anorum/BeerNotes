@@ -43,6 +43,12 @@ class Hop(Resource):
             return hops_schema.dump(hops), 200
         return {"message": HOPS_NOT_FOUND}, 404
 
+class Hops(Resource):
+    @classmethod
+    def get(cls):
+        return hops_schema.dump(HopsModel.query.all())
+
+
 class HopsSearch(Resource):
     @classmethod
     def get(cls):

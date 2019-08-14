@@ -9,6 +9,7 @@ import {
   DeleteButtonContainer
 } from "./styles/IngredientForm";
 
+
 class IngredientInput extends Component {
   constructor(props) {
     super(props);
@@ -62,13 +63,13 @@ class IngredientInput extends Component {
 
           </InputsContainer>
           <IngredientSelect
+            for = {this.props.for}
             options={this.state.options}
             onChange={value =>
               this.props.updateFunction(value, this.props.selectField)
             }
             createForm={this.props.createForm}
           />
-
           <DeleteButtonContainer>
             <button type="button" onClick={this.props.deleteFunction}>
               X

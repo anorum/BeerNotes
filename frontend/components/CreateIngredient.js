@@ -41,12 +41,11 @@ const TabColor = styled.div`
   }
 `;
 
-class FermentableForm extends Component {
+class CreateIngredient extends Component {
   constructor(props) {
     super(props);
     this.state = {
       name: this.props.name,
-      brand: null
     };
   }
 
@@ -57,7 +56,7 @@ class FermentableForm extends Component {
   };
 
   handleCreate = async () => {
-      await axios.post('/fermentables/create', this.state)
+      await axios.post(`/${this.props.for}/create`, this.state)
                 .then(result => this.props.handleCreate(true, result))
                 .catch(err => this.props.handleCreate(false, err.response.data))
   }
@@ -77,16 +76,19 @@ class FermentableForm extends Component {
         </h4>
         <TabColor>
           <table>
-            <th>Brand</th>
+          {Object.keys(this.props.fields).map(field => <th>{field}</th>)}
             <tbody>
               <tr>
                 <td>
-                  <input
-                    type="text"
-                    name="brand"
-                    value={this.state.brand}
+                {Object.keys(this.props.fields).map(field => (
+                    <input
+                    type={this.props.fields[field]}
+                    name={field}
+                    value={this.state[field]}
                     onChange={this.handleChange}
                   />
+                ))}
+                  
                 </td>
               </tr>
             </tbody>
@@ -112,4 +114,4 @@ class FermentableForm extends Component {
   }
 }
 
-export default FermentableForm;
+export default CreateIngredient;

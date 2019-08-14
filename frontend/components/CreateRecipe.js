@@ -5,7 +5,7 @@ import Form from "./styles/Form";
 import SectionContainer from "./styles/SectionContainer";
 import Dropdown from "./Dropdown";
 import IngredientInput from "./IngredientInput";
-import FermentableForm from "./FermentableForm";
+import CreateIngredient from "./CreateIngredient";
 
 const Name = styled.input`
   border-bottom: 1px solid black;
@@ -143,9 +143,13 @@ class CreateRecipe extends Component {
                       this.deleteIngredient("fermentables", index)
                     }
                     createForm={(name, createFunction) => (
-                      <FermentableForm
+                      <CreateIngredient
                         name={name}
+                        for="fermentables"
                         handleCreate={createFunction}
+                        fields={{
+                          brand: "text"
+                        }}
                       />
                     )}
                   >
@@ -198,9 +202,17 @@ class CreateRecipe extends Component {
                     }
                     deleteFunction={() => this.deleteIngredient("hops", index)}
                     createForm={(name, createFunction) => (
-                      <FermentableForm
+                      <CreateIngredient
+                        for="hops"
                         name={name}
                         handleCreate={createFunction}
+                        fields={{
+                          "aroma": "text",
+                          "alpha": "number",
+                          "typical_beer": "text",
+                          "hop_type": "text",
+                          "brand": "text"
+                        }}
                       />
                     )}
                   >

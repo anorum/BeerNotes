@@ -76,10 +76,6 @@ class IngredientSelect extends Component {
     }
   };
 
-  renderForm() {
-    return this.props.createForm(this.state.newValue, this.handleCreateDone);
-  }
-
   render() {
     return (
       <React.Fragment>
@@ -91,7 +87,7 @@ class IngredientSelect extends Component {
           options={this.props.options}
           getOptionLabel={option => option.name}
           getOptionValue={option => option.id}
-          formatOptionLabel={option => <Ingredient ingredient={option} />}
+          formatOptionLabel={option => <Ingredient ingredient={option} for={this.props.for} />}
           onChange={this.handleChange}
           onCreateOption={this.handleCreate}
           value={this.state.value}
@@ -103,7 +99,7 @@ class IngredientSelect extends Component {
           })}
         />
         {this.state.showAdd && (
-          <FormContainer>{this.renderForm()}</FormContainer>
+          <FormContainer>{this.props.createForm(this.state.newValue, this.handleCreateDone)}</FormContainer>
         )}
       </React.Fragment>
     );
