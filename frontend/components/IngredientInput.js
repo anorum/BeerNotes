@@ -41,18 +41,6 @@ class IngredientInput extends Component {
       );
   }
 
-  handleChange = (newValue, actionMeta) => {
-    let id;
-    if (actionMeta.action === "clear") {
-      id = null;
-    } else {
-      id = newValue.id;
-    }
-
-    this.props.updateFunction(id);
-    this.setState({ value: newValue });
-  };
-
   render() {
     return (
       <React.Fragment>
@@ -64,9 +52,10 @@ class IngredientInput extends Component {
           </InputsContainer>
           <IngredientSelect
             for = {this.props.for}
+            selectField={this.props.selectField}
             options={this.state.options}
-            onChange={value =>
-              this.props.updateFunction(value, this.props.selectField)
+            onChange={
+              this.props.updateFunction
             }
             createForm={this.props.createForm}
           />

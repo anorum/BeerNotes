@@ -30,6 +30,7 @@ const Form = styled.form`
     padding: 0.5rem;
     outline: 0;
     border-width: 0 0 2px;
+    border-radius: 5px;
 
     &:focus {
       outline: 0;

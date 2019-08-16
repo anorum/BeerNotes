@@ -54,13 +54,25 @@ class CreateIngredient extends Component {
     };
   }
 
-  fieldNames = Object.keys(this.props.fields).map(field =>
-    field
-      .replace("_", " ")
-      .split(" ")
-      .map(word => word.charAt(0).toUpperCase() + word.substring(1))
-      .join(" ")
-  );
+  componentDidMount() {
+    Object.keys(this.props.fields).forEach(field => {
+      if (typeof(this.props.fields[field]) === "object") {
+        this.setState({
+          [field]: this.props.fields[field].options[0]
+        })
+      }
+    })
+  }
+
+  getFieldNames(fields) {
+      return Object.keys(fields).map(field =>
+          field
+            .replace("_", " ")
+            .split(" ")
+            .map(word => word.charAt(0).toUpperCase() + word.substring(1))
+            .join(" ")
+  );}
+    
 
   handleChange = e => {
     const { name, type, value } = e.target;
@@ -72,15 +84,19 @@ class CreateIngredient extends Component {
     await axios
       .post(`/${this.props.for}/create`, this.state)
       .then(result => this.props.handleCreate(true, result.data))
-      .catch(err => this.props.handleCreate(false, err));
+      .catch(err => {
+        console.log(err.response.data)
+        this.props.handleCreate(false, err)});
   };
 
   render() {
+    const { fields } = this.props
     return (
       <div>
         <Container>
           <div style={{width:"40%", alignSelf: "center"}}>
             <h4>
+              {this.state.name}
               <input
                 type="text"
                 name="name"
@@ -91,21 +107,38 @@ class CreateIngredient extends Component {
           </div>
           <TabColor style={{ background: color[this.props.for] }}>
             <table>
-              {this.fieldNames.map(field => (
+              {this.getFieldNames(fields).map(field => (
                 <th>{field}</th>
               ))}
               <tbody>
                 <tr>
-                  {Object.keys(this.props.fields).map(field => (
-                    <td>
-                      <input
-                        type={this.props.fields[field]}
-                        name={field}
-                        value={this.state[field]}
-                        onChange={this.handleChange}
-                      />
-                    </td>
-                  ))}
+                  {Object.keys(fields).map(field => {
+                    if (typeof(fields[field]) === "object"){
+                      if (fields[field].type === "select") {
+                        return (<td>
+                        <select name={field} value={this.state.field} onChange={this.handleChange}>
+                          {fields[field].options.map(option => (
+                            <option value={option} name={field}> {option} </option>
+                          ))}
+                        </select>
+                      </td>)
+                      }
+                      
+                    }  
+                    else {
+                      return (
+                            <td>
+                              <input
+                                type={field}
+                                name={field}
+                                value={this.state.field}
+                                onChange={this.handleChange}
+                              />
+                            </td>
+                      )
+                    }
+                  })
+                  }
                 </tr>
               </tbody>
             </table>

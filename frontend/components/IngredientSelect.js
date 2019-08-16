@@ -62,7 +62,7 @@ class IngredientSelect extends Component {
     this.setState({ isLoading: true, showAdd: true, newValue: inputValue });
   };
 
-  handleCreateDone = (success, val) => {
+  handleCreateDone = async (success, val) => {
     if (success) {
       this.setState({
         isLoading: false,
@@ -70,7 +70,8 @@ class IngredientSelect extends Component {
         newValue: null,
         value: { ...val }
       });
-      this.props.onChange(val.id);
+      await this.props.onChange(val.id, this.props.selectField)
+      await this.props.onChange(val, this.props.for);
     } else {
       this.setState({
         isLoading: false,
@@ -81,11 +82,13 @@ class IngredientSelect extends Component {
     }
   };
 
-  handleChange = (value, { action }) => {
+  handleChange = async (val, { action }) => {
     if (action !== "clear") {
-      this.props.onChange(value.id);
+      await this.props.onChange(val.id, this.props.selectField);
+      await this.props.onChange(val, this.props.for)
     } else {
-      this.props.onChange(null);
+      await this.props.onChange(null, this.props.selectField);
+      await this.props.onChange(null, this.props.for)
     }
   };
 

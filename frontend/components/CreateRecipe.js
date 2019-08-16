@@ -1,4 +1,4 @@
-import React, { Component } from "react";
+import React, { Component, useMemo } from "react";
 import update from "immutability-helper";
 import styled from "styled-components";
 import Form from "./styles/Form";
@@ -6,6 +6,7 @@ import SectionContainer from "./styles/SectionContainer";
 import Dropdown from "./Dropdown";
 import IngredientInput from "./IngredientInput";
 import CreateIngredient from "./CreateIngredient";
+import RecipeStat from "./RecipeStat";
 
 const Name = styled.input`
   border-bottom: 1px solid black;
@@ -14,6 +15,25 @@ const Name = styled.input`
 
 const Description = styled.textarea`
   height: 80px;
+`;
+
+const NumberInputContainers = styled.div`
+  display: flex;
+
+  input {
+    font-size: 1.5rem;
+    border-radius: 5px;
+  }
+
+  label {
+    display: block;
+    align-self: center;
+    margin: auto 1rem auto 1rem;
+  }
+`;
+
+const NumberInput = styled.input`
+  width: 80px;
 `;
 
 const IngredientHeader = styled.div`
@@ -25,7 +45,7 @@ const IngredientHeader = styled.div`
 const IngredientLogo = styled.div`
   display: flex;
   align-items: center;
-`
+`;
 
 const Add = styled.button`
   cursor: pointer;
@@ -50,6 +70,11 @@ const Add = styled.button`
   }
 `;
 
+const RecipeStats = styled.div`
+display: flex;
+justify-content: space-between
+`
+
 class CreateRecipe extends Component {
   constructor(props) {
     super(props);
@@ -67,6 +92,24 @@ class CreateRecipe extends Component {
       loading: false
     };
   }
+
+  /*** Computed Values ***/
+
+  targetGravity = () => {
+    let totalPPG
+    try {
+      console.log("swag")
+      totalPPG = this.state.fermentables.map(fermentable => fermentable.fermentable.ppg).reduce((acc, value) => acc + value);
+    }
+    catch(e) {
+      totalPPG = 40
+    }
+    return totalPPG
+
+  };
+
+  /***   Event Handlers ***/
+
   handleChange = e => {
     let { name, type, value } = e.target;
     if (!value) {
@@ -121,9 +164,12 @@ class CreateRecipe extends Component {
                 onChange={this.handleChange}
               />
             </div>
-            <div style={{ height: "120px", width: "100%" }}>
-              PlaceHolder for all the stats
-            </div>
+            <RecipeStats>
+              <RecipeStat
+                stat="Original Gravity"
+                value={this.targetGravity()}
+              />
+            </RecipeStats>
             <Description
               type="textarea"
               id="description"
@@ -133,32 +179,70 @@ class CreateRecipe extends Component {
               value={this.state.description}
               onChange={this.handleChange}
             />
+            <NumberInputContainers>
+              <label htmlFor="boil_time">Boil Time</label>
+
+              <NumberInput
+                id="boil_time"
+                type="number"
+                name="boil_time"
+                value={this.state.boil_time}
+                onChange={this.handleChange}
+                placeholder="0 mins"
+              />
+              <label htmlFor="batch_size">Batch Size</label>
+
+              <NumberInput
+                id="batch_size"
+                type="number"
+                name="batch_size"
+                value={this.state.batch_size}
+                onChange={this.handleChange}
+                placeholder="0.0lbs"
+              />
+
+              <label htmlFor="efficiency">Efficiency</label>
+
+              <NumberInput
+                id="efficiency"
+                type="number"
+                name="efficiency"
+                value={this.state.efficiency}
+                onChange={this.handleChange}
+                placeholder="0%"
+              />
+            </NumberInputContainers>
             <SectionContainer>
               <div>
                 <IngredientHeader>
-                <IngredientLogo>
-                  <img
-                    id="logo"
-                    src="../../static/IngredientLogos/grain.svg"
-                    alt="grain"
-                  />
-                  <h2>Fermentables</h2>
+                  <IngredientLogo>
+                    <img
+                      id="logo"
+                      src="../../static/IngredientLogos/grain.svg"
+                      alt="grain"
+                    />
+                    <h2>Fermentables</h2>
                   </IngredientLogo>
-                    <Add
-                      type="button"
-                      onClick={() => this.addIngredient("fermentables")}
-                    >
-                      Add Fermentable
-                    </Add>
+                  <Add
+                    type="button"
+                    onClick={() => this.addIngredient("fermentables")}
+                  >
+                    Add Fermentable
+                  </Add>
                 </IngredientHeader>
                 {this.state.fermentables.map((fermentable, index) => (
                   <IngredientInput
                     for="fermentables"
-                    selectField="fermentable_id"
+                    selectField="fermentables_id"
                     key={index}
-                    updateFunction={(value, field) =>
-                      this.updateIngredient(value, "fermentables", index, field)
-                    }
+                    updateFunction={(value, field) => {
+                      return this.updateIngredient(
+                        value,
+                        "fermentables",
+                        index,
+                        field
+                      );
+                    }}
                     deleteFunction={() =>
                       this.deleteIngredient("fermentables", index)
                     }
@@ -168,7 +252,18 @@ class CreateRecipe extends Component {
                         for="fermentables"
                         handleCreate={createFunction}
                         fields={{
-                          brand: "text"
+                          brand: "text",
+                          ppg: "number",
+                          lovibond: "number",
+                          category: {
+                            type: "select",
+                            options: [
+                              "Dry Extract",
+                              "Liquid Extract",
+                              "Grain",
+                              "Fruit"
+                            ]
+                          }
                         }}
                       />
                     )}
@@ -199,18 +294,18 @@ class CreateRecipe extends Component {
             </SectionContainer>
             <SectionContainer>
               <div>
-              <IngredientHeader>
-              <IngredientLogo>
-                <img
-                  id="logo"
-                  src="../../static/IngredientLogos/hop.svg"
-                  alt="hops"
-                />
-                <h2>Hops</h2>
-                </IngredientLogo>
-                <Add type="button" onClick={() => this.addIngredient("hops")}>
-                  Add Hops
-                </Add>
+                <IngredientHeader>
+                  <IngredientLogo>
+                    <img
+                      id="logo"
+                      src="../../static/IngredientLogos/hop.svg"
+                      alt="hops"
+                    />
+                    <h2>Hops</h2>
+                  </IngredientLogo>
+                  <Add type="button" onClick={() => this.addIngredient("hops")}>
+                    Add Hops
+                  </Add>
                 </IngredientHeader>
                 {this.state.hops.map((hop, index) => (
                   <IngredientInput
@@ -278,23 +373,25 @@ class CreateRecipe extends Component {
                     </div>
                   </IngredientInput>
                 ))}
-
               </div>
             </SectionContainer>
             <SectionContainer>
               <div>
-              <IngredientHeader>
-              <IngredientLogo>
-                <img
-                  id="logo"
-                  src="../../static/IngredientLogos/yeast.svg"
-                  alt="yeast"
-                />
-                <h2>Yeasts</h2>
-                </IngredientLogo>
-                <Add type="button" onClick={() => this.addIngredient("yeasts")}>
-                  Add Yeast
-                </Add>
+                <IngredientHeader>
+                  <IngredientLogo>
+                    <img
+                      id="logo"
+                      src="../../static/IngredientLogos/yeast.svg"
+                      alt="yeast"
+                    />
+                    <h2>Yeasts</h2>
+                  </IngredientLogo>
+                  <Add
+                    type="button"
+                    onClick={() => this.addIngredient("yeasts")}
+                  >
+                    Add Yeast
+                  </Add>
                 </IngredientHeader>
                 {this.state.yeasts.map((yeast, index) => (
                   <IngredientInput
@@ -346,7 +443,6 @@ class CreateRecipe extends Component {
                     </div>
                   </IngredientInput>
                 ))}
-
               </div>
             </SectionContainer>
           </fieldset>
