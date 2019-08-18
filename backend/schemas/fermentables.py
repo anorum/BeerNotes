@@ -9,7 +9,7 @@ class FermentablesSchema(ma.ModelSchema):
 
     class Meta:
         model = FermentablesModel
-        fields = ("id", "name", "brand", "user_id")
+        fields = ("id", "name", "brand", "ppg", "lovibond", "category", "user_id")
         dump_only = ("id",)
         include_fk = True
 

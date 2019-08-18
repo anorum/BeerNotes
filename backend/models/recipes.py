@@ -47,6 +47,7 @@ class RecipeYeasts(db.Model, BaseModel):
         'yeast.id'), primary_key=True)
     pitch_temp = db.Column(db.Integer())
     pitch_time = db.Column(db.String(128))
+    attenutation = db.Column(db.Integer())
     yeast = db.relationship("YeastModel")
 
 

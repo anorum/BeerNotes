@@ -27,8 +27,7 @@ class Yeast(InnerDoc):
     min_fermenting_temp = Integer()
     max_fermenting_temp = Integer()
     name = Keyword()
-    max_attenuation_temp = Integer()
-    min_attenuation_temp = Integer()
+    avg_attenuation = Integer()
     yeast_style = Keyword()
     brand = Keyword()
 

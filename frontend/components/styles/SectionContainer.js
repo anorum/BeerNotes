@@ -1,7 +1,7 @@
 import styled from 'styled-components'
 
 const SectionContainer = styled.div`
-  margin: 1.5rem 0;
+  margin: 1rem 0;
   padding: 0 0.5rem;
   background-color: #fff;
   transition: box-shadow 0.25s;

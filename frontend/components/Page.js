@@ -5,6 +5,7 @@ import Header from "./Header";
 
 const theme = {
   mainColor: "#FEDC00",
+  statColor: "#D9DBE0;",
   red: "#FF0000",
   black: "#393939",
   grey: "#3A3A3A",

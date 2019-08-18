@@ -56,18 +56,25 @@ class MyApp extends App {
                     "X-CSRF-TOKEN": csrf_refresh_token, 
                   }
                 })
-                .then(res => (res.headers["set-cookie"][0]))
+                .then(res => (res.headers["set-cookie"]))
                 .catch(err => (err.response.data))
-                axios.defaults.headers.Cookie = refresh
                 console.group("Refresh Try")
                 console.log(refresh)
-                access_token_cookie = refresh.substring(
-                  refresh.indexOf("=") + 1,
-                  refresh.indexOf(";")
+                access_token_cookie = refresh[0].substring(
+                  refresh[0].indexOf("=") + 1,
+                  refresh[0].indexOf(";")
                 )
 
-                nookies.set(ctx, "access_token_cookie", access_token_cookie, {
+                csrf_access_token = await refresh[1].substring(
+                  refresh[1].indexOf("=") + 1,
+                  refresh[1].indexOf(";")
+                )
+
+                await nookies.set(ctx, "access_token_cookie", access_token_cookie, {
                   httpOnly: true,
+                  path: "/"
+                })
+                await nookies.set(ctx, "csrf_access_token", csrf_access_token, {
                   path: "/"
                 })
                 
@@ -87,7 +94,7 @@ class MyApp extends App {
           }
         }
       
-          
+      axios.defaults.headers.common['X-CSRF-TOKEN'] = csrf_access_token    
       
       pageProps.query = ctx.query;
       

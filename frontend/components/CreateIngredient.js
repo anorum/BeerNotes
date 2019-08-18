@@ -18,6 +18,10 @@ const Container = styled.div`
   overflow: hidden;
 `;
 
+const Name = styled.input`
+font-size: 2rem;
+`
+
 const TabColor = styled.div`
   padding: 0.5rem 10rem 1rem 3rem;
   top: 0;
@@ -35,6 +39,7 @@ const TabColor = styled.div`
     width: 100%;
     margin-top: 0.2rem;
     vertical-align: center;
+    padding: 0 30px 0 0;
     th {
       text-align: left;
       font-weight: 800;
@@ -56,7 +61,7 @@ class CreateIngredient extends Component {
 
   componentDidMount() {
     Object.keys(this.props.fields).forEach(field => {
-      if (typeof(this.props.fields[field]) === "object") {
+      if (typeof(this.props.fields[field].type) === "select") {
         this.setState({
           [field]: this.props.fields[field].options[0]
         })
@@ -96,12 +101,12 @@ class CreateIngredient extends Component {
         <Container>
           <div style={{width:"40%", alignSelf: "center"}}>
             <h4>
-              {this.state.name}
-              <input
+              <Name
                 type="text"
                 name="name"
                 value={this.state.name}
                 onChange={this.handleChange}
+                placeholder={`Enter name of ${this.props.for}.`}
               />
             </h4>
           </div>
@@ -113,7 +118,6 @@ class CreateIngredient extends Component {
               <tbody>
                 <tr>
                   {Object.keys(fields).map(field => {
-                    if (typeof(fields[field]) === "object"){
                       if (fields[field].type === "select") {
                         return (<td>
                         <select name={field} value={this.state.field} onChange={this.handleChange}>
@@ -123,13 +127,13 @@ class CreateIngredient extends Component {
                         </select>
                       </td>)
                       }
-                      
-                    }  
                     else {
                       return (
                             <td>
                               <input
-                                type={field}
+                                type={fields[field].type}
+                                placeholder={fields[field].placeholder}
+                                {...(fields[field].type === "number" ? { min: 0} : {})}
                                 name={field}
                                 value={this.state.field}
                                 onChange={this.handleChange}
