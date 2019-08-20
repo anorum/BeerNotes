@@ -1,5 +1,6 @@
 import App, { Container } from "next/app";
 import Cookies from 'js-cookie'
+import nookies from 'nookies'
 import axios from 'axios'
 import cookies from 'next-cookies'
 import {apiEndpoint} from '../config'
@@ -11,6 +12,8 @@ axios.defaults.withCredentials = true
 axios.defaults.headers.common['X-CSRF-TOKEN'] = Cookies.get('csrf_access_token')
 axios.defaults.headers.post['Content-Type'] = 'application/json'
 
+console.log(Cookies.get('csrf_access_token'))
+
 class MyApp extends App {
 
   static async getInitialProps({ Component, ctx}) {
@@ -19,23 +22,26 @@ class MyApp extends App {
       if (Component.getInitialProps) {
         pageProps = await Component.getInitialProps(ctx);
       }
-        let { access_token_cookie, refresh_token_cookie, csrf_access_token, csrf_refresh_token } =  await cookies(ctx);
+        let { access_token_cookie, refresh_token_cookie, csrf_access_token, csrf_refresh_token } =  await nookies.get(ctx);
+      
         if (ctx.req) {
-          var Cookie = ctx.req.headers.cookie;
+          axios.defaults.headers.Cookie = ctx.req.headers.cookie || "";
         }
         else {
-          var Cookie = ""
+          axios.defaults.headers.Cookie = document.cookie
         }
+
       let user = await axios.get('/user', {
         withCredentials: true,
         headers: {
-          Cookie: Cookie,
           "X-CSRF-TOKEN": csrf_access_token || null,
         }
       })
         .then(res => (res.data))
         .catch(err =>(err.response.data))
-
+        console.group("First User Try")
+        console.log(user)
+        console.groupEnd()
           if (user.msg) {
             if (user.msg === 'Missing cookie "access_token_cookie"') {
               user = null;
@@ -43,32 +49,52 @@ class MyApp extends App {
             }
             else {
               if (user.msg === "Token has expired") {
-                await axios
+                const refresh = await axios
                 .post('/refresh',{} ,{
                   withCredentials: true,
                   headers: {
-                    Cookie: Cookie,
-                    "X-CSRF-TOKEN": csrf_refresh_token,
+                    "X-CSRF-TOKEN": csrf_refresh_token, 
                   }
                 })
-                .then(res => (res.data))
+                .then(res => (res.headers["set-cookie"]))
                 .catch(err => (err.response.data))
+                console.group("Refresh Try")
+                console.log(refresh)
+                access_token_cookie = await refresh[0].substring(
+                  refresh[0].indexOf("=") + 1,
+                  refresh[0].indexOf(";")
+                )
+
+                csrf_access_token = await refresh[1].substring(
+                  refresh[1].indexOf("=") + 1,
+                  refresh[1].indexOf(";")
+                )
+
+                await nookies.set(ctx, "access_token_cookie", access_token_cookie, {
+                  httpOnly: true,
+                  path: "/"
+                })
+                await nookies.set(ctx, "csrf_access_token", csrf_access_token, {
+                  path: "/"
+                })
+                
+
               }
-  
+
               user = await axios
                 .get('/user', {
                   withCredentials: true,
                   headers: {
-                    Cookie: Cookie,
                     "X-CSRF-TOKEN": csrf_access_token,
                   }
                 })
                 .then(res => (res.data))
                 .catch(err => (null))
+
           }
         }
-            
-          
+      
+      axios.defaults.headers.common['X-CSRF-TOKEN'] = csrf_access_token    
       
       pageProps.query = ctx.query;
       

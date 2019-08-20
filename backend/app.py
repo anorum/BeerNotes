@@ -14,7 +14,7 @@ from flask_jwt_extended import (JWTManager, get_jwt_claims, verify_jwt_in_reques
 from flask_cors import CORS
 from elasticsearch import Elasticsearch
 from elasticsearch_dsl import connections
-
+from elastsearch_schema import Recipe
 # Create .env file path.
 dotenv_path = join(dirname(__file__), '.env')
 
@@ -27,9 +27,9 @@ from mail import mail
 from oa import oauth
 from resources.user import UserRegister, UsersList, UserLogin, UserDelete, SetPassword, GetUser
 from resources.grains import Grains
-from resources.fermentables import Fermentables, FermentablesCreate, FermentablesByID
-from resources.hops import Hop, HopsSearch
-from resources.yeast import Yeast, YeastSearch
+from resources.fermentables import Fermentable, Fermentables, FermentablesCreate, FermentablesByID
+from resources.hops import Hop, HopsSearch, Hops, HopsCreate
+from resources.yeast import Yeast, YeastSearch, Yeasts, YeastsCreate
 from resources.confirmation import Confirmation, ConfirmationByUser
 from resources.image import AvatarUpload, Avatar
 from resources.recipes import RecipesByID, Recipes, RecipeSearch, RecipeCreate, MyRecipes
@@ -67,7 +67,7 @@ es_header = [{
 
 # Instantiate the new Elasticsearch connection:
 app.elasticsearch = Elasticsearch(bonsai)
-
+connections.create_connection(hosts=[bonsai])
 
 api = Api(app)
 jwt = JWTManager(app)
@@ -90,11 +90,16 @@ api.add_resource(UserLogin, '/login')
 api.add_resource(UserDelete, '/deregister')
 api.add_resource(SetPassword, '/user/resetpassword')
 api.add_resource(Hop, '/hop/<string:name>')
+api.add_resource(Hops, '/hops/')
+api.add_resource(HopsCreate, '/hops/create')
 api.add_resource(HopsSearch, '/hop/search')
 api.add_resource(Yeast, '/yeast/<string:name>')
 api.add_resource(YeastSearch, '/yeast/search')
+api.add_resource(Yeasts, '/yeasts/')
+api.add_resource(YeastsCreate, '/yeasts/create')
 api.add_resource(Grains, '/grains/<string:name>')
-api.add_resource(Fermentables, '/fermentables/<string:fermentableid>')
+api.add_resource(Fermentable, '/fermentables/<string:fermentableid>')
+api.add_resource(Fermentables, '/fermentables/')
 api.add_resource(FermentablesCreate, '/fermentables/create')
 api.add_resource(FermentablesByID, '/fermentables/<string:fermentableid>')
 api.add_resource(Confirmation, '/confirm/<string:confirmation_id>')
@@ -119,7 +124,6 @@ def refresh():
     ret = jsonify({'access_token': new_token})
     set_access_cookies(ret, new_token)
     ret.status_code = 200
-
 
     return ret
 
@@ -147,4 +151,5 @@ if __name__ == "__main__":
     ma.init_app(app)
     mail.init_app(app)
     oauth.init_app(app)
+    Recipe.init()
     app.run(port=1050)

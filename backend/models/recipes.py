@@ -47,6 +47,7 @@ class RecipeYeasts(db.Model, BaseModel):
         'yeast.id'), primary_key=True)
     pitch_temp = db.Column(db.Integer())
     pitch_time = db.Column(db.String(128))
+    attenutation = db.Column(db.Integer())
     yeast = db.relationship("YeastModel")
 
 
@@ -69,12 +70,14 @@ class RecipeModel(db.Model, BaseModel, SearchableMixin):
     efficiency = db.Column(db.Integer())
     IBU = db.Column(db.Integer())
     SRM = db.Column(db.Integer())
+    hex_color = db.Column(db.String(10))
     description = db.Column(db.UnicodeText())
     style = db.Column(db.String(240))
     method = db.Column(db.String(240))
     instructions = db.Column(db.UnicodeText())
     private = db.Column(db.Boolean(), nullable=False, default=False)
     created_date = db.Column(db.DateTime, default=datetime.datetime.utcnow)
+    icon = db.Column(db.String(40))
 
     user = db.relationship("UserModel")
     fermentables = db.relationship("RecipeFermentables", cascade="all, delete-orphan")

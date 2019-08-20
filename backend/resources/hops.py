@@ -43,6 +43,27 @@ class Hop(Resource):
             return hops_schema.dump(hops), 200
         return {"message": HOPS_NOT_FOUND}, 404
 
+class Hops(Resource):
+    @classmethod
+    def get(cls):
+        return hops_schema.dump(HopsModel.query.all())
+
+class HopsCreate(Resource):
+    @classmethod
+    @jwt_required
+    def post(cls):
+        data = request.get_json()
+        data["user_id"] = get_jwt_identity()
+        hops = hop_schema.load(data, session=db.session)
+        try:
+            hops.save_to_db()
+        except Exception as e:
+            print(e)
+            return {"message": ERROR_INSERTING}, 500
+
+        return hop_schema.dump(hops), 201
+
+
 class HopsSearch(Resource):
     @classmethod
     def get(cls):

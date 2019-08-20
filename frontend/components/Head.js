@@ -22,10 +22,7 @@ const Head = props => (
     <link rel="mask-icon" href="/static/favicon-mask.svg" color="#49B882" />
     <link rel="icon" href="/static/favicon.ico" />
 
-    <link
-      href="https://fonts.googleapis.com/css?family=Racing+Sans+One|Roboto&display=swap"
-      rel="stylesheet"
-    />
+    <link href="https://fonts.googleapis.com/css?family=Roboto:300,400,700&display=swap" rel="stylesheet" />
 
     <meta property="og:url" content={props.url || defaultOGURL} />
     <meta property="og:title" content={props.title || ""} />

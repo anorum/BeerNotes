@@ -5,6 +5,7 @@ import Header from "./Header";
 
 const theme = {
   mainColor: "#FEDC00",
+  statColor: "#D9DBE0",
   red: "#FF0000",
   black: "#393939",
   grey: "#3A3A3A",
@@ -12,7 +13,8 @@ const theme = {
   offWhite: "#EDEDED",
   maxWidth: "95%",
   loadingBarColor: "#FFFFFF",
-  bs: "0 12px 24px 0 rgba(0, 0, 0, 0.09)"
+  bs: "0 12px 24px 0 rgba(0, 0, 0, 0.09)",
+  tablet: "760px"
 };
 
 const StyledPage = styled.div`

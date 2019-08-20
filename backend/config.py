@@ -14,7 +14,7 @@ class Config(object):
     MAIL_USE_TLS = False
     JWT_TOKEN_LOCATION = ['cookies']
     JWT_ACCESS_COOKIE_PATH = '/'
-    JWT_REFRESH_COOKIE_PATH = '/refresh'
+    JWT_REFRESH_COOKIE_PATH = '/'
     JWT_SESSION_COOKIE = 60*60*24*30
     JWT_COOKIE_CSRF_PROTECT = True
     UPLOADED_IMAGES_DEST = os.path.join(

@@ -12,6 +12,9 @@ const RecipeCard = styled.article`
     padding: 1em;
     transition: all .3s ease 0s;
     background: linear-gradient(80deg, #ffffff 60%, #ffed4b 60%);
+    :hover {
+        transform: translate3d(-4px, -4px, 0)
+    }
 `
 
 const RecipeDetails = styled.div`
@@ -22,6 +25,10 @@ const RecipeDetails = styled.div`
     grid-template-rows: auto 1fr;
     grid-template-columns: 4fr 2fr;
     gap: 0.625em 0.625em;
+    cursor: pointer;
+
+
+
 `
 
 const RecipeName = styled.div`
@@ -32,18 +39,16 @@ const RecipeName = styled.div`
 const Recipe = (props) => {
     const { id, name, style, description } = props.recipe
     return (
-    <div>
-        
         <RecipeCard>
+        <Link href="recipes/[id]" as={`/recipes/${id}`}>
             <RecipeDetails>
                 <span>{ style }</span>
                 <StyledButton style={{zIndex: 20}} href={`/brew/${id}`}>Brew</StyledButton>
-                <Link href={`/recipe/${id}`}>
+                
                 <RecipeName>
                     <h2>{name}</h2>
                     <p>{description}</p>
                 </RecipeName>
-                 </Link>
                 <span style={{alignSelf: "end"}}>
                     <svg version="1.1" id="Capa_1" xmlns="http://www.w3.org/2000/svg" x="0px" y="0px"
                         viewBox="0 0 297 297" style={{fill: "#D7D7D7", opacity: ".6"}}>
@@ -69,9 +74,8 @@ const Recipe = (props) => {
                 </span>
 
             </RecipeDetails>
+            </Link>
         </RecipeCard>
-
-    </div>
     );
 };
 

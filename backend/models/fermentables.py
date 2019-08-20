@@ -8,12 +8,15 @@ from models.searchableMixIn import SearchableMixin
 class FermentablesModel(BaseModel, db.Model, SearchableMixin):
     """ holds grain database table """
     __tablename__ = "fermentable"
-    __searchable__ = ['id', 'brand', 'name']
+    __searchable__ = ['id', 'brand', 'name', 'lovibond', 'category', 'ppg']
 
     id = db.Column(UUID(as_uuid=True), unique=True,
                    nullable=False, primary_key=True, default=uuid4)
     brand = db.Column(db.String(80))
     name = db.Column(db.String(80), nullable=False)
+    ppg = db.Column(db.Integer())
+    lovibond = db.Column(db.Float())
+    category = db.Column(db.String(80))
     user_id = db.Column(UUID(as_uuid=True), db.ForeignKey(
         "user.id"), nullable=False)
 
