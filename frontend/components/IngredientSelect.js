@@ -12,8 +12,7 @@ const FormContainer = styled.div`
 const styles = {
   singleValue: (provided, state) => {
     return {
-      ...provided,
-      width: "100%"
+      width: "98%"
     };
   },
   container: (provided, state) => {
@@ -25,13 +24,12 @@ const styles = {
   valueContainer: (provided, state) => {
     return {
       ...provided,
-      height: "90px"
     };
   },
   control: (provided, state) => {
     return {
       ...provided,
-      height: "90px",
+      minHeight: "90px",
       boxShadow: 0,
       borderWidth: "0 0 1px 0",
       borderColor: state.isFocused

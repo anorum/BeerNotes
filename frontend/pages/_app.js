@@ -60,7 +60,7 @@ class MyApp extends App {
                 .catch(err => (err.response.data))
                 console.group("Refresh Try")
                 console.log(refresh)
-                access_token_cookie = refresh[0].substring(
+                access_token_cookie = await refresh[0].substring(
                   refresh[0].indexOf("=") + 1,
                   refresh[0].indexOf(";")
                 )

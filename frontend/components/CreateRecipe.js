@@ -16,6 +16,7 @@ import {
   yeastFormat,
   yeastStyle
 } from "../data/recipeOptions";
+import srmToHex from "../data/srmToHex"
 
 const Name = styled.input`
   border-bottom: 1px solid black;
@@ -114,7 +115,7 @@ class CreateRecipe extends Component {
       grains: [],
       hops: [],
       yeasts: [],
-      loading: false
+      loading: false,
     };
   }
 
@@ -209,7 +210,6 @@ class CreateRecipe extends Component {
     try {
       let MCU = this.state.fermentables.map(fermentable => ((fermentable.fermentables.lovibond * fermentable.amount)/this.state.batch_size))
                             .reduce((acc, value) => acc + value)
-                            console.log(MCU)
       SRM =  1.4922 * (MCU ** 0.6859)
       }
     catch(e) {
@@ -255,7 +255,7 @@ class CreateRecipe extends Component {
     return (
       <div>
         <h1>New Recipe</h1>
-        <Form>
+        <Form noValidate>
           <fieldset
             disabled={this.state.loading}
             aria-busy={this.state.loading}
@@ -296,6 +296,8 @@ class CreateRecipe extends Component {
                 value={this.IBU()}
               />
               <RecipeStat
+                background={srmToHex(this.SRM())}
+                color={this.SRM() > 13 && "white"}
                 stat="Standard Reference Method"
                 value={this.SRM()}
                 />
@@ -394,22 +396,23 @@ class CreateRecipe extends Component {
                             },
                             ppg: {
                               type: "number",
-                              placeholder: "38",
+                              placeholder: "0",
                               help:
                                 "Points Per Pound. Usually found on package",
                               required: true
                             },
                             lovibond: {
                               type: "number",
-                              placeholder: "2",
+                              placeholder: "0",
                               help:
                                 "Lovibond degrees to determine color of beer",
-                              required: false
+                              required: true
                             },
                             category: {
                               type: "select",
                               options: fermentableCategories,
-                              help: "What type of fermentable are you using?"
+                              help: "What type of fermentable are you using?",
+                              required: true,
                             }
                           }}
                         />
@@ -599,19 +602,19 @@ class CreateRecipe extends Component {
                               options: yeastFormat,
                               required: true
                             },
-                            yeast_style: {
+                            style: {
                               type: "select",
                               help: "What style of yeast are you using?",
                               options: yeastStyle,
                               required: true
                             },
-                            min_fermenting_temp: {
+                            min_temp: {
                               type: "number",
                               placeholder: "0°F",
                               help:
                                 "What is the minimum fermenting temp of the yeast"
                             },
-                            max_fermenting_temp: {
+                            max_temp: {
                               type: "number",
                               placeholder: "0°F",
                               help:

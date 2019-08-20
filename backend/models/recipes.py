@@ -70,6 +70,7 @@ class RecipeModel(db.Model, BaseModel, SearchableMixin):
     efficiency = db.Column(db.Integer())
     IBU = db.Column(db.Integer())
     SRM = db.Column(db.Integer())
+    hex_color = db.Column(db.String(10))
     description = db.Column(db.UnicodeText())
     style = db.Column(db.String(240))
     method = db.Column(db.String(240))

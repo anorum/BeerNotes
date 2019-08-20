@@ -20,7 +20,7 @@ const StyledTable = styled.table`
 
 const DetailCell = styled.td`
   text-align: center;
-  font-weight: 600;
+  font-weight: 700;
   div:nth-child(2) {
     font-size: 1.3rem;
   }

@@ -48,7 +48,7 @@ const RecipeStat = props => {
 
   return (
     <Container>
-      <Stat onMouseEnter={() => setShowStatName(true)} onMouseLeave={() => setShowStatName(false)}>{statAbbr}</Stat>
+      <Stat style={{background: props.background, color: props.color}} onMouseEnter={() => setShowStatName(true)} onMouseLeave={() => setShowStatName(false)}>{statAbbr}</Stat>
       {showStatName && <StatHover>{props.stat}</StatHover>}
       <Value>{props.value && props.unit ? `${props.value}${props.unit}` : props.value ? `${props.value}` : "-"} </Value>
     </Container>
