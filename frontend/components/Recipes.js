@@ -10,7 +10,7 @@ margin: 0 auto;
 
 const RecipeGrid = styled.div`
     display: grid;
-    grid-template-columns: 1fr 1fr 1fr;
+    grid-template-columns: 1fr 1fr;
     gap: 20px 20px;
     margin: 0 auto;
 `

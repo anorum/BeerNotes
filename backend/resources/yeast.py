@@ -35,6 +35,27 @@ class Yeast(Resource):
             return yeasts_schema.dump(yeast)
         return {"message": YEAST_NOT_FOUND}
 
+class Yeasts(Resource):
+    @classmethod
+    def get(cls):
+        return yeasts_schema.dump(YeastModel.query.all())
+
+class YeastsCreate(Resource):
+    @classmethod
+    @jwt_required
+    def post(cls):
+        data = request.get_json()
+        data["user_id"] = get_jwt_identity()
+        yeasts = yeast_schema.load(data, session=db.session)
+        try:
+            yeasts.save_to_db()
+        except Exception as e:
+            print(e)
+            return {"message": ERROR_INSERTING}, 500
+
+        return yeast_schema.dump(yeasts), 201
+
+
 class YeastSearch(Resource):
     @classmethod
     def get(cls):

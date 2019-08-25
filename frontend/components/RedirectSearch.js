@@ -1,22 +1,20 @@
 import React, { Component } from "react";
 import styled, { withTheme } from "styled-components";
 import Router from "next/router";
-import {
-  ReactiveBase
-} from "@appbaseio/reactivesearch";
+import CustomReactiveBase from "./CustomReactiveBase"
 import StyledDataSearch from "./styles/StyledDataSearch"
 
 
 class RedirectSearch extends Component {
   pushToRoute(value, cause, source) {
-    Router.push({ pathname: `/${source.type}/${source._id}` });
+    Router.push({ pathname: `/${source.type}s/${source._id}` });
   }
 
   render() {
     return (
-      <ReactiveBase
+      <CustomReactiveBase
         app="brewcipes"
-        credentials="ObcMd4kS2:86a06e1a-0d7e-4e8a-9b90-016530933be8"
+        url="https://2zlp5s1cxj:zxpueqdn44@brewcipes-6393310412.us-west-2.bonsaisearch.net:443"
         theme={{
           colors: {
             primaryColor: this.props.theme.black
@@ -54,7 +52,7 @@ class RedirectSearch extends Component {
 }
 
         />
-      </ReactiveBase>
+      </CustomReactiveBase>
     );
   }
 }

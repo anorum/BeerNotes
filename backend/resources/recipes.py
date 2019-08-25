@@ -9,6 +9,7 @@ from models.fermentables import FermentablesModel
 from schemas.recipes import recipe_schema, recipes_schema, recipe_fermentable_schema, recipe_fermentables_schmea
 from schemas.fermentables import fermentables_schema, fermentable_schema
 from libs.clean_recipe_elastic import clean_recipe_elastic
+from libs.recipe_calculations import targetGravity, finalGravity, ABV, IBU, SRM
 
 
 ERROR_INSERTING = "An error occurred while inserting the recipe."
@@ -17,31 +18,6 @@ NO_RECIPES_FOUND = "There are no recipes"
 
 
 class RecipesByID(Resource):
-
-    @classmethod
-    @jwt_required
-    def put(cls, recipeid):
-        recipe = RecipeModel.find_by_id(recipeid)
-        if not recipe:
-            return {"msg": RECIPE_NOT_FOUND}, 404
-
-        data = request.get_json()
-        loaded_data = recipe_schema.load(data, instance=recipe)
-
-        try:
-            loaded_data.save_to_db()
-        except Exception as e:
-            return {"message": ERROR_INSERTING}, 500
-        if loaded_data.private:
-            if len(RecipeModel.elastic_find_by_id(recipe.id)) > 0:
-                current_app.elasticsearch.delete(index="brewcipes", id=loaded_data.id)
-        else:
-            current_app.elasticsearch.index(index="brewcipes", type="recipe", \
-                id=loaded_data.id, body=clean_recipe_elastic(recipe_schema.dump(loaded_data)))
-
-        return recipe_schema.dump(recipe), 201
-
-
 
     @classmethod
     def get(cls, recipeid):
@@ -60,15 +36,18 @@ class Recipes(Resource):
             return recipes_schema.dump(recipes.items)
         return {"message": NO_RECIPES_FOUND}
 
+
 class MyRecipes(Resource):
     @classmethod
     @jwt_required
     def get(cls, page):
         user_id = get_jwt_identity()
-        recipes = RecipeModel.query.filter_by(user_id=user_id).paginate(page=page, per_page=40)
+        recipes = RecipeModel.query.filter_by(
+            user_id=user_id).paginate(page=page, per_page=40)
         if recipes.items:
             return recipes_schema.dump(recipes.items)
         return {"message": NO_RECIPES_FOUND}
+
 
 class RecipeSearch(Resource):
     @classmethod
@@ -76,6 +55,7 @@ class RecipeSearch(Resource):
         q = request.args['q']
         query, total = RecipeModel.search(q, 1, 5)
         return recipes_schema.dump(query.all())
+
 
 class RecipeCreate(Resource):
     @classmethod
@@ -89,7 +69,49 @@ class RecipeCreate(Resource):
         except Exception as e:
             print(e)
             return {"message": ERROR_INSERTING}, 500
-        if not recipe.private:
-            current_app.elasticsearch.index(index="brewcipes", type="recipe", \
-                id=recipe.id, body=clean_recipe_elastic(recipe_schema.dump(recipe)))
+        if not recipe.private_recipe and recipe.published:
+            clean_recipe = recipe_schema.dump(recipe)
+            clean_recipe["type"] = "recipe"
+            current_app.elasticsearch.index(index="brewcipes",
+                                            id=recipe.id, body=clean_recipe)
+            print("Published to Elastic")
         return recipe_schema.dump(recipe), 201
+
+    @classmethod
+    @jwt_required
+    def put(cls):
+        data = request.get_json()
+        data["user_id"] = get_jwt_identity()
+        try:
+            recipeid = data['id']
+        except:
+            recipeid = None
+        recipe = RecipeModel.find_by_id(recipeid)
+        if not recipe:
+            data.pop('id', None)
+            loaded_data = recipe_schema.load(data, session=db.session)
+        else:
+            loaded_data = recipe_schema.load(data, instance=recipe)
+        santized_recipe = recipe_schema.dump(loaded_data)
+        loaded_data.target_og = targetGravity(santized_recipe)
+        loaded_data.target_fg = finalGravity(santized_recipe)
+        loaded_data.target_abv = ABV(santized_recipe)
+        loaded_data.IBU = IBU(santized_recipe)
+        loaded_data.SRM = SRM(santized_recipe)
+        print(loaded_data.SRM)
+
+        try:
+            loaded_data.save_to_db()
+        except Exception as e:
+            return {"message": ERROR_INSERTING}, 500
+        if loaded_data.private_recipe or (not loaded_data.published):
+            if len(RecipeModel.elastic_find_by_id(loaded_data.id)) > 0:
+                current_app.elasticsearch.delete(
+                    index="brewcipes", id=loaded_data.id)
+        else:
+            clean_recipe = recipe_schema.dump(recipe)
+            clean_recipe["type"] = "recipe"
+            current_app.elasticsearch.index(index="brewcipes",
+                                            id=loaded_data.id, body=clean_recipe)
+
+        return recipe_schema.dump(loaded_data), 201

@@ -2,9 +2,13 @@ import React, { Component } from "react";
 import styled, { ThemeProvider, createGlobalStyle } from "styled-components";
 import Head from "./Head";
 import Header from "./Header";
+import {NotificationContainer} from 'react-notifications';
+
+
 
 const theme = {
   mainColor: "#FEDC00",
+  statColor: "#D9DBE0",
   red: "#FF0000",
   black: "#393939",
   grey: "#3A3A3A",
@@ -12,7 +16,12 @@ const theme = {
   offWhite: "#EDEDED",
   maxWidth: "95%",
   loadingBarColor: "#FFFFFF",
-  bs: "0 12px 24px 0 rgba(0, 0, 0, 0.09)"
+  bs: "0 12px 24px 0 rgba(0, 0, 0, 0.09)",
+  mobile: "414px",
+  tablet: "834px",
+  desktop: "1200px",
+  ultrawide: "1800px"
+  
 };
 
 const StyledPage = styled.div`
@@ -23,6 +32,7 @@ const StyledPage = styled.div`
 const Inner = styled.div`
   max-width: ${props => props.theme.maxWidth};
   margin: 0 auto;
+
 `;
 
 const GlobalStyle = createGlobalStyle`
@@ -39,6 +49,8 @@ const GlobalStyle = createGlobalStyle`
         font-size: 1.5rem;
         font-family: 'Roboto', sans-serif;
         line-height: 1.5;
+        color: ${props => props.theme.black};
+
     }
     a {
         text-decoration: none;
@@ -58,6 +70,7 @@ class Page extends Component {
           <GlobalStyle />
           <Head title="Beer Notes" />
           <Header />
+          <NotificationContainer/>
           <Inner>{this.props.children}</Inner>
         </StyledPage>
       </ThemeProvider>

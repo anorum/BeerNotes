@@ -25,7 +25,7 @@ export default class MyRecipes extends Component {
   }
 
   componentDidMount() {
-    axios.get('/myrecipes/1')
+    axios.get('/myrecipes/3')
           .then(res => {
             this.setState({
               recipes: res.data,

@@ -18,49 +18,33 @@ const Form = styled.form`
   padding: 20px;
   font-size: 1.5rem;
   line-height: 1.5;
-  font-weight: 600;
+  font-weight: 700;
   label {
     display: block;
-    margin-bottom: 1rem;
   }
   input,
   textarea,
   select {
     width: 100%;
     padding: 0.5rem;
-    font-size: 1.5rem;
-    border: 1px solid black;
+    outline: 0;
+    border-width: 0 0 2px;
+    border-radius: 5px;
+
     &:focus {
       outline: 0;
       border-color: ${props => props.theme.mainColor};
     }
+
   }
-  button,
-  input[type='submit'] {
-    width: auto;
-    background: red;
-    color: white;
-    border: 0;
-    font-size: 2rem;
-    font-weight: 600;
-    padding: 0.5rem 1.2rem;
-  }
+
   fieldset {
     border: 0;
     padding: 0;
     &[disabled] {
       opacity: 0.5;
     }
-    &::before {
-      height: 10px;
-      content: '';
-      display: block;
-      background-image: linear-gradient(to right, ${props=> props.theme.mainColor} 0%, #e2b04a 50%, #FEDC60 100%);
-    }
-    &[aria-busy='true']::before {
-      background-size: 50% auto;
-      animation: ${loading} 0.5s linear infinite;
-    }
+    
   }
 `;
 

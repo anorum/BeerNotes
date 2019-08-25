@@ -13,7 +13,7 @@ class BaseModel():
     def find_by_id(cls, id):
         try:
             return cls.query.filter_by(id=id).first()
-        except DataError:
+        except:
             return None
     
     @classmethod

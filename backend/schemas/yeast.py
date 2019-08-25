@@ -8,8 +8,8 @@ class YeastSchema(ma.ModelSchema):
     user_id = fields.UUID()
 
     class Meta:
-        fields = ("id", "brand", "name", "yeast_style", "yeast_format", "min_attenuation_temp",
-                  "max_attenuation_temp", "min_fermenting_temp", "max_fermenting_temp", "user_id")
+        fields = ("id", "brand", "name", "style", "yeast_format",
+                  "avg_attenuation", "min_temp", "max_temp", "user_id")
         dump_only = ('id',)
         model = YeastModel
         include_fk = True

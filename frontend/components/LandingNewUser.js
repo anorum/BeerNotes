@@ -29,11 +29,12 @@ const LandingNewUser = props => {
     >
       <Container>
         <Content>
-          <div>
-            <h1>Find or Share Great Beer</h1>
+          <div> 
+            <h1> Brewcipes - A Simple Approach at Beer Brewing </h1>
+            <h2></h2>
             <h3>
-              Join today to make great brews and share them with your fellow
-              homebrewers!
+              A simple alternative to beer brewing websites. Get the information
+              you need to brew get started with homebrewing and nothing more.
             </h3>
 
             <StyledButton href="/register" alt="sign up">
