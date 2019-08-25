@@ -7,7 +7,7 @@ import StyledDataSearch from "./styles/StyledDataSearch"
 
 class RedirectSearch extends Component {
   pushToRoute(value, cause, source) {
-    Router.push({ pathname: `/${source.type}/${source._id}` });
+    Router.push({ pathname: `/${source.type}s/${source._id}` });
   }
 
   render() {

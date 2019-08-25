@@ -4,11 +4,11 @@ import axios from "axios";
 import IngredientSelect from "./IngredientSelect";
 import {
   Container,
+  IngredientListContainer,
   InputsContainer,
   InputContainer,
   DeleteButtonContainer
 } from "./styles/IngredientForm";
-
 
 class IngredientInput extends Component {
   constructor(props) {
@@ -44,27 +44,26 @@ class IngredientInput extends Component {
   render() {
     return (
       <React.Fragment>
-        <Container>
-          <InputsContainer>
-            
-              {React.Children.map(this.props.children, (child) => (<InputContainer>{child}</InputContainer>))}
-
-          </InputsContainer>
-          <IngredientSelect
-            for = {this.props.for}
-            selectField={this.props.selectField}
-            options={this.state.options}
-            onChange={
-              this.props.updateFunction
-            }
-            createForm={this.props.createForm}
-          />
-          <DeleteButtonContainer>
-            <button type="button" onClick={this.props.deleteFunction}>
-              X
-            </button>
-          </DeleteButtonContainer>
-        </Container>
+          <Container>
+            <InputsContainer>
+              {React.Children.map(this.props.children, child => (
+                <InputContainer>{child}</InputContainer>
+              ))}
+            </InputsContainer>
+            <IngredientSelect
+              for={this.props.for}
+              selectField={this.props.selectField}
+              options={this.state.options}
+              onChange={this.props.updateFunction}
+              createForm={this.props.createForm}
+              value={this.props.value}
+            />
+            <DeleteButtonContainer>
+              <button type="button" onClick={this.props.deleteFunction}>
+                X
+              </button>
+            </DeleteButtonContainer>
+          </Container>
       </React.Fragment>
     );
   }

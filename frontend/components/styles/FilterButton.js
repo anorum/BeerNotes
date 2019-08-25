@@ -5,10 +5,9 @@ text-transform: uppercase;
 margin: .25rem 0;
 color: ${props => props.theme.black};
 cursor: pointer;
+margin-bottom: 2rem;
 
 position: relative;
-    margin: 1rem 3rem;
-
     &::after {
       position: absolute;
       top: 100%;

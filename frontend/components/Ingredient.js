@@ -45,7 +45,7 @@ const Ingredient = props => {
         <NameContainer><h4>{name}</h4></NameContainer>
         <DetailsContainer>
           {fieldNames.map(field => (
-            <Details>
+            <Details key={field}>
               <DetailHeader>
                 {field
                   .replace("_", " ")

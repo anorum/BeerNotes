@@ -18,7 +18,9 @@ const styles = {
   container: (provided, state) => {
     return {
       ...provided,
-      width: "100%"
+      width: "100%",
+      alignSelf: "center"
+      
     };
   },
   valueContainer: (provided, state) => {
@@ -31,7 +33,7 @@ const styles = {
       ...provided,
       minHeight: "90px",
       boxShadow: 0,
-      borderWidth: "0 0 1px 0",
+      borderWidth: "0 0 0 0",
       borderColor: state.isFocused
         ? "#FEDC00"
         : provided.borderColor,
@@ -69,7 +71,7 @@ class IngredientSelect extends Component {
         value: { ...val }
       });
       await this.props.onChange(val.id, this.props.selectField)
-      await this.props.onChange(val, this.props.for);
+      await this.props.onChange(val, this.props.for.slice(0,-1));
     } else {
       this.setState({
         isLoading: false,
@@ -83,10 +85,10 @@ class IngredientSelect extends Component {
   handleChange = async (val, { action }) => {
     if (action !== "clear") {
       await this.props.onChange(val.id, this.props.selectField);
-      await this.props.onChange(val, this.props.for)
+      await this.props.onChange(val, this.props.for.slice(0,-1))
     } else {
       await this.props.onChange(null, this.props.selectField);
-      await this.props.onChange(null, this.props.for)
+      await this.props.onChange(null, this.props.for.slice(0,-1))
     }
   };
 
@@ -106,7 +108,7 @@ class IngredientSelect extends Component {
           )}
           onChange={this.handleChange}
           onCreateOption={this.handleCreate}
-          value={this.state.value}
+          value={this.props.value}
           getNewOptionData={(inputValue, optionLabel) => ({
             id: inputValue,
             name: optionLabel,

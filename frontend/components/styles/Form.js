@@ -21,7 +21,6 @@ const Form = styled.form`
   font-weight: 700;
   label {
     display: block;
-    margin-bottom: 1rem;
   }
   input,
   textarea,

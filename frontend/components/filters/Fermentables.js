@@ -19,6 +19,7 @@ const Fermentables = (props) => {
                 and: props.react
             }}
             queryFormat="and"
+            showMissing={true}
             />    
     );
 };

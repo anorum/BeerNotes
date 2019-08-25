@@ -9,30 +9,36 @@ const Container = styled.div`
   text-align: center;
 `;
 const Stat = styled.div`
-  padding: 20px;
+  /* padding: 20px;
   margin: 2rem 2rem 1rem 2rem;
   border-radius: 500px;
-  background: ${props => props.theme.statColor};
+  background: ${props => props.theme.statColor}; */
+  font-size: 3rem;
+  font-weight: 300;
+  border-radius: 5%;
+  padding: 5px;
 `;
 const StatHover = styled.div`
 position: absolute;
 max-height: 80px;
-width: 90px;
+width: 100px;
 padding: 5px;
 border-radius: 5px;
 background: ${props => props.theme.statColor};
-top: 15px;
-left: 90%; 
+bottom: 100%;
+right: -50%; 
+z-index: 10;
+box-shadow: ${props => props.theme.bs};
 
 &::after{
   content: " ";
   position: absolute;
-  top: 50%;
-  right: 100%;
+  top: 90%;
+  right: 45%;
   margin-top: 5px;
   border-width: 5px;
   border-style: solid;
-  border-color: transparent ${props => props.theme.statColor} transparent transparent;
+  border-color: ${props => props.theme.statColor} transparent transparent transparent;
 }
 
 `
@@ -48,9 +54,9 @@ const RecipeStat = props => {
 
   return (
     <Container>
-      <Stat style={{background: props.background, color: props.color}} onMouseEnter={() => setShowStatName(true)} onMouseLeave={() => setShowStatName(false)}>{statAbbr}</Stat>
+      <Stat style={{background: props.background, color: props.color, fontSize: props.labelSize}} onMouseEnter={() => setShowStatName(true)} onMouseLeave={() => setShowStatName(false)}>{statAbbr}</Stat>
       {showStatName && <StatHover>{props.stat}</StatHover>}
-      <Value>{props.value && props.unit ? `${props.value}${props.unit}` : props.value ? `${props.value}` : "-"} </Value>
+      <Value style={{fontSize: props.statSize}}>{props.value && props.unit ? `${props.value}${props.unit}` : props.value ? `${props.value}` : "-"} </Value>
     </Container>
   );
 };

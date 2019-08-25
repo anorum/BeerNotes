@@ -43,7 +43,6 @@ const srmToHexLookup = {
 
 const srmToHex = (SRM) => {
     SRM = Math.round(parseFloat(SRM))
-    console.log(SRM)
     if (SRM > 0 && SRM < 41) {
         return srmToHexLookup[SRM]
     }

@@ -1,6 +1,8 @@
 import React from "react";
 import NextHead from "next/head";
 import { string } from "prop-types";
+import '@fortawesome/fontawesome-free/css/all.css'
+import 'react-notifications/lib/notifications.css';
 
 const defaultDescription = "An App to help you find and create amazing beer!";
 const defaultOGURL = "";
@@ -23,6 +25,7 @@ const Head = props => (
     <link rel="icon" href="/static/favicon.ico" />
 
     <link href="https://fonts.googleapis.com/css?family=Roboto:300,400,700&display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css?family=Racing+Sans+One&display=swap" rel="stylesheet" />
 
     <meta property="og:url" content={props.url || defaultOGURL} />
     <meta property="og:title" content={props.title || ""} />

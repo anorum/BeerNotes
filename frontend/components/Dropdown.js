@@ -87,14 +87,14 @@ const Dropdown = props => {
         <img
             name="icon"
             data-value={beer}
-            src={`../static/BeerTypes/${beer}.svg`}
+            src={`/static/BeerTypes/${beer}.svg`}
             alt={beer} />
     </Option> ))
 
   return (
     <Container ref={node}>
       <button type="button" onClick={e => setShowOptions(!showOptions)}>
-        <img src={`../static/BeerTypes/${props.icon}.svg`} alt={props.icon} />
+        <img src={`/static/BeerTypes/${props.icon}.svg`} alt={props.icon} />
       </button>
       {showOptions && (
         <React.Fragment>

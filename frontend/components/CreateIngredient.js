@@ -12,6 +12,7 @@ import {
   DetailHeader
 } from "./styles/IngredientForm";
 import HoverTip from "./HoverTip";
+import Select from "react-select";
 
 const color = {
   fermentables: value => srmToHex(value) || "#EEAF4B",
@@ -80,7 +81,6 @@ class CreateIngredient extends Component {
       .post(`/${this.props.for}/create`, this.state)
       .then(result => this.props.handleCreate(true, result.data))
       .catch(err => {
-        console.log(err.response.data);
         this.props.handleCreate(false, err);
       });
   };
@@ -126,18 +126,28 @@ class CreateIngredient extends Component {
                       </label>
                     </HoverTip>
                     {fields[field].type === "select" ? (
-                      <select
-                        name={field}
-                        id={field}
-                        value={this.state.field}
-                        onChange={this.handleChange}
-                      >
-                        {fields[field].options.map(option => (
-                          <option value={option} name={field}>
-                            {option}
-                          </option>
-                        ))}
-                      </select>
+                      <React.Fragment>
+                        <Select
+                          name={field}
+                          id={field}
+                          onChange={(value, { action }) => {
+                            action !== "clear"
+                              ? this.setState({ [field]: value.value })
+                              : this.setState({ [field]: null });
+                          }}
+                          options={fields[field].options}
+                          value={this.state.field}
+                        />
+                        {fields[field].required && (
+                          <input
+                            tabIndex={-1}
+                            autoComplete="off"
+                            style={{ opacity: 0, height: 0 }}
+                            value={this.state[field]}
+                            required
+                          />
+                        )}
+                      </React.Fragment>
                     ) : (
                       <input
                         type={fields[field].type}

@@ -1,10 +1,12 @@
 import React, { Component, useMemo } from "react";
 import update from "immutability-helper";
+import Router from "next/router";
 import styled from "styled-components";
 import { roundNumberDecimal } from "../util/helpers";
 import Form from "./styles/Form";
 import SectionContainer from "./styles/SectionContainer";
-import StyledButton from "./styles/StyledButton";
+import Switch from "react-switch";
+import Select from "react-select";
 import Dropdown from "./Dropdown";
 import IngredientInput from "./IngredientInput";
 import CreateIngredient from "./CreateIngredient";
@@ -14,9 +16,19 @@ import {
   fermentableCategories,
   hopTypes,
   yeastFormat,
-  yeastStyle
+  yeastStyle,
+  methods
 } from "../data/recipeOptions";
-import srmToHex from "../data/srmToHex"
+import srmToHex from "../data/srmToHex";
+import {
+  InputContainer,
+  IngredientListContainer,
+  IngredientHeader,
+  IngredientsContainer,
+  IngredientLogo
+} from "./styles/IngredientForm";
+import { NotificationManager } from "react-notifications";
+import axios from "axios";
 
 const Name = styled.input`
   border-bottom: 1px solid black;
@@ -50,24 +62,6 @@ const NumberInputContainers = styled.div`
 
 const NumberInput = styled.input`
   width: 80px;
-`;
-
-const IngredientHeader = styled.div`
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-`;
-
-const IngredientsContainer = styled.div`
-  display: grid;
-  grid-template-columns: 1fr;
-  grid-template-rows: 1fr;
-  grid-gap: 5px;
-`;
-
-const IngredientLogo = styled.div`
-  display: flex;
-  align-items: center;
 `;
 
 const Add = styled.button`
@@ -104,10 +98,12 @@ const RecipeStats = styled.div`
 class CreateRecipe extends Component {
   constructor(props) {
     super(props);
+    this.form = React.createRef();
     this.state = {
-      name: "",
+      name: null,
       description: "",
-      private: true,
+      private_recipe: true,
+      published: false,
       icon: "pilsner",
       batch_size: 5,
       efficiency: 35,
@@ -115,8 +111,14 @@ class CreateRecipe extends Component {
       grains: [],
       hops: [],
       yeasts: [],
-      loading: false,
+      loading: false
     };
+  }
+
+  componentWillMount() {
+    this.setState({
+      ...this.props.recipe
+    });
   }
 
   /*** Computed Values ***/
@@ -129,7 +131,7 @@ class CreateRecipe extends Component {
           .map(fermentable => {
             let {
               amount,
-              fermentables: { ppg }
+              fermentable: { ppg }
             } = fermentable;
             amount = parseFloat(amount);
             ppg = parseFloat(ppg);
@@ -185,41 +187,119 @@ class CreateRecipe extends Component {
   IBU = () => {
     let IBU;
     try {
-      IBU = 
-      this.state.hops.map(hop => {
-        //Calculate AAU weight(oz) * Alpha acids
-        let AAU = hop.amount * hop.hops.alpha
+      IBU = this.state.hops
+        .map(hop => {
+          //Calculate AAU weight(oz) * Alpha acids
+          let AAU = hop.amount * hop.hop.alpha;
 
-        //Calculate Utilization
-        let Utilization = (1.65*0.000125**(this.targetGravity() - 1)) * ((1-Math.E**(1-hop.hop_schedule))/4.15)
-        
-        //AAU * Utilization * 75 / boil_time
-        return (AAU * Utilization * 75)/ this.state.batch_size
-      }).reduce((acc, value) => acc+value)
+          //Calculate Utilization
+          let Utilization =
+            1.65 *
+            0.000125 ** (this.targetGravity() - 1) *
+            ((1 -
+              Math.E **
+                (hop.hop.hop_type === "pellets"
+                  ? 1 - hop.hop_schedule
+                  : -0.04 * hop.hop_schedule)) /
+              4.15);
 
-      
+          //AAU * Utilization * 75 / boil_time
+          return (AAU * Utilization * 75) / this.state.batch_size;
+        })
+        .reduce((acc, value) => acc + value);
+    } catch (e) {
+      IBU = null;
     }
-    catch(e) {
-      IBU = null
-    }
-    return roundNumberDecimal(IBU, 0)
-  }
+    return roundNumberDecimal(IBU, 0);
+  };
 
   SRM = () => {
     let SRM;
     try {
-      let MCU = this.state.fermentables.map(fermentable => ((fermentable.fermentables.lovibond * fermentable.amount)/this.state.batch_size))
-                            .reduce((acc, value) => acc + value)
-      SRM =  1.4922 * (MCU ** 0.6859)
-      }
-    catch(e) {
-
-      SRM = null
+      let MCU = this.state.fermentables
+        .map(
+          fermentable =>
+            (fermentable.fermentable.lovibond * fermentable.amount) /
+            this.state.batch_size
+        )
+        .reduce((acc, value) => acc + value);
+      SRM = 1.4922 * MCU ** 0.6859;
+    } catch (e) {
+      SRM = null;
     }
-    return roundNumberDecimal(SRM,2)
-  }
+    return roundNumberDecimal(SRM, 2);
+  };
 
   /***   Event Handlers ***/
+
+  cancelRecipe = e => {
+    Router.replace("/recipes/");
+  };
+
+  saveRecipe = () => {
+    axios
+      .put("/recipe/create", this.state)
+      .then(res => {
+        this.setState({
+          id: res.data.id
+        });
+        NotificationManager.success(
+          `Recipe ${res.data.name} has been saved.`,
+          "Recipe Saved."
+        );
+      })
+      .catch(err =>
+        NotificationManager.error(
+          err.response.message,
+          Object.keys(err.response.data).map(
+            field => `${field} : ${err.response.data[field]}`
+          ),
+          5000,
+          () => {
+            return;
+          }
+        )
+      );
+  };
+
+  publishRecipe = async e => {
+    e.preventDefault();
+    if (!this.form.current.checkValidity()) {
+      this.form.current.reportValidity();
+      return;
+    } else {
+      await this.setState({
+        published: true
+      });
+      await axios
+        .put("/recipe/create", this.state)
+        .then(res => {
+          NotificationManager.success(
+            `Recipe ${res.data.name} has been created`,
+            "Recipe Created"
+          );
+          Router.replace(`/recipes/${res.data.id}`);
+        })
+        .catch(err =>
+          NotificationManager.error(
+            err.response.message,
+            Object.keys(err.response.data).map(
+              field => `${field} : ${err.response.data[field]}`
+            ),
+            5000,
+            () => {
+              return;
+            }
+          )
+        );
+    }
+  };
+
+  handlePrivateCheck = checked => {
+    this.setState({
+      private_recipe: !checked
+    });
+  };
 
   handleChange = e => {
     let { name, type, value } = e.target;
@@ -254,16 +334,35 @@ class CreateRecipe extends Component {
   render() {
     return (
       <div>
-        <h1>New Recipe</h1>
-        <Form noValidate>
+      {this.props.edit ? <h1>Edit {this.state.name}</h1> : <h1>New Recipe</h1>}
+        <Form ref={this.form}>
           <fieldset
             disabled={this.state.loading}
             aria-busy={this.state.loading}
           >
             <ButtonContainer>
-              <Add type="button"> Cancel </Add>
-              <Add type="button"> Save </Add>
-              <Add type="button"> Publish </Add>
+              <Add type="button" onClick={this.cancelRecipe}>
+                Cancel
+              </Add>
+              <Add type="button" onClick={this.saveRecipe}>
+                Save
+              </Add>
+              <Add type="submit" onClick={this.publishRecipe}>
+                {" "}
+                Publish{" "}
+              </Add>
+              <InputContainer>
+                <label htmlFor="private_recipe">Public</label>
+                <Switch
+                  id="private_recipe"
+                  onChange={this.handlePrivateCheck}
+                  checked={!this.state.private_recipe}
+                  uncheckedIcon={false}
+                  checkedIcon={false}
+                  height={24}
+                  width={52}
+                />
+              </InputContainer>
             </ButtonContainer>
             <div style={{ display: "flex" }}>
               <Dropdown
@@ -278,7 +377,76 @@ class CreateRecipe extends Component {
                 required
                 value={this.state.name}
                 onChange={this.handleChange}
+                required
               />
+            </div>
+            <div
+              style={{
+                display: "flex",
+                alignItems: "baseline",
+                marginTop: "15px"
+              }}
+            >
+              <label htmlFor="beerstyle" style={{ margin: "0 10px" }}>
+                Beer Style
+              </label>
+              <div style={{ flexGrow: "1" }}>
+                <Select
+                  id="beerstyle"
+                  name="style"
+                  options={beerStyles}
+                  getOptionLabel={option => option.label}
+                  getOptionValue={option => option.value}
+                  formatOptionLabel={option => option.label}
+                  placeholder={"Select Beer Style..."}
+                  onChange={(value, { action }) => {
+                    action !== "clear"
+                      ? this.setState({ style: value.value })
+                      : this.setState({ style: null });
+                  }}
+                  isClearable
+                  value={beerStyles.filter(
+                    ({ value }) => value === this.state.style
+                  )}
+                />
+                <input
+                  tabIndex={-1}
+                  autoComplete="off"
+                  style={{ opacity: 0, height: 0 }}
+                  value={this.state.style}
+                  required
+                />
+              </div>
+              <label htmlFor="brewmethod" style={{ margin: "0 10px" }}>
+                Brew Method
+              </label>
+              <div style={{ flexGrow: "1" }}>
+                <Select
+                  id="brewmethod"
+                  name="method"
+                  options={methods}
+                  getOptionLabel={option => option.label}
+                  getOptionValue={option => option.value}
+                  formatOptionLabel={option => option.value}
+                  placeholder={"Select Method..."}
+                  onChange={(value, { action }) => {
+                    action !== "clear"
+                      ? this.setState({ method: value.value })
+                      : this.setState({ method: null });
+                  }}
+                  isClearable
+                  value={methods.filter(
+                    ({ value }) => value === this.state.method
+                  )}
+                />
+                <input
+                  tabIndex={-1}
+                  autoComplete="off"
+                  style={{ opacity: 0, height: 0 }}
+                  value={this.state.method}
+                  required
+                />
+              </div>
             </div>
             <RecipeStats>
               <RecipeStat
@@ -300,7 +468,7 @@ class CreateRecipe extends Component {
                 color={this.SRM() > 13 && "white"}
                 stat="Standard Reference Method"
                 value={this.SRM()}
-                />
+              />
             </RecipeStats>
             <Description
               type="textarea"
@@ -310,6 +478,7 @@ class CreateRecipe extends Component {
               required
               value={this.state.description}
               onChange={this.handleChange}
+              required
             />
             <NumberInputContainers>
               <label htmlFor="boil_time">Boil Time</label>
@@ -322,6 +491,7 @@ class CreateRecipe extends Component {
                 value={this.state.boil_time}
                 onChange={this.handleChange}
                 placeholder="0 mins"
+                required
               />
               <label htmlFor="batch_size">Batch Size</label>
 
@@ -333,6 +503,8 @@ class CreateRecipe extends Component {
                 value={this.state.batch_size}
                 onChange={this.handleChange}
                 placeholder="0.0lbs"
+                required
+                step="0.1"
               />
 
               <label htmlFor="efficiency">Efficiency</label>
@@ -345,6 +517,8 @@ class CreateRecipe extends Component {
                 value={this.state.efficiency}
                 onChange={this.handleChange}
                 placeholder="0%"
+                step="0.1"
+                required
               />
             </NumberInputContainers>
             <IngredientsContainer>
@@ -366,81 +540,87 @@ class CreateRecipe extends Component {
                       Add Fermentable
                     </Add>
                   </IngredientHeader>
-                  {this.state.fermentables.map((fermentable, index) => (
-                    <IngredientInput
-                      for="fermentables"
-                      selectField="fermentables_id"
-                      key={index}
-                      updateFunction={(value, field) => {
-                        return this.updateIngredient(
-                          value,
-                          "fermentables",
-                          index,
-                          field
-                        );
-                      }}
-                      deleteFunction={() =>
-                        this.deleteIngredient("fermentables", index)
-                      }
-                      createForm={(name, createFunction) => (
-                        <CreateIngredient
-                          name={name}
-                          for="fermentables"
-                          handleCreate={createFunction}
-                          fields={{
-                            brand: {
-                              type: "text",
-                              placeholder: "Briess...",
-                              help: "Brand of Fermentables",
-                              required: false
-                            },
-                            ppg: {
-                              type: "number",
-                              placeholder: "0",
-                              help:
-                                "Points Per Pound. Usually found on package",
-                              required: true
-                            },
-                            lovibond: {
-                              type: "number",
-                              placeholder: "0",
-                              help:
-                                "Lovibond degrees to determine color of beer",
-                              required: true
-                            },
-                            category: {
-                              type: "select",
-                              options: fermentableCategories,
-                              help: "What type of fermentable are you using?",
-                              required: true,
+                  <IngredientListContainer>
+                    {this.state.fermentables.map((fermentable, index) => (
+                      <IngredientInput
+                        for="fermentables"
+                        selectField="fermentable_id"
+                        value={fermentable.fermentable}
+                        key={index}
+                        updateFunction={(value, field) => {
+                          return this.updateIngredient(
+                            value,
+                            "fermentables",
+                            index,
+                            field
+                          );
+                        }}
+                        deleteFunction={() =>
+                          this.deleteIngredient("fermentables", index)
+                        }
+                        createForm={(name, createFunction) => (
+                          <CreateIngredient
+                            name={name}
+                            for="fermentables"
+                            handleCreate={createFunction}
+                            fields={{
+                              brand: {
+                                type: "text",
+                                placeholder: "Briess...",
+                                help: "Brand of Fermentables",
+                                required: false
+                              },
+                              ppg: {
+                                type: "number",
+                                placeholder: "0",
+                                help:
+                                  "Points Per Pound. Usually found on package",
+                                required: true
+                              },
+                              lovibond: {
+                                type: "number",
+                                placeholder: "0",
+                                help:
+                                  "Lovibond degrees to determine color of beer",
+                                required: true
+                              },
+                              category: {
+                                type: "select",
+                                options: fermentableCategories,
+                                help: "What type of fermentable are you using?",
+                                required: true
+                              }
+                            }}
+                          />
+                        )}
+                      >
+                        <div>
+                          <label htmlFor="fermentable_amount">
+                            Amount (lbs)
+                          </label>
+                          <input
+                            type="number"
+                            id="fermentable_amount"
+                            name="amount"
+                            min="0"
+                            style={{ width: "75px", fontSize: "1.7rem" }}
+                            placeholder="0.0lbs"
+                            onChange={e =>
+                              this.updateIngredient(
+                                e.target.value,
+                                "fermentables",
+                                index,
+                                "amount"
+                              )
                             }
-                          }}
-                        />
-                      )}
-                    >
-                      <div>
-                        <label htmlFor="fermentable_amount">Amount (lbs)</label>
-                        <input
-                          type="number"
-                          id="fermentable_amount"
-                          name="amount"
-                          min="0"
-                          style={{ width: "75px", fontSize: "1.7rem" }}
-                          placeholder="0.0lbs"
-                          onChange={e =>
-                            this.updateIngredient(
-                              e.target.value,
-                              "fermentables",
-                              index,
-                              "amount"
-                            )
-                          }
-                          value={this.state.fermentables[index].amount}
-                          required
-                        />
-                      </div>
-                    </IngredientInput>
-                  ))}
+                            value={this.state.fermentables[index].amount}
+                            step="0.1"
+                            required
+                          />
+                        </div>
+                      </IngredientInput>
+                    ))}
+                  </IngredientListContainer>
                 </div>
               </SectionContainer>
               <SectionContainer>
@@ -465,6 +645,7 @@ class CreateRecipe extends Component {
                     <IngredientInput
                       for="hops"
                       selectField="hop_id"
+                      value={hop.hop}
                       key={index}
                       updateFunction={(value, field) =>
                         this.updateIngredient(value, "hops", index, field)
@@ -527,6 +708,7 @@ class CreateRecipe extends Component {
                             )
                           }
                           value={this.state.hops[index].amount}
+                          step="0.1"
                           required
                         />
                       </div>
@@ -577,6 +759,7 @@ class CreateRecipe extends Component {
                     <IngredientInput
                       for="yeasts"
                       selectField="yeast_id"
+                      value={yeast.yeast}
                       key={index}
                       updateFunction={(value, field) =>
                         this.updateIngredient(value, "yeasts", index, field)

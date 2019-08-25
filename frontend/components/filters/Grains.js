@@ -16,6 +16,7 @@ const Grains = (props) => {
                 and: props.react
             }}
             queryFormat="and"
+            showMissing={true}
             />    
         </div>   
     );
