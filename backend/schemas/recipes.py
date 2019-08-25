@@ -2,14 +2,11 @@ from marshmallow import fields
 from ma import ma
 from models.recipes import (
     RecipeModel, RecipeFermentables, RecipeHops, RecipeGrains, RecipeYeasts)
+from schemas.user import UserRecipeSchema, UserSchema
 from schemas.fermentables import FermentablesSchema
 from schemas.hops import HopsSchema
 from schemas.grains import GrainsSchema
 from schemas.yeast import YeastSchema
-
-class RecipeSearchSchema(ma.ModelSchema):
-    pass
-
 
 
 class RecipeFermentablesSchema(ma.ModelSchema):
@@ -64,7 +61,8 @@ class RecipeYeastsSchema(ma.ModelSchema):
 
     class Meta:
         model = RecipeYeasts
-        fields = ("recipe_id", "yeast_id", "yeast", "pitch_temp", "pitch_time")
+        fields = ("recipe_id", "yeast_id", "yeast",
+                  "pitch_temp", "pitch_time","attenuation")
         load_only = ("yeast_id", "recipe_id")
 
 
@@ -79,19 +77,19 @@ class RecipeSchema(ma.ModelSchema):
     hops = fields.Nested(RecipeHopsSchema, many=True)
     grains = fields.Nested(RecipeGrainsSchema, many=True)
     yeasts = fields.Nested(RecipeYeastsSchema, many=True)
+    user = fields.Nested(UserRecipeSchema)
 
     class Meta:
         model = RecipeModel
-        fields = ("id", "name", "user_id",
-                  "target_abv", "fermentables", 
-                  "hops", "grains", "yeasts",
+        fields = ("id", "name", "user_id", "user",
+                  "target_abv", "fermentables",
+                  "hops", "grains", "yeasts", "batch_size",
+                  "efficiency", "boil_time",
                   "target_abv", "actual_abv", "target_og",
-                  "actual_og", "target_fg", "actual_fg", "IBU", "SRM",
-                  "description", "method", "instructions", "private", "style"
+                  "actual_og", "target_fg", "actual_fg", "IBU", "SRM", 
+                  "description", "method", "instructions", "private_recipe", "style", "published", "icon"
                   )
         include_fk = True
-
-
 
 
 recipe_schema = RecipeSchema()

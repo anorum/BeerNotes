@@ -14,11 +14,12 @@ class FermentablesModel(BaseModel, db.Model, SearchableMixin):
                    nullable=False, primary_key=True, default=uuid4)
     brand = db.Column(db.String(80))
     name = db.Column(db.String(80), nullable=False)
-    ppg = db.Column(db.Integer())
-    lovibond = db.Column(db.Float())
-    category = db.Column(db.String(80))
+    ppg = db.Column(db.Integer(), nullable=False)
+    lovibond = db.Column(db.Float(), nullable=False)
+    category = db.Column(db.String(80), nullable=False)
     user_id = db.Column(UUID(as_uuid=True), db.ForeignKey(
         "user.id"), nullable=False)
+    custom = db.Column(db.Boolean(), nullable=False, default=True)
 
     user = db.relationship("UserModel")
 

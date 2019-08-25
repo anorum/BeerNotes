@@ -12,6 +12,8 @@ from flask_jwt_extended import (JWTManager, get_jwt_claims, verify_jwt_in_reques
                                 jwt_refresh_token_required, get_jwt_identity, create_access_token, 
                                 set_access_cookies, unset_jwt_cookies)
 from flask_cors import CORS
+from requests_aws4auth import AWS4Auth
+import boto3
 from elasticsearch import Elasticsearch
 from elasticsearch_dsl import connections
 from elastsearch_schema import Recipe

@@ -13,11 +13,23 @@ class UserSchema(ma.ModelSchema):
     is_admin = fields.Boolean()
     confirmation = fields.Nested(ConfirmationSchema, many=True)
     profile_pic_link = fields.String()
+    username = fields.String()
 
     class Meta:
         model = UserModel
         load_only = ("password",)
         dump_only = ("id", "is_admin", "confirmation")
+
+class UserRecipeSchema(ma.ModelSchema):
+    id = fields.UUID()
+    profile_pic_link = fields.String()
+    username = fields.String()
+
+    class Meta:
+        model = UserModel
+        fields= ("id", "profile_pic_link", "username")
+        dump_only = ("id", "profile_pic_link", "username")
+
 
 
 @pre_dump

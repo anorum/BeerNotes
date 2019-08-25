@@ -17,6 +17,7 @@ class UserModel(db.Model, BaseModel):
     id = db.Column(UUID(as_uuid=True), unique=True,
                    nullable=False, primary_key=True, default=uuid4)
     email = db.Column(db.String(80), nullable=False, unique=True)
+    username= db.Column(db.String(40), nullable=False, unique=True)
     password = db.Column(db.String(128), nullable=False)
     is_admin = db.Column(db.Boolean, nullable=False, default=False)
     profile_pic_link = db.Column(db.String(120))

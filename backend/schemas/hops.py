@@ -5,11 +5,7 @@ from models.hops import HopsModel
 
 class HopsSchema(ma.ModelSchema):
     id = fields.UUID()
-    brand = fields.String()
     name = fields.String()
-    alpha = fields.Float()
-    aroma = fields.String()
-    typical_beer = fields.String()
     hop_type = fields.String()
     user_id = fields.UUID()
 
