@@ -98,8 +98,6 @@ class RecipeCreate(Resource):
         loaded_data.target_abv = ABV(santized_recipe)
         loaded_data.IBU = IBU(santized_recipe)
         loaded_data.SRM = SRM(santized_recipe)
-        print(loaded_data.SRM)
-
         try:
             loaded_data.save_to_db()
         except Exception as e:

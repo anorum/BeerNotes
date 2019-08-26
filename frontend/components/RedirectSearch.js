@@ -1,9 +1,8 @@
 import React, { Component } from "react";
 import styled, { withTheme } from "styled-components";
 import Router from "next/router";
-import CustomReactiveBase from "./CustomReactiveBase"
-import StyledDataSearch from "./styles/StyledDataSearch"
-
+import CustomReactiveBase from "./CustomReactiveBase";
+import StyledDataSearch from "./styles/StyledDataSearch";
 
 class RedirectSearch extends Component {
   pushToRoute(value, cause, source) {
@@ -12,15 +11,7 @@ class RedirectSearch extends Component {
 
   render() {
     return (
-      <CustomReactiveBase
-        app="brewcipes"
-        url="https://2zlp5s1cxj:zxpueqdn44@brewcipes-6393310412.us-west-2.bonsaisearch.net:443"
-        theme={{
-          colors: {
-            primaryColor: this.props.theme.black
-          }
-        }}
-      >
+      <CustomReactiveBase>
         <StyledDataSearch
           componentId="homeSearch"
           dataField={["name"]}
@@ -43,14 +34,9 @@ class RedirectSearch extends Component {
             value: suggestion.source.name,
             source: suggestion.source
           })}
-
           renderNoSuggestion={() => (
-        <div className="search-list">
-            No suggestions found
-        </div>
-    )
-}
-
+            <div className="search-list">No suggestions found</div>
+          )}
         />
       </CustomReactiveBase>
     );

@@ -282,7 +282,7 @@ class CreateRecipe extends Component {
         })
         .catch(err =>
           NotificationManager.error(
-            err.response.message,
+            err.response,
             Object.keys(err.response.data).map(
               field => `${field} : ${err.response.data[field]}`
             ),
