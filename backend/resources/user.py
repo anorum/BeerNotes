@@ -24,6 +24,7 @@ USER_FAILED_TO_CREATE = "An error occurred during creation of account."
 USER_NOT_CONFIRMED = "This user is not confirmed. Please confirm"
 INVALID_LOGIN = "The username or password is incorrect."
 USER_PASSWORD_UPDATED = "Your password has been changed."
+USERNAME_ALREADY_EXISTS = "Account with this username already exists."
 
 
 class UserRegister(Resource):
@@ -33,6 +34,9 @@ class UserRegister(Resource):
         user = user_schema.load(request.get_json())
         if UserModel.find_by_email(user.email.lower()):
             return {"message": USER_ALREADY_EXISTS}, 400
+        
+        if UserModel.find_by_username(user.username.lower()):
+            return {"message": USERNAME_ALREADY_EXISTS}, 400
 
         try:
             user.set_password(user.password)

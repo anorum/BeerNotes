@@ -32,10 +32,9 @@ const ForgotContainer = styled.div`
   justify-content: space-between;
 `;
 
-class SignIn extends Component {
+class Forgot extends Component {
   state = {
     email: "",
-    password: "",
     isLoading: false
   };
 
@@ -45,8 +44,14 @@ class SignIn extends Component {
 
   signIn = async () => {
     const req = await axios
-      .post("/login", JSON.stringify(this.state))
+      .post("/forgot", JSON.stringify(this.state))
       .then(res => {
+        NotificationManager.success(
+          `Email has been sent to ${
+            this.state.email
+          }. Please check to reset password`,
+          "Reset Email Sent"
+        );
         Router.back();
       })
       .catch(err => NotificationManager.error(err.response.data.message));
@@ -57,8 +62,11 @@ class SignIn extends Component {
   render() {
     return (
       <LoginContainer>
-        <h1>Sign In</h1>
-        <h3>Welcome Back</h3>
+        <h1>Reset Your Password</h1>
+        <p>
+          No worries! Enter the email you signed up with below and we'll send
+          you a reset link
+        </p>
         <Form
           style={{ background: "#FFF" }}
           method="post"
@@ -79,25 +87,13 @@ class SignIn extends Component {
                 onChange={this.saveToState}
               />
             </Label>
-            <Label htmlFor="password">
-              Password
-              <Input
-                type="password"
-                name="password"
-                placeholder="password"
-                value={this.state.password}
-                onChange={this.saveToState}
-                required
-              />
-            </Label>
             <div style={{ marginTop: "15px" }}>
               <Button type="submit" background="#FEDD00" color="#FFF">
-                Sign In
+                Send Reset Email
               </Button>
             </div>
             <ForgotContainer>
-              <Link href="/forgot">Forgot Password?</Link>
-              <Link href="/signup">Dont' have an account? Sign Up</Link>
+              <Link href="/login">Back to login</Link>
             </ForgotContainer>
           </fieldset>
         </Form>
@@ -106,4 +102,4 @@ class SignIn extends Component {
   }
 }
 
-export default SignIn;
+export default Forgot;

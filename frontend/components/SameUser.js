@@ -4,7 +4,7 @@ import PropTypes from "prop-types";
 const SameUser = props => {
   return (
     <React.Fragment>
-      {props.currentUserID === props.userID && props.children}
+      {props.currentUser && props.userID && props.currentUser.id === props.userID && props.children}
     </React.Fragment>
   );
 };

@@ -12,6 +12,7 @@ CONFIRMATION_EXPIRED = "This confirmation link has been expired."
 CONFIRMATION_ALREADY_CONFIRMED = "This user has already been confirmed"
 CONFIRMATION_RESEND_SUCCESSFUL = "Confirmation resent successful."
 USER_NOT_FOUND = "This user was not found"
+USER_CONFIRM = "Your account has been confirmed! You can start using Brewcipes."
 
 
 class Confirmation(Resource):
@@ -30,7 +31,7 @@ class Confirmation(Resource):
         confirmation.save_to_db()
 
         headers = {"Content-Type": "text/html"}
-        return make_response(render_template("confirmation_path.html", email=confirmation.user.email), 200, headers)
+        return {"message": USER_CONFIRMED}, 200
 
 
 class ConfirmationByUser(Resource):

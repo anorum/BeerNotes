@@ -34,6 +34,10 @@ class UserModel(db.Model, BaseModel):
         return cls.query.filter_by(email=email).first()
 
     @classmethod
+    def find_by_username(cls, username: str) -> "UserModel":
+        return cls.query.filter_by(username=username).first()
+
+    @classmethod
     def find_by_id(cls, id: int) -> "UserModel":
         return cls.query.filter_by(id=id).first()
 
@@ -61,5 +65,5 @@ class UserModel(db.Model, BaseModel):
         text = f"Please click the link to confirm your registration: {link}"
         html = f"<html>Please click the link to confirm your registration: <a href={link}>link</a></html>"
         msg = Message(subject=subject,
-                      recipients=[self.email], body=text, html=html, sender="welcome-no-reply@norumbeernotes.com")
+                      recipients=[self.email], body=text, html=html, sender="welcome-no-reply@brewcipes.com")
         mail.send(msg)

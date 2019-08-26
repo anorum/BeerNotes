@@ -26,16 +26,18 @@ const ForgotContainer = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
-  height: 80px;
+  height: 60px;
   width: 100%;
   margin-top: 15px;
-  justify-content: space-between;
+  justify-content: flex-end;
 `;
 
-class SignIn extends Component {
+class SignUp extends Component {
   state = {
+    username: "",
     email: "",
     password: "",
+    confirmpassword: "",
     isLoading: false
   };
 
@@ -43,11 +45,13 @@ class SignIn extends Component {
     this.setState({ [e.target.name]: e.target.value });
   };
 
-  signIn = async () => {
+  register = async (e) => {
+    e.preventDefault();
     const req = await axios
-      .post("/login", JSON.stringify(this.state))
+      .post("/register", JSON.stringify(this.state))
       .then(res => {
-        Router.back();
+        NotificationManager.success(`A confirmation email has been sent to ${this.state.email}`, "Success")
+        Router.replace("/")
       })
       .catch(err => NotificationManager.error(err.response.data.message));
 
@@ -57,26 +61,37 @@ class SignIn extends Component {
   render() {
     return (
       <LoginContainer>
-        <h1>Sign In</h1>
-        <h3>Welcome Back</h3>
+        <h1>Create A New Account</h1>
+        <p>
+          Join Brewcipes to start creating, brewing, and sharing great beer
+          recipes!
+        </p>
         <Form
           style={{ background: "#FFF" }}
           method="post"
-          onSubmit={async e => {
-            e.preventDefault();
-            const res = await this.signIn();
-            this.setState({ email: "", password: "" });
-          }}
+          onSubmit={this.register}
         >
           <fieldset>
+          <Label htmlFor="username">
+              Username
+              <Input
+                type="text"
+                name="username"
+                placeholder="Username"
+                value={this.state.username}
+                onChange={this.saveToState}
+                required
+              />
+            </Label>
             <Label htmlFor="email">
               Email
               <Input
                 type="email"
                 name="email"
-                placeholder="email"
+                placeholder="Email"
                 value={this.state.email}
                 onChange={this.saveToState}
+                required
               />
             </Label>
             <Label htmlFor="password">
@@ -84,8 +99,19 @@ class SignIn extends Component {
               <Input
                 type="password"
                 name="password"
-                placeholder="password"
+                placeholder="Password"
                 value={this.state.password}
+                onChange={this.saveToState}
+                required
+              />
+            </Label>
+            <Label htmlFor="password2">
+              Confirm Password
+              <Input
+                type="password"
+                name="password2"
+                placeholder="Retype Your Password"
+                value={this.state.password2}
                 onChange={this.saveToState}
                 required
               />
@@ -96,8 +122,7 @@ class SignIn extends Component {
               </Button>
             </div>
             <ForgotContainer>
-              <Link href="/forgot">Forgot Password?</Link>
-              <Link href="/signup">Dont' have an account? Sign Up</Link>
+              <Link href="/login">Already have an account? Sign In</Link>
             </ForgotContainer>
           </fieldset>
         </Form>
@@ -106,4 +131,4 @@ class SignIn extends Component {
   }
 }
 
-export default SignIn;
+export default SignUp;

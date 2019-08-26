@@ -12,6 +12,7 @@ import {
 import SectionContainer from "./styles/SectionContainer";
 import Ingredient from "./Ingredient";
 import SameUser from "./SameUser";
+import User from "./User"
 
 const RecipeContainer = styled.div`
   box-shadow: 0 0 5px 3px rgba(0, 0, 0, 0.05);
@@ -147,7 +148,7 @@ class SingleRecipe extends React.Component {
             <Style>{style}</Style>
           </Name>
           <ButtonContainer>
-            <SameUser currentUserID={this.props.user.id} userID={user_id}>
+            <SameUser currentUser={this.props.user} userID={user_id}>
               <Status>
                 <DetailLabel>Status</DetailLabel>
                 {published ? "Published" : "Draft"}
@@ -156,7 +157,9 @@ class SingleRecipe extends React.Component {
                 <Add>Edit</Add>
               </Link>
             </SameUser>
-            <Add>Brew It</Add>
+            <User>
+              <Add>Brew It</Add>
+            </User>
           </ButtonContainer>
         </RecipeHeader>
         <Description>{description}</Description>

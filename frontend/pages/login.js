@@ -2,7 +2,7 @@ import SignIn from "../components/SignIn"
 
 const Login = props => {
     return (
-        <div> Please Sign In
+        <div> 
         <SignIn />
         </div>
     )
