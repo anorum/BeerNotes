@@ -36,6 +36,7 @@ from resources.confirmation import Confirmation, ConfirmationByUser
 from resources.image import AvatarUpload, Avatar
 from resources.recipes import RecipesByID, Recipes, RecipeSearch, RecipeCreate, MyRecipes
 from resources.github_login import GithubLogin, GithubAuthorize
+from resources.reset_password import ResetToken, SendResetToken
 from models.user import UserModel
 from models.recipes import RecipeModel, RecipeYeasts, RecipeGrains, RecipeHops, RecipeFermentables
 from schemas.recipes import recipes_schema
@@ -131,7 +132,7 @@ api.add_resource(Fermentables, '/fermentables/')
 api.add_resource(FermentablesCreate, '/fermentables/create')
 api.add_resource(FermentablesByID, '/fermentables/<string:fermentableid>')
 api.add_resource(Confirmation, '/confirm/<string:confirmation_id>')
-api.add_resource(ConfirmationByUser, '/confirmation/user/<string:user_id>')
+api.add_resource(ConfirmationByUser, '/confirm/resend')
 api.add_resource(AvatarUpload, "/upload/profilepicture")
 api.add_resource(Avatar, "/avatar/<string:user_id>")
 api.add_resource(RecipesByID, "/recipe/<string:recipeid>")
@@ -142,6 +143,9 @@ api.add_resource(RecipeSearch, "/recipes/search")
 api.add_resource(GithubLogin, "/login/github")
 api.add_resource(GithubAuthorize, "/login/github/authorized", endpoint="github.authorize")
 api.add_resource(ElasticProxy, "/elastic/<path:path>", defaults={'path': ''})
+api.add_resource(ResetToken, "/reset/<string:reset_id>")
+api.add_resource(SendResetToken, "/resetpassword")
+
 # Refresh token endpoint. This will generate a new access token from
 # the refresh token, but will mark that access token as non-fresh,
 # as we do not actually verify a password in this endpoint.

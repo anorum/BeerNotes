@@ -38,7 +38,7 @@ const AccountMenu = props => {
         <span onClick={logOut}>Log Out</span>
       </User>
       <NotUser>
-        <StyledButton href="/register" alt="sign up">
+        <StyledButton href="/signup" alt="sign up">
           Sign Up
         </StyledButton>
         <StyledButton href="/login" alt="login" clear>

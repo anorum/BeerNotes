@@ -104,7 +104,7 @@ class UserLogin(Resource):
                 resp.status_code = 200
                 return resp
             else:
-                return {"message": USER_NOT_CONFIRMED}
+                return {"message": USER_NOT_CONFIRMED}, 401
         return {"message": INVALID_PASSWORD}, 401
 
 

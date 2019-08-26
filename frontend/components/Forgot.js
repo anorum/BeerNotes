@@ -42,9 +42,9 @@ class Forgot extends Component {
     this.setState({ [e.target.name]: e.target.value });
   };
 
-  signIn = async () => {
+  sendReset = async () => {
     const req = await axios
-      .post("/forgot", JSON.stringify(this.state))
+      .post("/resetpassword", JSON.stringify(this.state))
       .then(res => {
         NotificationManager.success(
           `Email has been sent to ${
@@ -52,7 +52,7 @@ class Forgot extends Component {
           }. Please check to reset password`,
           "Reset Email Sent"
         );
-        Router.back();
+        Router.replace('/');
       })
       .catch(err => NotificationManager.error(err.response.data.message));
 
@@ -72,8 +72,7 @@ class Forgot extends Component {
           method="post"
           onSubmit={async e => {
             e.preventDefault();
-            const res = await this.signIn();
-            this.setState({ email: "", password: "" });
+            const res = await this.sendReset();
           }}
         >
           <fieldset>

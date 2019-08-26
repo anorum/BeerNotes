@@ -37,7 +37,7 @@ const LandingNewUser = props => {
               you need to brew get started with homebrewing and nothing more.
             </h3>
 
-            <StyledButton href="/register" alt="sign up">
+            <StyledButton href="/signup" alt="sign up">
               Sign Up
             </StyledButton>
           </div>

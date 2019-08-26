@@ -32,10 +32,9 @@ const ForgotContainer = styled.div`
   justify-content: space-between;
 `;
 
-class SignIn extends Component {
+class ResendConfirm extends Component {
   state = {
     email: "",
-    password: "",
     isLoading: false
   };
 
@@ -45,8 +44,14 @@ class SignIn extends Component {
 
   signIn = async () => {
     const req = await axios
-      .post("/login", JSON.stringify(this.state))
+      .post("/confirm/resend", JSON.stringify(this.state))
       .then(res => {
+        NotificationManager.success(
+          `If a user exists with ${
+            this.state.email
+          }. We will send you a new confirmation email.`,
+          "Reset Email Sent"
+        );
         Router.back();
       })
       .catch(err => NotificationManager.error(err.response.data.message));
@@ -57,8 +62,10 @@ class SignIn extends Component {
   render() {
     return (
       <LoginContainer>
-        <h1>Sign In</h1>
-        <h3>Welcome Back</h3>
+        <h1>Resend Confirmation Email</h1>
+        <p>
+          Lost your confirmation email? We'll send you a new one right away!
+        </p>
         <Form
           style={{ background: "#FFF" }}
           method="post"
@@ -79,25 +86,13 @@ class SignIn extends Component {
                 onChange={this.saveToState}
               />
             </Label>
-            <Label htmlFor="password">
-              Password
-              <Input
-                type="password"
-                name="password"
-                placeholder="password"
-                value={this.state.password}
-                onChange={this.saveToState}
-                required
-              />
-            </Label>
             <div style={{ marginTop: "15px" }}>
               <Button type="submit" background="#FEDD00" color="#FFF">
-                Sign In
+                Send Confirmation Email
               </Button>
             </div>
             <ForgotContainer>
-              <Link href="/trouble">Having trouble logging in?</Link>
-              <Link href="/signup">Dont' have an account? Sign Up</Link>
+              <Link href="/login">Back to login</Link>
             </ForgotContainer>
           </fieldset>
         </Form>
@@ -106,4 +101,4 @@ class SignIn extends Component {
   }
 }
 
-export default SignIn;
+export default ResendConfirm;

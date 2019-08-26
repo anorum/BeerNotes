@@ -9,6 +9,7 @@ from db import db
 from mail import mail
 from models.basemodel import BaseModel
 from models.confirmation import ConfirmationModel
+from models.resettokens import ResetTokenModel
 
 
 class UserModel(db.Model, BaseModel):
@@ -17,7 +18,7 @@ class UserModel(db.Model, BaseModel):
     id = db.Column(UUID(as_uuid=True), unique=True,
                    nullable=False, primary_key=True, default=uuid4)
     email = db.Column(db.String(80), nullable=False, unique=True)
-    username= db.Column(db.String(40), nullable=False, unique=True)
+    username = db.Column(db.String(40), nullable=False, unique=True)
     password = db.Column(db.String(128), nullable=False)
     is_admin = db.Column(db.Boolean, nullable=False, default=False)
     profile_pic_link = db.Column(db.String(120))
@@ -25,9 +26,17 @@ class UserModel(db.Model, BaseModel):
     confirmation = db.relationship(
         "ConfirmationModel", lazy="dynamic", cascade="all, delete-orphan")
 
+    reset_token = db.relationship(
+        "ResetTokenModel", lazy="dynamic", cascade="all, delete-orphan"
+    )
+
     @property
     def most_recent_confirmation(self) -> "ConfirmationModel":
         return self.confirmation.order_by(db.desc(ConfirmationModel.expire_at)).first()
+    
+    @property
+    def most_recent_reset(self) -> "ResetTokenModel":
+        return self.reset_token.order_by(db.desc(ResetTokenModel.expire_at)).first()
 
     @classmethod
     def find_by_email(cls, email: str) -> "UserModel":
@@ -57,7 +66,7 @@ class UserModel(db.Model, BaseModel):
         return user.is_admin
 
     def send_confirmation_email(self):
-        subject = "Welcome to Beer Notes! Please confirm your email."
+        subject = "Welcome to Brewcipes! Please confirm your email."
         link = request.url_root[:-1] + url_for(
             "confirmation", confirmation_id=self.most_recent_confirmation.id)
         link = "alex.norum.com"
@@ -66,4 +75,16 @@ class UserModel(db.Model, BaseModel):
         html = f"<html>Please click the link to confirm your registration: <a href={link}>link</a></html>"
         msg = Message(subject=subject,
                       recipients=[self.email], body=text, html=html, sender="welcome-no-reply@brewcipes.com")
+        mail.send(msg)
+
+    def send_reset_email(self):
+        subject = "Reset your password for Brewcipes"
+        link = request.url_root[:-1] + url_for(
+            "resettoken", reset_id=self.most_recent_reset.id)
+        link = "alexnorum.com"
+
+        text = f"Please click this link to reset your password: {link}"
+        html = f"<html>Please click the link to reset your password: <a href={link}>link</a></html>"
+        msg = Message(subject=subject,
+                      recipients=[self.email], body=text, html=html, sender="reset-no-reply@brewcipes.com")
         mail.send(msg)

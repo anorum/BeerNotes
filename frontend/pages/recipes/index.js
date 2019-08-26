@@ -15,7 +15,7 @@ const RecipesHome = props => {
         <NotUser>
           <div style={{ alignSelf: "center" }}>
             Sign up for a free account to create recipes!
-            <StyledButton href="/register">Sign Up</StyledButton>
+            <StyledButton href="/signup">Sign Up</StyledButton>
           </div>
         </NotUser>
       </HeaderSection>

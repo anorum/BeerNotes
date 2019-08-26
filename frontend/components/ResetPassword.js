@@ -26,18 +26,16 @@ const ForgotContainer = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
-  height: 60px;
+  height: 80px;
   width: 100%;
   margin-top: 15px;
-  justify-content: flex-end;
+  justify-content: space-between;
 `;
 
-class SignUp extends Component {
+class ResetPassword extends Component {
   state = {
-    username: "",
-    email: "",
     password: "",
-    confirmpassword: "",
+    password2: "",
     isLoading: false
   };
 
@@ -45,13 +43,15 @@ class SignUp extends Component {
     this.setState({ [e.target.name]: e.target.value });
   };
 
-  register = async (e) => {
-    e.preventDefault();
+  resetPassword = async reset_token => {
     const req = await axios
-      .post("/register", JSON.stringify(this.state))
+      .post(`/reset/${reset_token}`, JSON.stringify(this.state))
       .then(res => {
-        NotificationManager.success(`A confirmation email has been sent to ${this.state.email}`, "Success")
-        Router.replace("/")
+        NotificationManager.success(
+          `Your password has been reset!`,
+          "Password Reset"
+        );
+        Router.replace("/login");
       })
       .catch(err => NotificationManager.error(err.response.data.message));
 
@@ -61,68 +61,43 @@ class SignUp extends Component {
   render() {
     return (
       <LoginContainer>
-        <h1>Create A New Account</h1>
-        <p>
-          Join Brewcipes to start creating, brewing, and sharing great beer
-          recipes!
-        </p>
+        <h1>Reset Your Password</h1>
         <Form
           style={{ background: "#FFF" }}
           method="post"
-          onSubmit={this.register}
+          onSubmit={async e => {
+            e.preventDefault();
+            const res = await this.resetPassword(this.props.reset_token);
+          }}
         >
           <fieldset>
-          <Label htmlFor="username">
-              Username
-              <Input
-                type="text"
-                name="username"
-                placeholder="Username"
-                value={this.state.username}
-                onChange={this.saveToState}
-                required
-              />
-            </Label>
             <Label htmlFor="email">
-              Email
-              <Input
-                type="email"
-                name="email"
-                placeholder="Email"
-                value={this.state.email}
-                onChange={this.saveToState}
-                required
-              />
-            </Label>
-            <Label htmlFor="password">
-              Password
+              New Password
               <Input
                 type="password"
                 name="password"
-                placeholder="Password"
+                placeholder="password"
                 value={this.state.password}
                 onChange={this.saveToState}
-                required
               />
             </Label>
-            <Label htmlFor="password2">
-              Confirm Password
+            <Label htmlFor="email">
+              Confirm New Password
               <Input
                 type="password"
                 name="password2"
-                placeholder="Retype Your Password"
-                value={this.state.password2}
+                placeholder="password"
+                value={this.state.password}
                 onChange={this.saveToState}
-                required
               />
             </Label>
             <div style={{ marginTop: "15px" }}>
               <Button type="submit" background="#FEDD00" color="#FFF">
-                Create Your Account
+                Reset Password
               </Button>
             </div>
             <ForgotContainer>
-              <Link href="/login">Already have an account? Sign In</Link>
+              <Link href="/login">Back to login</Link>
             </ForgotContainer>
           </fieldset>
         </Form>
@@ -131,4 +106,4 @@ class SignUp extends Component {
   }
 }
 
-export default SignUp;
+export default ResetPassword;

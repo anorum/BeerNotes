@@ -1,6 +1,6 @@
 from time import time
 
-from flask import make_response, render_template
+from flask import make_response, render_template, request
 from flask_restful import Resource
 
 from models.confirmation import ConfirmationModel
@@ -12,7 +12,7 @@ CONFIRMATION_EXPIRED = "This confirmation link has been expired."
 CONFIRMATION_ALREADY_CONFIRMED = "This user has already been confirmed"
 CONFIRMATION_RESEND_SUCCESSFUL = "Confirmation resent successful."
 USER_NOT_FOUND = "This user was not found"
-USER_CONFIRM = "Your account has been confirmed! You can start using Brewcipes."
+USER_CONFIRMED = "Your account has been confirmed! You can start using Brewcipes."
 
 
 class Confirmation(Resource):
@@ -35,33 +35,21 @@ class Confirmation(Resource):
 
 
 class ConfirmationByUser(Resource):
-    @classmethod
-    def get(self, user_id: str):
-        """Returns confirmation for a given user, used for testing."""
-        user = UserModel.find_by_id(user_id)
-        if not user:
-            return {"message": USER_NOT_FOUND}, 404
-        return (
-            {
-                "current_time": int(time()),
-                "confirmation": [
-                    confirmations_schema.dump(each)
-                    for each in [user.confirmation.order_by(ConfirmationModel.expire_at)]
-                ][0]
-            }
-        )
 
     @classmethod
-    def post(self, user_id: str):
+    def post(self):
         """Resend Confirmation Email"""
-        user = UserModel.find_by_id(user_id)
+        data = request.get_json()
+        email = data['email']
+        user = UserModel.find_by_email(email)
         if not user:
             return {"message": USER_NOT_FOUND}, 404
         try:
+            user_id = user.id
             confirmation = user.most_recent_confirmation
             if confirmation:
                 if confirmation.confirmed:
-                    return {"message": CONFIRMATION_ALREADY_CONFIRMED}
+                    return {"message": CONFIRMATION_ALREADY_CONFIRMED}, 401
                 confirmation.force_to_expire()
             new_confirmation = ConfirmationModel(user_id)
             new_confirmation.save_to_db()
