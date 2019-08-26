@@ -89,6 +89,7 @@ class RecipeSchema(ma.ModelSchema):
                   "actual_og", "target_fg", "actual_fg", "IBU", "SRM", 
                   "description", "method", "instructions", "private_recipe", "style", "published", "icon"
                   )
+        dump_only = ("user",)
         include_fk = True
 
 

@@ -14,7 +14,7 @@ from flask_jwt_extended import (JWTManager, get_jwt_claims, verify_jwt_in_reques
 from flask_cors import CORS
 from requests_aws4auth import AWS4Auth
 import boto3
-from elasticsearch import Elasticsearch
+from elasticsearch import Elasticsearch, RequestsHttpConnection
 from elasticsearch_dsl import connections
 from elastsearch_schema import Recipe
 # Create .env file path.
@@ -40,6 +40,7 @@ from models.user import UserModel
 from models.recipes import RecipeModel, RecipeYeasts, RecipeGrains, RecipeHops, RecipeFermentables
 from schemas.recipes import recipes_schema
 from libs.image_helper import IMAGE_SET
+from resources.elastic_proxy import ElasticProxy
 
 
 
@@ -55,7 +56,7 @@ patch_request_class(app, 10 * 1024 * 1024)
 configure_uploads(app, IMAGE_SET)
 
 
-bonsai = os.environ['BONSAI_URL']
+""" bonsai = os.environ['BONSAI_URL']
 auth = re.search('https\:\/\/(.*)\@', bonsai).group(1).split(':')
 host = bonsai.replace('https://%s:%s@' % (auth[0], auth[1]), '')
 
@@ -69,7 +70,32 @@ es_header = [{
 
 # Instantiate the new Elasticsearch connection:
 app.elasticsearch = Elasticsearch(bonsai)
-connections.create_connection(hosts=[bonsai])
+connections.create_connection(hosts=[bonsai]) """
+
+""" AWS SETUP START """
+
+host = os.environ['AWS_ES_HOST']
+region = os.environ['AWS_REGION']
+
+service = 'es'
+credentials = boto3.Session().get_credentials()
+awsauth = AWS4Auth(credentials.access_key, credentials.secret_key, region, service)
+
+
+app.elasticsearch = Elasticsearch(
+    hosts = [{'host': host, 'port': 443}],
+    http_auth = awsauth,
+    use_ssl = True,
+    verify_certs = True,
+    connection_class = RequestsHttpConnection
+)
+connections.create_connection(hosts = [{'host': host, 'port': 443}],
+    http_auth = awsauth,
+    use_ssl = True,
+    verify_certs = True,
+    connection_class = RequestsHttpConnection)
+
+""" AWS SETUP END """
 
 api = Api(app)
 jwt = JWTManager(app)
@@ -115,6 +141,7 @@ api.add_resource(MyRecipes, "/myrecipes/<int:page>")
 api.add_resource(RecipeSearch, "/recipes/search")
 api.add_resource(GithubLogin, "/login/github")
 api.add_resource(GithubAuthorize, "/login/github/authorized", endpoint="github.authorize")
+api.add_resource(ElasticProxy, "/elastic/<path:path>", defaults={'path': ''})
 # Refresh token endpoint. This will generate a new access token from
 # the refresh token, but will mark that access token as non-fresh,
 # as we do not actually verify a password in this endpoint.

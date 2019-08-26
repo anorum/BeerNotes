@@ -11,6 +11,7 @@ import {
 } from "./styles/IngredientForm";
 import SectionContainer from "./styles/SectionContainer";
 import Ingredient from "./Ingredient";
+import SameUser from "./SameUser";
 
 const RecipeContainer = styled.div`
   box-shadow: 0 0 5px 3px rgba(0, 0, 0, 0.05);
@@ -106,11 +107,11 @@ const DetailLabel = styled.span`
 `;
 
 const Status = styled.div`
-display: flex;
-justify-content: center;
-flex-direction: column;
-font-size: 1.5rem;
-`
+  display: flex;
+  justify-content: center;
+  flex-direction: column;
+  font-size: 1.5rem;
+`;
 
 class SingleRecipe extends React.Component {
   render() {
@@ -142,24 +143,21 @@ class SingleRecipe extends React.Component {
             alt={icon}
           />
           <Name>
-            <h1>{name}</h1> 
+            <h1>{name}</h1>
             <Style>{style}</Style>
           </Name>
           <ButtonContainer>
-            {this.props.user && user_id === this.props.user.id && (
-              <React.Fragment>
+            <SameUser currentUserID={this.props.user.id} userID={user_id}>
               <Status>
-              <DetailLabel>Status</DetailLabel>
-              {published ? "Published": "Draft"}
+                <DetailLabel>Status</DetailLabel>
+                {published ? "Published" : "Draft"}
               </Status>
               <Link href={{ pathname: `/recipes/edit/${id}` }}>
                 <Add>Edit</Add>
               </Link>
-              </React.Fragment>
-            )}
+            </SameUser>
             <Add>Brew It</Add>
           </ButtonContainer>
-          
         </RecipeHeader>
         <Description>{description}</Description>
         <RecipeStats>

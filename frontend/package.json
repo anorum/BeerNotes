@@ -9,6 +9,7 @@
     "@appbaseio/reactivesearch": "^3.0.0-rc.22",
     "@zeit/next-css": "^1.0.1",
     "axios": "^0.19.0",
+    "dotenv": "^8.1.0",
     "immutability-helper": "^3.0.1",
     "js-cookie": "^2.2.0",
     "next": "^9.0.0",
