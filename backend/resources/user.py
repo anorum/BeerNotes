@@ -7,6 +7,7 @@ from flask_jwt_extended import (jwt_required,
                                 create_refresh_token,
                                 get_jwt_claims,
                                 fresh_jwt_required,
+                                jwt_refresh_token_required,
                                 set_access_cookies,
                                 set_refresh_cookies,
                                 get_jwt_identity)
@@ -66,6 +67,18 @@ class GetUser(Resource):
                     return {"message": "Please confirm your user account."}, 400
             else:
                 return None, 400
+
+    @classmethod
+    @jwt_refresh_token_required
+    def post(cls):
+        user_id = get_jwt_identity()
+        new_token = create_access_token(identity=user_id, fresh=False)
+        user = UserModel.find_by_id(user_id)
+        ret = jsonify(user_schema.dump(user))
+        set_access_cookies(ret, new_token)
+        ret.status_code = 200
+        return ret
+
 
 
 

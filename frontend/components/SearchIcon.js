@@ -3,7 +3,7 @@ import React from 'react';
 
 const SearchIcon = (props) => (
             <svg
-            style={{alignSelf: 'center', cursor: 'pointer'}}
+            style={{alignSelf: 'center', cursor: 'pointer', justifySelf: "flex-end", gridArea: "searchicon"}}
             alt="Search"
             height="25"
             xmlns="http://www.w3.org/2000/svg"

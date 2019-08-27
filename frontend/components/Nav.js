@@ -1,10 +1,9 @@
 import React, { useState } from "react";
 import Link from "next/link";
 import styled from "styled-components";
-import AccountMenu from "./AccountMenu";
+
 
 const link_items = [
-  { href: "/search", label: "Search" },
   { href: "/recipes", label: "Recipes" },
   { href: "/hops", label: "Hops" },
   { href: "/fermentables", label: "Fermentables" },
@@ -18,6 +17,7 @@ const links = link_items.map(link => {
 
 const StyledNav = styled.nav`
   display: flex;
+  grid-area: mainnav;
   flex-direction: row;
   align-items: center;
   flex-grow: 2;
@@ -57,6 +57,11 @@ const StyledNav = styled.nav`
       transform: translateY(0px);
     }
   }
+
+  @media only screen and (max-width: ${props => props.theme.desktop}) {
+    font-size: 1.8rem;
+    justify-content: center;
+  }
 `;
 
 const Nav = () => {
@@ -67,7 +72,6 @@ const Nav = () => {
           {label}
         </Link>
       ))}
-      <AccountMenu />
     </StyledNav>
   );
 };

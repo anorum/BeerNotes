@@ -2,7 +2,6 @@ import styled from 'styled-components'
 import { DataSearch } from "@appbaseio/reactivesearch"
 
 const StyledDataSearch = styled(DataSearch)`
-
   .search-input {
     border-radius: 10px;
     font-size: 1.5rem;

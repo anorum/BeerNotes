@@ -5,6 +5,7 @@ const LinkStyle = styled.a`
 cursor: pointer;
 border-radius: 4px;
 min-width: 85px;
+white-space: nowrap;
 text-align: center;
 height: 40px;
 background: #3ecf8e;
@@ -17,7 +18,7 @@ text-transform: uppercase;
 color: #fff;
 transition: all .15s ease;
 font-size: 1.5rem;
-margin: auto 23px;
+margin: auto 0;
 
     :hover {
         box-shadow: 0 7px 14px rgba(50,50,93,.1), 0 3px 6px rgba(0,0,0,.08);

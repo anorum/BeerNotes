@@ -154,10 +154,9 @@ api.add_resource(SendResetToken, "/resetpassword")
 def refresh():
     current_user = get_jwt_identity()
     new_token = create_access_token(identity=current_user, fresh=False)
-    ret = jsonify({'access_token': new_token})
+    ret = jsonify({'user': current_user})
     set_access_cookies(ret, new_token)
     ret.status_code = 200
-
     return ret
 
 @app.route('/logout', methods=['POST'])
