@@ -85,6 +85,14 @@ const Add = styled.button`
 const ButtonContainer = styled.div`
   display: flex;
   margin-left: auto;
+
+  @media screen and (max-width: ${props => props.theme.tablet}) {
+      flex-direction: column-reverse;
+      text-align: center;
+      > * {
+        margin-bottom: 10px;
+      }
+    }
 `;
 
 const RecipeStats = styled.div`
@@ -93,8 +101,10 @@ const RecipeStats = styled.div`
 `;
 
 const Description = styled.div`
-  height: 80px;
+
   padding: 15px;
+  border-bottom: .5px solid ${props => props.theme.lightGrey};
+  margin-bottom: 10px;
 `;
 
 const DetailsContainer = styled.div`

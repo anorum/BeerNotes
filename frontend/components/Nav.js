@@ -57,10 +57,15 @@ const StyledNav = styled.nav`
       transform: translateY(0px);
     }
   }
-
-  @media only screen and (max-width: ${props => props.theme.desktop}) {
-    font-size: 1.8rem;
+  @media only screen and (max-width: ${props => props.theme.mobile}) {
     justify-content: center;
+  }
+
+  @media only screen and (max-width: ${props => props.theme.tablet}) {
+    font-size: 1.8rem;
+    a {
+      margin-left: 0;
+    }
   }
 `;
 

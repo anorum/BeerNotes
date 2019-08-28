@@ -25,10 +25,9 @@ const StyledHeader = styled.header`
     height: 100%;
   }
 
-
   .bar {
     display: grid;
-    grid-template-columns: 150px 1fr 250px auto 250px;
+    grid-template-columns: 125px 1fr 250px auto auto;
     grid-template-areas: "logo mainnav search searchicon account";
     align-items: center;
     height: 100%;
@@ -37,9 +36,15 @@ const StyledHeader = styled.header`
     transition: all 0.6s cubic-bezier(0.785, 0.135, 0.15, 0.86) 0s;
 
     @media only screen and (max-width: ${props => props.theme.desktop}) {
-      grid-template-columns: 150px 1fr 250px;
-      grid-template-rows: 75px auto 1fr;
-      grid-template-areas: "logo searchicon account" "search search search" "mainnav mainnav mainnav" ;
+      grid-template-columns: 125px 1fr 50px auto;
+      grid-template-rows: 75px 1fr;
+      grid-template-areas: "logo mainnav searchicon account" "search search search search";
+    }
+
+    @media only screen and (max-width: ${props => props.theme.tablet}) {
+      grid-template-rows: 55px auto 1fr;
+      grid-template-columns: 125px 1fr auto;
+      grid-template-areas: "logo searchicon account" "search search search" "mainnav mainnav mainnav";
     }
   }
 `;
@@ -50,7 +55,8 @@ const Logo = styled.h1`
   margin-left: 2rem;
   flex-shrink: 1;
   margin: 0px;
-  grid-area: logo a {
+  grid-area: logo; 
+  a {
     padding: 0.5rem 1rem;
     text-decoration: none;
 

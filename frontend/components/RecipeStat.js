@@ -17,6 +17,10 @@ const Stat = styled.div`
   font-weight: 300;
   border-radius: 5%;
   padding: 5px;
+
+  @media screen and (max-width: ${props => props.theme.tablet}) {
+      font-size: 2rem;
+    }
 `;
 const StatHover = styled.div`
 position: absolute;
@@ -46,6 +50,11 @@ box-shadow: ${props => props.theme.bs};
 const Value = styled.span`
     font-size: 2rem;
     margin: 0 0 1rem 0;
+
+    @media screen and (max-width: ${props => props.theme.tablet}) {
+      font-size: 1.7rem;
+    }
+
 `
 
 const RecipeStat = props => {

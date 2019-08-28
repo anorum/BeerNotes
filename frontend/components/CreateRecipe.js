@@ -43,6 +43,27 @@ const ButtonContainer = styled.div`
   display: flex;
   justify-content: flex-end;
   margin-bottom: 2rem;
+  @media screen and (max-width: ${props => props.theme.tablet}) {
+    justify-content: space-around;
+
+    button {
+      margin-left: 0;
+    }
+  }
+`;
+
+const StyleMethodContainer = styled.div`
+  display: flex;
+  align-items: baseline;
+  margin-top: 15px;
+
+  @media screen and (max-width: ${props => props.theme.tablet}) {
+    flex-direction: column;
+    width: 100%;
+    > div {
+      width: 100%;
+    }
+  }
 `;
 
 const NumberInputContainers = styled.div`
@@ -233,7 +254,7 @@ class CreateRecipe extends Component {
   /***   Event Handlers ***/
 
   cancelRecipe = e => {
-    Router.replace("/recipes/");
+    Router.back();
   };
 
   saveRecipe = () => {
@@ -334,36 +355,32 @@ class CreateRecipe extends Component {
   render() {
     return (
       <div>
-      {this.props.edit ? <h1>Edit {this.state.name}</h1> : <h1>New Recipe</h1>}
+        <IngredientHeader className="recipeheader">
+          {this.props.edit ? (
+            <h1>Edit {this.state.name}</h1>
+          ) : (
+            <h1>New Recipe</h1>
+          )}
+          <ButtonContainer>
+            <Add type="button" onClick={this.cancelRecipe} style={{textShadow: "none", background: "#EFEEEE", color: "#706F6A"}}>
+              Cancel
+            </Add>
+            <Add type="button" onClick={this.cancelRecipe} style={{background: "#ED5E67"}}>
+              Delete
+            </Add>
+            <Add type="button" onClick={this.saveRecipe}>
+              Save
+            </Add>
+            <Add type="submit" onClick={this.publishRecipe}>
+              Publish
+            </Add>
+          </ButtonContainer>
+        </IngredientHeader>
         <Form ref={this.form}>
           <fieldset
             disabled={this.state.loading}
             aria-busy={this.state.loading}
           >
-            <ButtonContainer>
-              <Add type="button" onClick={this.cancelRecipe}>
-                Cancel
-              </Add>
-              <Add type="button" onClick={this.saveRecipe}>
-                Save
-              </Add>
-              <Add type="submit" onClick={this.publishRecipe}>
-                {" "}
-                Publish{" "}
-              </Add>
-              <InputContainer>
-                <label htmlFor="private_recipe">Public</label>
-                <Switch
-                  id="private_recipe"
-                  onChange={this.handlePrivateCheck}
-                  checked={!this.state.private_recipe}
-                  uncheckedIcon={false}
-                  checkedIcon={false}
-                  height={24}
-                  width={52}
-                />
-              </InputContainer>
-            </ButtonContainer>
             <div style={{ display: "flex" }}>
               <Dropdown
                 handleChange={this.handleChange}
@@ -379,14 +396,20 @@ class CreateRecipe extends Component {
                 onChange={this.handleChange}
                 required
               />
+              <InputContainer>
+              <label htmlFor="private_recipe">Public</label>
+              <Switch
+                id="private_recipe"
+                onChange={this.handlePrivateCheck}
+                checked={!this.state.private_recipe}
+                uncheckedIcon={false}
+                checkedIcon={false}
+                height={24}
+                width={52}
+              />
+            </InputContainer>
             </div>
-            <div
-              style={{
-                display: "flex",
-                alignItems: "baseline",
-                marginTop: "15px"
-              }}
-            >
+            <StyleMethodContainer>
               <label htmlFor="beerstyle" style={{ margin: "0 10px" }}>
                 Beer Style
               </label>
@@ -447,7 +470,7 @@ class CreateRecipe extends Component {
                   required
                 />
               </div>
-            </div>
+            </StyleMethodContainer>
             <RecipeStats>
               <RecipeStat
                 stat="Original Gravity"

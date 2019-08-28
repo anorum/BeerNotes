@@ -17,8 +17,8 @@ const theme = {
   maxWidth: "95%",
   loadingBarColor: "#FFFFFF",
   bs: "0 12px 24px 0 rgba(0, 0, 0, 0.09)",
-  mobile: "414px",
-  tablet: "834px",
+  mobile: "650px",
+  tablet: "950px",
   desktop: "1200px",
   ultrawide: "1800px"
   

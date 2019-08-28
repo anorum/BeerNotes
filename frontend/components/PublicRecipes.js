@@ -20,6 +20,10 @@ const SearchContainer = styled.div`
   display: grid;
   grid: auto auto / auto 1fr;
   grid-template-areas: "search search" "filters results";
+
+  @media only screen and (max-width: ${props => props.theme.desktop}) {
+    grid-template-areas: "search search" "filters filters" "results results"
+  }
 `;
 
 const SearchBarArea = styled.div`
@@ -37,12 +41,20 @@ const ResultsArea = styled.div`
     display: grid;
     grid: 1fr / 1fr 1fr;
     grid-gap: 20px;
+
+    @media only screen and (max-width: ${props => props.theme.tablet}) {
+      grid: 1fr / 1fr;
+    }
   }
 `;
 
 const RecipeContainer = styled.div`
   width: 95%;
   margin: 0 auto;
+
+  @media screen and (max-width: ${props => props.theme.desktop}) {
+    width: 100%;
+  }
 `;
 
 const PublicRecipes = props => {

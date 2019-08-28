@@ -9,6 +9,15 @@ export const Container = styled.div`
   border-radius: 15px;
   box-shadow: 0 1px 5px rgba(0, 0, 0, 0.1);
   padding: 15px 0;
+
+  @media screen and (max-width: ${props => props.theme.mobile}) {
+    grid-template-columns: auto 0.05fr;
+    grid-template-rows: 50px 1fr;
+
+    & :first-child {
+      grid-column: 1 / -1;
+    }
+  }
 `;
 
 export const ViewContainer = styled.div`
@@ -17,12 +26,19 @@ export const ViewContainer = styled.div`
   grid-template-columns: min-content auto 0.05fr;
   grid-template-rows: 1fr auto;
   padding: 15px 0;
-`
+`;
 
 export const IngredientHeader = styled.div`
   display: flex;
   align-items: center;
   justify-content: space-between;
+
+  &.recipeheader {
+    @media screen and (max-width: ${props => props.theme.mobile}) {
+      flex-direction: column;
+    }
+  }
+
 `;
 
 export const IngredientsContainer = styled.div`
@@ -38,14 +54,13 @@ export const IngredientLogo = styled.div`
 `;
 
 export const IngredientListContainer = styled.div`
-display: grid;
-grid: auto / 1fr 1fr;
+  display: grid;
+  grid: auto / 1fr 1fr;
 
-@media only screen and (max-width: ${props => props.theme.ultrawide}) {
+  @media only screen and (max-width: ${props => props.theme.ultrawide}) {
     grid: 1fr / 1fr;
   }
-
-`
+`;
 
 export const InputsContainer = styled.div`
   display: flex;
@@ -54,7 +69,10 @@ export const InputsContainer = styled.div`
   @media only screen and (max-width: ${props => props.theme.desktop}) {
     flex-direction: column;
   }
-
+  @media only screen and (max-width: ${props => props.theme.mobile}) {
+    flex-direction: row;
+    margin-bottom: 20px;
+  }
 `;
 
 export const InputContainer = styled.div`
@@ -77,7 +95,6 @@ export const IngredientContainer = styled.div`
   border-radius: 15px;
   box-shadow: 0 1px 5px rgba(0, 0, 0, 0.15);
   width: 100%;
-
 `;
 
 export const Wrapper = styled.div`
