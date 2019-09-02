@@ -16,6 +16,7 @@ class UserSchema(ma.ModelSchema):
     profile_pic_link = fields.String()
     username = fields.String()
     reset_token = fields.Nested(ResetTokenSchema, many=True)
+    description = fields.String()
 
     class Meta:
         model = UserModel
@@ -29,8 +30,18 @@ class UserRecipeSchema(ma.ModelSchema):
 
     class Meta:
         model = UserModel
-        fields= ("id", "profile_pic_link", "username")
+        fields= ("id", "profile_pic_link", "username", "description")
         dump_only = ("id", "profile_pic_link", "username")
+
+class UserPrivate(ma.Schema):
+    id = fields.UUID()
+    profile_pic_link = fields.String()
+    username = fields.String()
+
+    class Meta:
+        model = UserModel
+        fields= ("id", "profile_pic_link", "username", "email", "description")
+        dump_only = ("id", "username", "email")
 
 
 
@@ -43,3 +54,5 @@ def _pre_dump(self, user: UserModel):
 
 user_schema = UserSchema()
 users_schema = UserSchema(many=True)
+public_user_schema = UserRecipeSchema()
+private_user_schema = UserPrivate()

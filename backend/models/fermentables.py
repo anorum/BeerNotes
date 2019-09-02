@@ -19,7 +19,7 @@ class FermentablesModel(BaseModel, db.Model, SearchableMixin):
     category = db.Column(db.String(80), nullable=False)
     user_id = db.Column(UUID(as_uuid=True), db.ForeignKey(
         "user.id"), nullable=False)
-    custom = db.Column(db.Boolean(), nullable=False, default=True)
+    custom = db.Column(db.Boolean(), default=True)
 
     user = db.relationship("UserModel")
 

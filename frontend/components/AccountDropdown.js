@@ -1,10 +1,11 @@
-import React, { useContext, useState } from "react";
+import React, { useContext, useState, useRef, useEffect } from "react";
 import styled from "styled-components";
 import PropTypes from "prop-types";
+import Router from "next/router";
+import Link from "next/link";
 import axios from "axios";
 import UserContext from "./UserContext";
 import { NotificationManager } from "react-notifications";
-
 
 const AccountContainer = styled.div`
   position: relative;
@@ -31,7 +32,6 @@ const AccountPic = styled.div`
     border-right: 4px solid transparent;
     border-top-style: solid;
     border-top-width: 4px;
-    content: "";
     display: inline-block;
     height: 0;
     vertical-align: middle;
@@ -41,9 +41,37 @@ const AccountPic = styled.div`
 
 const MenuContainer = styled.div`
   position: absolute;
-  width: 150px;
+  width: 200px;
   background: #fff;
   right: 0px;
+  bottom: -335px;
+  padding: 10px;
+  border-radius: 5px;
+  border: 1px solid #dbdee1;
+
+  a {
+    display: block;
+    cursor: pointer;
+    padding: 4px;
+    &:hover {
+      background: #dbdee1;
+    }
+  }
+
+  ::after {
+    position: absolute;
+    top: -7 px;
+    z-index: 10;
+    right: 5px;
+    content: "";
+    display: inline-block;
+    border-color: #000;
+    width: 0.5em;
+    height: 0.5em;
+    border-left: 6px solid transparent;
+    border-right: 6px solid transparent;
+    border-bottom: 6px solid #fff;
+  }
 `;
 
 const DropdownDivider = styled.div`
@@ -57,6 +85,16 @@ const AccountDropdown = props => {
   const userContext = useContext(UserContext);
   const [showMenu, setShowMenu] = useState(false);
   const user = userContext.user;
+  const node = useRef();
+
+  const handleClick = e => {
+    if (node.current.contains(e.target)) {
+      // inside click
+      return;
+    }
+    // outside click
+    setShowMenu(false);
+  };
 
   const logOut = e => {
     axios
@@ -70,20 +108,74 @@ const AccountDropdown = props => {
       );
   };
 
+  useEffect(() => {
+    document.addEventListener("mousedown", handleClick);
+
+    return () => {
+      document.removeEventListener("mousedown", handleClick);
+    };
+  }, []);
+
   return (
-    <AccountContainer>
+    <AccountContainer ref={node}>
       <AccountPic onClick={() => setShowMenu(!showMenu)}>
-        {user.profile_pic_link ? (
+        {user.profile_pic_link && user.profile_pic_link ? (
           <img src={user.profile_pic_link} alt="profile_pic" />
         ) : (
-          user.username.charAt(0).toUpperCase()
+          user && user.username.charAt(0).toUpperCase()
         )}
       </AccountPic>
       {showMenu && (
         <MenuContainer>
-          Signed In As <span style={{ fontWeight: 700 }}>{user.username}</span>
+          Signed in as <span style={{ fontWeight: 700 }}>{user.username}</span>
           <DropdownDivider />
-          <span onClick={logOut}>Log Out</span>
+          <Link href={`/profile/${user.username}`}>Your Profile</Link>
+          <Link
+            href={{
+              pathname: `/profile/${user.username}`,
+              query: { page: "recipes" }
+            }}
+          >
+            <a>Your Recipes</a>
+          </Link>
+          <Link
+            href={{
+              pathname: `/profile/${user.username}`,
+              query: { page: "hops" }
+            }}
+          >
+            <a>Your Hops</a>
+          </Link>
+          <Link
+            href={{
+              pathname: `/profile/${user.username}`,
+              query: { page: "fermentables" }
+            }}
+          >
+            <a>Your Fermentables</a>
+          </Link>
+          <Link
+            href={{
+              pathname: `/profile/${user.username}`,
+              query: { page: "yeasts" }
+            }}
+          >
+            <a>Your Yeasts</a>
+          </Link>
+          <Link
+            href={{
+              pathname: `/profile/${user.username}`,
+              query: { page: "brewhistory" }
+            }}
+          >
+            <a>Your Brew History</a>
+          </Link>
+          <DropdownDivider />
+          <Link href="/settings/">Account Settings</Link>
+          <DropdownDivider />
+          <Link style={{ cursor: "pointer" }}>
+            <a onClick={logOut}>Log Out</a>
+          </Link>
         </MenuContainer>
       )}
     </AccountContainer>

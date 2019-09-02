@@ -21,6 +21,7 @@ class YeastModel(db.Model, BaseModel, SearchableMixin):
     avg_attenuation = db.Column(db.Integer())
     min_temp = db.Column(db.Integer())
     max_temp = db.Column(db.Integer())
+    custom = db.Column(db.Boolean(), default=True)
     user_id = db.Column(UUID(as_uuid=True), db.ForeignKey(
         "user.id"), nullable=False)
 

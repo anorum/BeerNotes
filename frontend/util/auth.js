@@ -2,6 +2,7 @@ import React, { Component } from "react";
 import nookies from "nookies";
 import nextCookie from "next-cookies";
 import axios from "axios";
+import { NotificationManager } from "react-notifications";
 
 export const auth = async ctx => {
   if (ctx.req) {
@@ -15,11 +16,12 @@ export const auth = async ctx => {
     if (!access_token_cookie) {
       return null;
     }
-
     let user = await axios
       .get("/user", {
         withCredentials: true,
-        cookie: ctx.req.headers.cookie
+        headers: {
+          cookie: ctx.req.headers.cookie || ""
+        }
       })
       .then(res => res.data)
       .catch(err => err.response.data);
@@ -34,12 +36,15 @@ export const auth = async ctx => {
               withCredentials: true,
               headers: {
                 "X-CSRF-TOKEN": csrf_refresh_token,
-                cookie: ctx.req.headers.cookie
+                cookie: ctx.req.headers.cookie || ""
               }
             }
           )
           .then(res => res)
-          .catch(err => err.response.data);
+          .catch(err => {
+            NotificationManager.error(`An error occurred: ${err.message}`);
+            return null;
+          });
       }
       let new_cookies = user.headers["set-cookie"];
       user = user.data;
@@ -64,14 +69,10 @@ export const auth = async ctx => {
 
     return user;
   } else {
-    let {
-      csrf_access_token,
-      csrf_refresh_token
-    } = nextCookie(document.cookie);
-
+    let { csrf_access_token, csrf_refresh_token } = nextCookie(document.cookie);
 
     if (!csrf_access_token) {
-        return null
+      return null;
     }
 
     let user = await axios
@@ -96,7 +97,8 @@ export const auth = async ctx => {
           .catch(err => err.response.data);
       }
     }
+
+    console.log("SWAGBOY", user);
     return user;
   }
-  return null;
 };

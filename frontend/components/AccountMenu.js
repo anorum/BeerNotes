@@ -1,5 +1,4 @@
 import React, { useState, useContext } from "react";
-import Router from "next/router";
 import styled from "styled-components";
 import User from "./User";
 import NotUser from "./NotUser";

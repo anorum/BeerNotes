@@ -1,23 +1,19 @@
-import User from "../../../components/User"
-import CreateRecipe from "../../../components/CreateRecipe"
+import User from "../../../components/User";
+import withAuthSync from "../../../components/withAuthSync";
+import CreateRecipe from "../../../components/CreateRecipe";
 import axios from "axios";
 
 const EditRecipe = props => {
-
-    return (
-    <User>
-        <CreateRecipe recipe={props.recipe} edit={true}/>
-    </User>
-    )
-}
+  return <CreateRecipe recipe={props.recipe} edit={true} user={props.user} />;
+};
 
 EditRecipe.getInitialProps = async ({ req, query: { id } }) => {
-    const recipe = await axios
+  const recipe = await axios
     .get(`/recipe/${id}`)
     .then(res => res.data)
     .catch(err => err.message);
 
-    return { recipe }
-}
+  return { recipe };
+};
 
-export default EditRecipe
+export default withAuthSync(EditRecipe);

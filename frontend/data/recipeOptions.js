@@ -51,8 +51,6 @@ export const hopTypes = [
   }
 ];
 
-export const yeastFormat = ["Dry", "Liquid"];
-
 export const yeastStyle = [
   {
     "label": "Dry",

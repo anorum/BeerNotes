@@ -5,12 +5,21 @@ import Link from "next/link";
 import axios from "axios";
 import { NotificationManager } from "react-notifications";
 import SectionContainer from "./styles/SectionContainer";
-import Form from "./styles/Form";
+import FormStyles from "./styles/FormStyle";
 import Button from "./styles/Button";
+import Formsy from "formsy-react";
+import MyInput from "./MyInput";
 
 const LoginContainer = styled.div`
   max-width: 450px;
   margin: 0 auto;
+`;
+
+const FormStyle = styled(FormStyles)`
+  input {
+    height: 70px;
+    font-size: 1.8rem;
+  }
 `;
 
 const Input = styled.input`
@@ -33,74 +42,94 @@ const ForgotContainer = styled.div`
 `;
 
 class SignIn extends Component {
-  state = {
-    email: "",
-    password: "",
-    isLoading: false
-  };
+  constructor(props) {
+    super(props);
 
+    this.disableButton = this.disableButton.bind(this);
+    this.enableButton = this.enableButton.bind(this);
+    this.state = {
+      email: "",
+      password: "",
+      isLoading: false,
+      canSubmit: false
+    };
+  }
+
+  disableButton() {
+    this.setState({ canSubmit: false });
+  }
+
+  enableButton() {
+    this.setState({ canSubmit: true });
+  }
   saveToState = e => {
     this.setState({ [e.target.name]: e.target.value });
   };
 
-  signIn = async () => {
-    const req = await axios
-      .post("/login", JSON.stringify(this.state))
+  submit(model) {
+    const req = axios
+      .post("/login", JSON.stringify(model))
       .then(res => {
         Router.back();
       })
       .catch(err => NotificationManager.error(err.response.data.message));
 
     return req;
-  };
+  }
 
   render() {
     return (
       <LoginContainer>
         <h1>Sign In</h1>
         <h3>Welcome Back</h3>
-        <Form
-          style={{ background: "#FFF" }}
-          method="post"
-          onSubmit={async e => {
-            e.preventDefault();
-            const res = await this.signIn();
-            this.setState({ email: "", password: "" });
-          }}
-        >
-          <fieldset>
-            <Label htmlFor="email">
-              Email
-              <Input
-                type="email"
-                name="email"
-                placeholder="email"
-                value={this.state.email}
-                onChange={this.saveToState}
-              />
-            </Label>
-            <Label htmlFor="password">
-              Password
-              <Input
-                type="password"
-                name="password"
-                placeholder="password"
-                value={this.state.password}
-                onChange={this.saveToState}
-                required
-              />
-            </Label>
-            <div style={{ marginTop: "15px" }}>
-              <Button type="submit" background="#FEDD00" color="#FFF">
-                Sign In
-              </Button>
-            </div>
-            <ForgotContainer>
-              <Link href="/trouble">Having trouble logging in?</Link>
-              <Link href="/signup">Dont' have an account? Sign Up</Link>
-            </ForgotContainer>
-          </fieldset>
-        </Form>
+
+        <FormStyle>
+          <Formsy
+            style={{ background: "#FFF" }}
+            method="post"
+            onValidSubmit={this.submit}
+            onValid={this.enableButton}
+            onInvalid={this.disableButton}
+          >
+            <fieldset>
+              <Label htmlFor="email">
+                Email
+                <MyInput
+                  type="email"
+                  name="email"
+                  placeholder="Enter your email."
+                  validations={{
+                    isEmail: true
+                  }}
+                  validationError="Please enter a valid email"
+                  value={this.state.email}
+                  onChange={this.saveToState}
+                />
+              </Label>
+              <Label htmlFor="password">
+                Password
+                <MyInput
+                  type="password"
+                  name="password"
+                  placeholder="password"
+                  value={this.state.password}
+                  onChange={this.saveToState}
+                  required
+                  formNoValidate
+                />
+              </Label>
+              <div style={{ marginTop: "15px" }}>
+                <Button type="submit" background="#FEDD00" color="#FFF" disabled={!this.state.canSubmit}>
+                  Sign In
+                </Button>
+              </div>
+              <ForgotContainer>
+                <Link href="/trouble">Having trouble logging in?</Link>
+                <Link href="/signup">Dont' have an account? Sign Up</Link>
+              </ForgotContainer>
+            </fieldset>
+          </Formsy>
+        </FormStyle>
       </LoginContainer>
     );
   }

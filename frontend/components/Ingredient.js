@@ -27,7 +27,8 @@ const Ingredient = props => {
         val.includes("__isNew__") ||
         val.includes("category") ||
         val.includes("hop_type") ||
-        val.includes("yeast_format")
+        val.includes("yeast_format") ||
+        val.includes("custom")
       )
   );
 
@@ -42,7 +43,9 @@ const Ingredient = props => {
         {category || hop_type || yeast_format}
       </Format>
       <Wrapper>
-        <NameContainer><h4>{name}</h4></NameContainer>
+        <NameContainer>
+        <h4>{name}</h4>
+        </NameContainer>
         <DetailsContainer>
           {fieldNames.map(field => (
             <Details key={field}>

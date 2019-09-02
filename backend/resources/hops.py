@@ -5,10 +5,14 @@ from flask_jwt_extended import (jwt_required,
                                 create_refresh_token,
                                 get_jwt_claims,
                                 fresh_jwt_required,
-                                get_jwt_identity)
-
+                                get_jwt_identity,
+                                jwt_optional)
+from sqlalchemy.dialects.postgresql import Any
 from schemas.hops import hop_schema, hops_schema
 from models.hops import HopsModel
+from models.recipes import RecipeModel, RecipeHops
+from models.user import UserModel
+from schemas.recipes import profile_recipe_private, recipes_schema
 from db import db
 
 ERROR_INSERTING = "An error occurred while inserting the hop."
@@ -35,18 +39,27 @@ class Hop(Resource):
         return hop_schema.dump(hop), 201
 
     @classmethod
-    def get(cls, name: str):
-        args = request.args
-        print(args)
-        hops = HopsModel.find_by_name(name)
-        if hops:
-            return hops_schema.dump(hops), 200
-        return {"message": HOPS_NOT_FOUND}, 404
+    @jwt_optional
+    def get(cls, id: str):
+        data = {}
+        user = UserModel.find_by_id(get_jwt_identity())
+        hop = HopsModel.find_by_id(id)
+        all_recipes = RecipeModel.query.filter(RecipeModel.hops.any(
+            RecipeHops.hop_id == id)).filter(RecipeModel.published == True).filter(RecipeModel.private_recipe == False)
+        data["all_recipes"] = recipes_schema.dump(all_recipes)
+        data["hop"] = hop_schema.dump(hop)
+        if user:
+            your_recipes = RecipeModel.query.filter(RecipeModel.hops.any(
+                RecipeHops.hop_id == id)).filter(RecipeModel.user_id == user.id)
+            data["your_recipes"] = recipes_schema.dump(your_recipes)
+        return data, 200
+
 
 class Hops(Resource):
     @classmethod
     def get(cls):
         return hops_schema.dump(HopsModel.query.all())
+
 
 class HopsCreate(Resource):
     @classmethod

@@ -7,7 +7,7 @@ const link_items = [
   { href: "/recipes", label: "Recipes" },
   { href: "/hops", label: "Hops" },
   { href: "/fermentables", label: "Fermentables" },
-  { href: "/yeast", label: "Yeast" }
+  { href: "/yeasts", label: "Yeast" }
 ];
 
 const links = link_items.map(link => {

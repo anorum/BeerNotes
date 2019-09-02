@@ -66,7 +66,6 @@ const Filter = props => {
   };
 
   return (
-    <div>
       <FilterContainer>
         <FilterIcon onClick={() => setShowFilters(!showFilters)}>
           Filters
@@ -98,7 +97,6 @@ const Filter = props => {
           </React.Fragment>
         )}
       </FilterContainer>
-    </div>
   );
 };
 

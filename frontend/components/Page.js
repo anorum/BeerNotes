@@ -14,12 +14,14 @@ const theme = {
   grey: "#3A3A3A",
   lightGrey: "#E1E1E1",
   offWhite: "#EDEDED",
+  invalidRed: "#CB3937",
+  validGreen: "#3ECF8E",
   maxWidth: "95%",
   loadingBarColor: "#FFFFFF",
   bs: "0 12px 24px 0 rgba(0, 0, 0, 0.09)",
   mobile: "650px",
   tablet: "950px",
-  desktop: "1200px",
+  desktop: "1284px",
   ultrawide: "1800px"
   
 };

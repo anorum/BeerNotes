@@ -22,6 +22,7 @@ class UserModel(db.Model, BaseModel):
     password = db.Column(db.String(128), nullable=False)
     is_admin = db.Column(db.Boolean, nullable=False, default=False)
     profile_pic_link = db.Column(db.String(120))
+    description = db.Column(db.String(1000))
 
     confirmation = db.relationship(
         "ConfirmationModel", lazy="dynamic", cascade="all, delete-orphan")

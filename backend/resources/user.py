@@ -3,6 +3,7 @@ import traceback
 from flask_restful import Resource
 from flask import request, jsonify
 from flask_jwt_extended import (jwt_required,
+                                jwt_optional,
                                 create_access_token,
                                 create_refresh_token,
                                 get_jwt_claims,
@@ -14,7 +15,7 @@ from flask_jwt_extended import (jwt_required,
 
 from models.user import UserModel
 from models.confirmation import ConfirmationModel
-from schemas.user import user_schema, users_schema
+from schemas.user import user_schema, users_schema, public_user_schema
 
 USER_ALREADY_EXISTS = "Account with this email already exists."
 USER_REGISTERED = "Account successfully created."
@@ -148,3 +149,4 @@ class SetPassword(Resource):
         # TODO SEND AN EMAIL TO USER THAT THEIR PASSWORD CHANGED.
 
         return {"message": USER_PASSWORD_UPDATED}, 201
+

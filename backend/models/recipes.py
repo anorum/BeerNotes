@@ -2,6 +2,10 @@ from uuid import uuid4
 import datetime
 from db import db
 from models.basemodel import BaseModel
+from models.fermentables import FermentablesModel
+from models.hops import HopsModel
+from models.grains import GrainsModel
+from models.yeast import YeastModel
 from models.searchableMixIn import SearchableMixin
 from sqlalchemy.dialects.postgresql import UUID
 
@@ -12,7 +16,7 @@ class RecipeFermentables(db.Model, BaseModel):
         'recipe.id'), primary_key=True)
     fermentable_id = db.Column(UUID(as_uuid=True), db.ForeignKey(
         'fermentable.id'), primary_key=True)
-    amount = db.Column(db.Float(), nullable=False)
+    amount = db.Column(db.Float(), nullable=False, primary_key=True)
     fermentable = db.relationship("FermentablesModel")
 
 
@@ -25,7 +29,7 @@ class RecipeHops(db.Model, BaseModel):
     hop_id = db.Column(UUID(as_uuid=True), db.ForeignKey(
         'hop.id'), primary_key=True)
     amount = db.Column(db.Float(), nullable=False)
-    hop_schedule = db.Column(db.Integer())
+    hop_schedule = db.Column(db.Integer(), primary_key=True)
     hop = db.relationship("HopsModel")
 
 
@@ -45,7 +49,7 @@ class RecipeYeasts(db.Model, BaseModel):
         'recipe.id'), primary_key=True)
     yeast_id = db.Column(UUID(as_uuid=True), db.ForeignKey(
         'yeast.id'), primary_key=True)
-    pitch_temp = db.Column(db.Integer())
+    pitch_temp = db.Column(db.Integer(), primary_key=True)
     pitch_time = db.Column(db.String(128))
     attenuation = db.Column(db.Integer())
     yeast = db.relationship("YeastModel")
@@ -85,3 +89,4 @@ class RecipeModel(db.Model, BaseModel, SearchableMixin):
     hops = db.relationship("RecipeHops", cascade="all, delete-orphan")
     grains = db.relationship("RecipeGrains", cascade="all, delete-orphan")
     yeasts = db.relationship("RecipeYeasts", cascade="all, delete-orphan")
+

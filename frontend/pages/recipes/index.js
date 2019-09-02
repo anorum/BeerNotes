@@ -1,7 +1,7 @@
 import User from "../../components/User";
 import NotUser from "../../components/NotUser";
 import StyledButton from "../../components/styles/StyledButton";
-import PublicRecipes from "../../components/PublicRecipes";
+import RecipeSearch from "../../components/RecipeSearch";
 import { HeaderSection } from "../../components/styles/PageStyles";
 
 const RecipesHome = props => {
@@ -19,7 +19,7 @@ const RecipesHome = props => {
           </div>
         </NotUser>
       </HeaderSection>
-      <PublicRecipes />
+      <RecipeSearch />
     </div>
   );
 };

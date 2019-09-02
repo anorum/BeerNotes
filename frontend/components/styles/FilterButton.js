@@ -52,6 +52,10 @@ position: relative;
     }
     }
 
+    @media screen and (max-width: ${props => props.theme.tablet}) {
+        font-size: 1.5rem;
+    }
+
 `
 
 export default FilterButton

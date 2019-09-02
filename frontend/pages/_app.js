@@ -17,11 +17,11 @@ axios.defaults.headers.post["Content-Type"] = "application/json";
 class MyApp extends App {
   static async getInitialProps({ Component, ctx }) {
     let pageProps = {};
+    let user = await auth(ctx)
+    
     if (Component.getInitialProps) {
       pageProps = await Component.getInitialProps(ctx);
     }
-    let user = await auth(ctx)
-
     // pageProps.query = ctx.query;
 
     return { pageProps, user };
