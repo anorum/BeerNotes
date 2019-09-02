@@ -7,7 +7,7 @@ import styled from "styled-components"
 
 const HomeGrid = styled.div`
 display: grid;
-grid-template-columns: 65% 1fr;
+grid-template-columns: 100%;
 grid-gap: 20px 20px;
 
 `
@@ -59,9 +59,6 @@ export default class MyRecipes extends Component {
           )
         }
         </div>
-        <div>
-            <h2> Current Brews </h2>
-          </div>
         </HomeGrid>
 
     )

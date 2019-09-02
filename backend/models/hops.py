@@ -18,6 +18,7 @@ class HopsModel(db.Model, BaseModel, SearchableMixin):
     aroma = db.Column(db.String(240))
     typical_beer = db.Column(db.String(240))
     hop_type = db.Column(db.String(80))
+    custom = db.Column(db.Boolean(), default=True)
 
     user_id = db.Column(UUID(as_uuid=True), db.ForeignKey(
         "user.id"), nullable=False)

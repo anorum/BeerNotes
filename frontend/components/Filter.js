@@ -8,6 +8,9 @@ const FilterContainer = styled.div`
   border-bottom: 2px solid #e3e3e3;
   margin-top: 10px;
 
+  transition: all 0.6s cubic-bezier(0.785, 0.135, 0.15, 0.86) 0s;
+
+
   .selected-filters {
     display: flex;
     flex-direction: column;
@@ -19,12 +22,23 @@ const FiltersLabelContainer = styled.div`
   justify-content: space-around;
   flex-direction: column;
   margin-bottom: 1.5rem;
+
+  @media screen and (max-width: ${props => props.theme.desktop}) {
+    flex-direction: row;
+    text-align: center;
+  }
+
 `;
 
 const FilterIcon = styled.span`
   font-size: 1.5rem;
   cursor: pointer;
 `;
+
+const FilterColumn = styled.div`
+display: flex;
+flex-direction: column;
+`
 
 const IndividualFilterContainer = styled.div`
   display: flex;
@@ -35,6 +49,11 @@ const IndividualFilterContainer = styled.div`
     top: -9999px;
     left: -9999px;
   }
+
+  @media screen and (max-width: ${props => props.theme.tablet}) {
+    max-width: 150px;
+  }
+
 
 `;
 
@@ -47,7 +66,6 @@ const Filter = props => {
   };
 
   return (
-    <div>
       <FilterContainer>
         <FilterIcon onClick={() => setShowFilters(!showFilters)}>
           Filters
@@ -60,7 +78,7 @@ const Filter = props => {
                 const { label } = child.props;
 
                 return (
-                  <React.Fragment>
+                  <FilterColumn>
                     <FilterButton
                       label={label}
                       key={label}
@@ -72,14 +90,13 @@ const Filter = props => {
                     <IndividualFilterContainer className={child.props.label !== activeFilter && "hide"}>
                       {child}
                     </IndividualFilterContainer>
-                  </React.Fragment>
+                  </FilterColumn>
                 );
               })}
             </FiltersLabelContainer>
           </React.Fragment>
         )}
       </FilterContainer>
-    </div>
   );
 };
 

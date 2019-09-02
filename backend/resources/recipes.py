@@ -6,6 +6,7 @@ from elasticsearch_dsl import Q
 
 from models.recipes import RecipeModel
 from models.fermentables import FermentablesModel
+from models.user import UserModel
 from schemas.recipes import recipe_schema, recipes_schema, recipe_fermentable_schema, recipe_fermentables_schmea
 from schemas.fermentables import fermentables_schema, fermentable_schema
 from libs.clean_recipe_elastic import clean_recipe_elastic
@@ -82,6 +83,7 @@ class RecipeCreate(Resource):
     def put(cls):
         data = request.get_json()
         data["user_id"] = get_jwt_identity()
+        current_user = UserModel.find_by_id(get_jwt_identity())
         try:
             recipeid = data['id']
         except:
@@ -92,6 +94,8 @@ class RecipeCreate(Resource):
             loaded_data = recipe_schema.load(data, session=db.session)
         else:
             loaded_data = recipe_schema.load(data, instance=recipe)
+            if loaded_data.user_id != current_user.id:
+                return {"message": "You can not edit other users recipes"}, 403
         santized_recipe = recipe_schema.dump(loaded_data)
         loaded_data.target_og = targetGravity(santized_recipe)
         loaded_data.target_fg = finalGravity(santized_recipe)

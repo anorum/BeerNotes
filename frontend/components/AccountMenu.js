@@ -1,50 +1,42 @@
 import React, { useState, useContext } from "react";
-import Router from "next/router";
 import styled from "styled-components";
 import User from "./User";
 import NotUser from "./NotUser";
 import StyledButton from "./styles/StyledButton";
-import SearchMenu from "./SearchMenu";
-import axios from "axios";
-import { NotificationManager } from "react-notifications";
+import AccountDropdown from "./AccountDropdown"
 
 const ProfileContainer = styled.div`
   display: flex;
-  flex: auto;
   justify-content: flex-end;
   margin: 0 3rem !important;
+  grid-area: account;
 `;
+
+const MenuContainer = styled.div`
+display: flex;
+justify-content: space-between;
+`
 
 const AccountMenu = props => {
   const [showDropdown, setDropdown] = useState(false);
 
-  const logOut = e => {
-    axios
-      .post("/logout", {})
-      .then(res => {
-        NotificationManager.success("You have been logged out.", "Logged out");
-        Router.replace("/");
-      })
-      .catch(err =>
-        NotificationManager.error(`An error occurred: ${err.message}`)
-      );
-  };
-
   return (
     <ProfileContainer>
-      <SearchMenu />
+    <MenuContainer>     
       <User>
-        <StyledButton href="/account">Account</StyledButton>
-        <span onClick={logOut}>Log Out</span>
+        <AccountDropdown />
       </User>
       <NotUser>
-        <StyledButton href="/signup" alt="sign up">
+        <div style={{display: "flex", width: "200px", justifyContent: "space-between"}}>
+        <StyledButton href="/login" alt="sign up">
+          Sign In
+        </StyledButton>
+        <StyledButton href="/signup" alt="login" clear>
           Sign Up
         </StyledButton>
-        <StyledButton href="/login" alt="login" clear>
-          Login
-        </StyledButton>
+        </div>
       </NotUser>
+      </MenuContainer>
     </ProfileContainer>
   );
 };

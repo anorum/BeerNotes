@@ -20,6 +20,10 @@ const SearchContainer = styled.div`
   display: grid;
   grid: auto auto / auto 1fr;
   grid-template-areas: "search search" "filters results";
+
+  @media only screen and (max-width: ${props => props.theme.desktop}) {
+    grid-template-areas: "search search" "filters filters" "results results"
+  }
 `;
 
 const SearchBarArea = styled.div`
@@ -37,12 +41,20 @@ const ResultsArea = styled.div`
     display: grid;
     grid: 1fr / 1fr 1fr;
     grid-gap: 20px;
+
+    @media only screen and (max-width: ${props => props.theme.tablet}) {
+      grid: 1fr / 1fr;
+    }
   }
 `;
 
 const RecipeContainer = styled.div`
   width: 95%;
   margin: 0 auto;
+
+  @media screen and (max-width: ${props => props.theme.desktop}) {
+    width: 100%;
+  }
 `;
 
 const PublicRecipes = props => {
@@ -82,7 +94,7 @@ const PublicRecipes = props => {
               componentId="ABV"
               dataField="target_abv"
               label="ABV"
-              react={["RecipeNameSearch", "Fermentables", "RecipeLimit", "Hops", "Yeasts", "ABV"]}
+              react={["RecipeNameSearch"]}
               range={{
                 start: 2,
                 end: 20
@@ -92,9 +104,9 @@ const PublicRecipes = props => {
                 end: `${max}%`
               })}
             />
-            <Fermentables label="Fermentables" react={["RecipeNameSearch", "Fermentables", "RecipeLimit", "Hops", "Yeasts", "ABV"]}/>
-            <Hops label="Hops" react={["RecipeNameSearch", "Fermentables", "RecipeLimit", "Hops", "Yeasts", "ABV"]} />
-            <Yeasts label="Yeasts" react={["RecipeNameSearch", "Fermentables", "RecipeLimit", "Hops", "Yeasts", "ABV"]} />
+            <Fermentables label="Fermentables" react={["RecipeNameSearch"]}/>
+            <Hops label="Hops" react={["RecipeNameSearch"]} />
+            <Yeasts label="Yeasts" react={["RecipeNameSearch"]} />
           </Filter>
         </FilterArea>
         <RecipeContainer>

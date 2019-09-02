@@ -12,7 +12,7 @@ class HopsSchema(ma.ModelSchema):
     class Meta:
         model = HopsModel
         fields = ("id", "brand", "name", "alpha", "aroma",
-                  "typical_beer", "hop_type", "user_id")
+                  "typical_beer", "hop_type", "user_id", "custom")
         include_fk = True
         dump_only = ('id',)
 

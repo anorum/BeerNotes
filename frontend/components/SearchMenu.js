@@ -6,14 +6,13 @@ const SearchMenu = props => {
   const [showSearch, setSearch] = useState(false);
 
   const toggleSearch = () => {
-    console.log(showSearch)
     setSearch(!showSearch)
   }
 
   return (
     <React.Fragment>
       {showSearch && (
-        <div onBlur={toggleSearch} style={{ margin: "0 3rem" }}>
+        <div onBlur={toggleSearch} style={{minWidth: "250px",gridArea: "search" }}>
           <RedirectSearch />
         </div>
       )}
@@ -21,7 +20,8 @@ const SearchMenu = props => {
           <SearchIcon
           tabIndex="0"
           role="button"
-          onFocus={toggleSearch} />
+          onFocus={toggleSearch}
+          />
       )}
     </React.Fragment>
   );

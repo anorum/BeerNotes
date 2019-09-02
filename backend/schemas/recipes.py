@@ -2,7 +2,7 @@ from marshmallow import fields
 from ma import ma
 from models.recipes import (
     RecipeModel, RecipeFermentables, RecipeHops, RecipeGrains, RecipeYeasts)
-from schemas.user import UserRecipeSchema, UserSchema
+from schemas.user import UserRecipeSchema, UserSchema, UserPrivate
 from schemas.fermentables import FermentablesSchema
 from schemas.hops import HopsSchema
 from schemas.grains import GrainsSchema
@@ -17,7 +17,8 @@ class RecipeFermentablesSchema(ma.ModelSchema):
     class Meta:
         model = RecipeFermentables
         fields = ("recipe_id", "fermentable_id", "amount", "fermentable")
-        load_only = ("fermentable_id", "recipe_id")
+        dump_only = ("fermentable",)
+        load_only = ("recipe_id",)
 
 
 recipe_fermentable_schema = RecipeFermentablesSchema()
@@ -32,7 +33,8 @@ class RecipeHopsSchema(ma.ModelSchema):
     class Meta:
         model = RecipeHops
         fields = ("recipe_id", "hop_id", "amount", "hop_schedule", "hop")
-        load_only = ("hop_id", "recipe_id")
+        dump_only = ("hop",)
+        load_only = ("recipe_id",)
 
 
 recipe_hop_schema = RecipeHopsSchema()
@@ -47,7 +49,8 @@ class RecipeGrainsSchema(ma.ModelSchema):
     class Meta:
         model = RecipeGrains
         fields = ("recipe_id", "grain_id", "amount", "grain")
-        load_only = ("grain_id", "recipe_id")
+        dump_only = ("grain",)
+        load_only = ("recipe_id",)
 
 
 recipe_grain_schema = RecipeGrainsSchema()
@@ -62,8 +65,9 @@ class RecipeYeastsSchema(ma.ModelSchema):
     class Meta:
         model = RecipeYeasts
         fields = ("recipe_id", "yeast_id", "yeast",
-                  "pitch_temp", "pitch_time","attenuation")
-        load_only = ("yeast_id", "recipe_id")
+                  "pitch_temp", "pitch_time", "attenuation")
+        dump_only = ("yeast",)
+        load_only = ("recipe_id",)
 
 
 recipe_yeast_schema = RecipeYeastsSchema()
@@ -86,12 +90,37 @@ class RecipeSchema(ma.ModelSchema):
                   "hops", "grains", "yeasts", "batch_size",
                   "efficiency", "boil_time",
                   "target_abv", "actual_abv", "target_og",
-                  "actual_og", "target_fg", "actual_fg", "IBU", "SRM", 
+                  "actual_og", "target_fg", "actual_fg", "IBU", "SRM",
                   "description", "method", "instructions", "private_recipe", "style", "published", "icon"
                   )
         dump_only = ("user",)
         include_fk = True
 
 
+class ProfileSchemaPublic(ma.Schema):
+    recipes = fields.Nested(RecipeSchema, many=True)
+    user = fields.Nested(UserRecipeSchema)
+    hops = fields.Nested(HopsSchema, many=True)
+    fermentables = fields.Nested(FermentablesSchema, many=True)
+    yeasts = fields.Nested(YeastSchema, many=True)
+
+    class Meta:
+        include_fk = True
+
+
+class ProfileSchemaPrivate(ma.Schema):
+    recipes = fields.Nested(RecipeSchema, many=True)
+    user = fields.Nested(UserPrivate)
+    hops = fields.Nested(HopsSchema, many=True)
+    fermentables = fields.Nested(FermentablesSchema, many=True)
+    yeasts = fields.Nested(YeastSchema, many=True)
+
+    class Meta:
+        include_fk = True
+
+
 recipe_schema = RecipeSchema()
 recipes_schema = RecipeSchema(many=True)
+
+profile_recipe_public = ProfileSchemaPublic()
+profile_recipe_private = ProfileSchemaPrivate()

@@ -27,8 +27,10 @@ import {
   IngredientsContainer,
   IngredientLogo
 } from "./styles/IngredientForm";
+import User from "./User";
 import { NotificationManager } from "react-notifications";
 import axios from "axios";
+import Error from "next/error";
 
 const Name = styled.input`
   border-bottom: 1px solid black;
@@ -43,6 +45,33 @@ const ButtonContainer = styled.div`
   display: flex;
   justify-content: flex-end;
   margin-bottom: 2rem;
+  @media screen and (max-width: ${props => props.theme.tablet}) {
+    justify-content: flex-end;
+    flex-wrap: wrap;
+
+    button {
+      margin-left: 0;
+      margin-top: 10px;
+    }
+  }
+
+  @media screen and (max-width: ${props => props.theme.mobile}) {
+    justify-content: space-around;
+  }
+`;
+
+const StyleMethodContainer = styled.div`
+  display: flex;
+  align-items: baseline;
+  margin-top: 15px;
+
+  @media screen and (max-width: ${props => props.theme.tablet}) {
+    flex-direction: column;
+    width: 100%;
+    > div {
+      width: 100%;
+    }
+  }
 `;
 
 const NumberInputContainers = styled.div`
@@ -233,19 +262,16 @@ class CreateRecipe extends Component {
   /***   Event Handlers ***/
 
   cancelRecipe = e => {
-    Router.replace("/recipes/");
+    Router.back();
   };
 
-  saveRecipe = () => {
+  saveRecipe = (e, message) => {
     axios
       .put("/recipe/create", this.state)
       .then(res => {
-        this.setState({
-          id: res.data.id
-        });
         NotificationManager.success(
-          `Recipe ${res.data.name} has been saved.`,
-          "Recipe Saved."
+          message || `Recipe ${res.data.name} has been saved.`,
+          message ? "Recipe Unpublished" : "Recipe Saved."
         );
       })
       .catch(err =>
@@ -260,6 +286,11 @@ class CreateRecipe extends Component {
           }
         )
       );
+  };
+
+  unpublishRecipe = async () => {
+    await this.setState({ published: false });
+    this.saveRecipe(null, "Recipe Unpublished and Saved.");
   };
 
   publishRecipe = async e => {
@@ -333,538 +364,574 @@ class CreateRecipe extends Component {
 
   render() {
     return (
-      <div>
-      {this.props.edit ? <h1>Edit {this.state.name}</h1> : <h1>New Recipe</h1>}
-        <Form ref={this.form}>
-          <fieldset
-            disabled={this.state.loading}
-            aria-busy={this.state.loading}
-          >
-            <ButtonContainer>
-              <Add type="button" onClick={this.cancelRecipe}>
-                Cancel
-              </Add>
-              <Add type="button" onClick={this.saveRecipe}>
-                Save
-              </Add>
-              <Add type="submit" onClick={this.publishRecipe}>
-                {" "}
-                Publish{" "}
-              </Add>
-              <InputContainer>
-                <label htmlFor="private_recipe">Public</label>
-                <Switch
-                  id="private_recipe"
-                  onChange={this.handlePrivateCheck}
-                  checked={!this.state.private_recipe}
-                  uncheckedIcon={false}
-                  checkedIcon={false}
-                  height={24}
-                  width={52}
-                />
-              </InputContainer>
-            </ButtonContainer>
-            <div style={{ display: "flex" }}>
-              <Dropdown
-                handleChange={this.handleChange}
-                icon={this.state.icon}
-              />
-              <Name
-                type="text"
-                id="name"
-                name="name"
-                placeholder="Recipe Name"
-                required
-                value={this.state.name}
-                onChange={this.handleChange}
-                required
-              />
-            </div>
-            <div
-              style={{
-                display: "flex",
-                alignItems: "baseline",
-                marginTop: "15px"
-              }}
-            >
-              <label htmlFor="beerstyle" style={{ margin: "0 10px" }}>
-                Beer Style
-              </label>
-              <div style={{ flexGrow: "1" }}>
-                <Select
-                  id="beerstyle"
-                  name="style"
-                  options={beerStyles}
-                  getOptionLabel={option => option.label}
-                  getOptionValue={option => option.value}
-                  formatOptionLabel={option => option.label}
-                  placeholder={"Select Beer Style..."}
-                  onChange={(value, { action }) => {
-                    action !== "clear"
-                      ? this.setState({ style: value.value })
-                      : this.setState({ style: null });
+      <User>
+        {this.props.edit && this.props.recipe.user_id !== this.props.user.id ? (
+          <Error
+            statusCode={403}
+            title={"You can not edit someone elses recipe"}
+          />
+        ) : (
+          <React.Fragment>
+            <IngredientHeader className="recipeheader">
+              <div>
+                {this.props.edit ? (
+                  <h1>Edit {this.state.name}</h1>
+                ) : (
+                  <h1>New Recipe</h1>
+                )}
+                <span>{this.state.published ? "Published" : "Draft"}</span>
+              </div>
+
+              <ButtonContainer>
+                <Add
+                  type="button"
+                  onClick={this.cancelRecipe}
+                  style={{
+                    textShadow: "none",
+                    background: "#EFEEEE",
+                    color: "#706F6A"
                   }}
-                  isClearable
-                  value={beerStyles.filter(
-                    ({ value }) => value === this.state.style
-                  )}
-                />
-                <input
-                  tabIndex={-1}
-                  autoComplete="off"
-                  style={{ opacity: 0, height: 0 }}
-                  value={this.state.style}
+                >
+                  Cancel
+                </Add>
+                <Add
+                  type="button"
+                  onClick={this.cancelRecipe}
+                  style={{ background: "#ED5E67" }}
+                >
+                  Delete
+                </Add>
+                {this.state.published && (
+                  <Add
+                    type="button"
+                    onClick={this.unpublishRecipe}
+                    style={{ background: "#ED5E67" }}
+                  >
+                    Unpublish
+                  </Add>
+                )}
+                <Add type="button" onClick={this.saveRecipe}>
+                  Save
+                </Add>
+                <Add type="submit" onClick={this.publishRecipe}>
+                  Publish
+                </Add>
+              </ButtonContainer>
+            </IngredientHeader>
+            <Form ref={this.form}>
+              <fieldset
+                disabled={this.state.loading}
+                aria-busy={this.state.loading}
+              >
+                <div style={{ display: "flex" }}>
+                  <Dropdown
+                    handleChange={this.handleChange}
+                    icon={this.state.icon}
+                  />
+                  <Name
+                    type="text"
+                    id="name"
+                    name="name"
+                    placeholder="Recipe Name"
+                    required
+                    value={this.state.name}
+                    onChange={this.handleChange}
+                    required
+                  />
+                  <InputContainer>
+                    <label htmlFor="private_recipe">Public</label>
+                    <Switch
+                      id="private_recipe"
+                      onChange={this.handlePrivateCheck}
+                      checked={!this.state.private_recipe}
+                      uncheckedIcon={false}
+                      checkedIcon={false}
+                      height={24}
+                      width={52}
+                    />
+                  </InputContainer>
+                </div>
+                <StyleMethodContainer>
+                  <label htmlFor="beerstyle" style={{ margin: "0 10px" }}>
+                    Beer Style
+                  </label>
+                  <div style={{ flexGrow: "1" }}>
+                    <Select
+                      id="beerstyle"
+                      name="style"
+                      options={beerStyles}
+                      getOptionLabel={option => option.label}
+                      getOptionValue={option => option.value}
+                      formatOptionLabel={option => option.label}
+                      placeholder={"Select Beer Style..."}
+                      onChange={(value, { action }) => {
+                        action !== "clear"
+                          ? this.setState({ style: value.value })
+                          : this.setState({ style: null });
+                      }}
+                      isClearable
+                      value={beerStyles.filter(
+                        ({ value }) => value === this.state.style
+                      )}
+                    />
+                    <input
+                      tabIndex={-1}
+                      autoComplete="off"
+                      style={{ opacity: 0, height: 0 }}
+                      value={this.state.style}
+                      required
+                    />
+                  </div>
+                  <label htmlFor="brewmethod" style={{ margin: "0 10px" }}>
+                    Brew Method
+                  </label>
+                  <div style={{ flexGrow: "1" }}>
+                    <Select
+                      id="brewmethod"
+                      name="method"
+                      options={methods}
+                      getOptionLabel={option => option.label}
+                      getOptionValue={option => option.value}
+                      formatOptionLabel={option => option.value}
+                      placeholder={"Select Method..."}
+                      onChange={(value, { action }) => {
+                        action !== "clear"
+                          ? this.setState({ method: value.value })
+                          : this.setState({ method: null });
+                      }}
+                      isClearable
+                      value={methods.filter(
+                        ({ value }) => value === this.state.method
+                      )}
+                    />
+                    <input
+                      tabIndex={-1}
+                      autoComplete="off"
+                      style={{ opacity: 0, height: 0 }}
+                      value={this.state.method}
+                      required
+                    />
+                  </div>
+                </StyleMethodContainer>
+                <RecipeStats>
+                  <RecipeStat
+                    stat="Original Gravity"
+                    value={this.targetGravity()}
+                  />
+                  <RecipeStat
+                    stat="Final Gravity"
+                    value={this.finalGravity()}
+                  />
+                  <RecipeStat
+                    stat="Alchohol By Volume"
+                    value={this.ABV()}
+                    unit="%"
+                  />
+                  <RecipeStat
+                    stat="International Bittering Units"
+                    value={this.IBU()}
+                  />
+                  <RecipeStat
+                    background={srmToHex(this.SRM())}
+                    color={this.SRM() > 13 && "white"}
+                    stat="Standard Reference Method"
+                    value={this.SRM()}
+                  />
+                </RecipeStats>
+                <Description
+                  type="textarea"
+                  id="description"
+                  name="description"
+                  placeholder="Description"
+                  required
+                  value={this.state.description}
+                  onChange={this.handleChange}
                   required
                 />
-              </div>
-              <label htmlFor="brewmethod" style={{ margin: "0 10px" }}>
-                Brew Method
-              </label>
-              <div style={{ flexGrow: "1" }}>
-                <Select
-                  id="brewmethod"
-                  name="method"
-                  options={methods}
-                  getOptionLabel={option => option.label}
-                  getOptionValue={option => option.value}
-                  formatOptionLabel={option => option.value}
-                  placeholder={"Select Method..."}
-                  onChange={(value, { action }) => {
-                    action !== "clear"
-                      ? this.setState({ method: value.value })
-                      : this.setState({ method: null });
-                  }}
-                  isClearable
-                  value={methods.filter(
-                    ({ value }) => value === this.state.method
-                  )}
-                />
-                <input
-                  tabIndex={-1}
-                  autoComplete="off"
-                  style={{ opacity: 0, height: 0 }}
-                  value={this.state.method}
-                  required
-                />
-              </div>
-            </div>
-            <RecipeStats>
-              <RecipeStat
-                stat="Original Gravity"
-                value={this.targetGravity()}
-              />
-              <RecipeStat stat="Final Gravity" value={this.finalGravity()} />
-              <RecipeStat
-                stat="Alchohol By Volume"
-                value={this.ABV()}
-                unit="%"
-              />
-              <RecipeStat
-                stat="International Bittering Units"
-                value={this.IBU()}
-              />
-              <RecipeStat
-                background={srmToHex(this.SRM())}
-                color={this.SRM() > 13 && "white"}
-                stat="Standard Reference Method"
-                value={this.SRM()}
-              />
-            </RecipeStats>
-            <Description
-              type="textarea"
-              id="description"
-              name="description"
-              placeholder="Description"
-              required
-              value={this.state.description}
-              onChange={this.handleChange}
-              required
-            />
-            <NumberInputContainers>
-              <label htmlFor="boil_time">Boil Time</label>
+                <NumberInputContainers>
+                  <label htmlFor="boil_time">Boil Time</label>
 
-              <NumberInput
-                id="boil_time"
-                type="number"
-                min="0"
-                name="boil_time"
-                value={this.state.boil_time}
-                onChange={this.handleChange}
-                placeholder="0 mins"
-                required
-              />
-              <label htmlFor="batch_size">Batch Size</label>
+                  <NumberInput
+                    id="boil_time"
+                    type="number"
+                    min="0"
+                    name="boil_time"
+                    value={this.state.boil_time}
+                    onChange={this.handleChange}
+                    placeholder="0 mins"
+                    required
+                  />
+                  <label htmlFor="batch_size">Batch Size</label>
 
-              <NumberInput
-                id="batch_size"
-                type="number"
-                min="0"
-                name="batch_size"
-                value={this.state.batch_size}
-                onChange={this.handleChange}
-                placeholder="0.0lbs"
-                required
-                step="0.1"
-              />
+                  <NumberInput
+                    id="batch_size"
+                    type="number"
+                    min="0"
+                    name="batch_size"
+                    value={this.state.batch_size}
+                    onChange={this.handleChange}
+                    placeholder="0.0lbs"
+                    required
+                    step="0.1"
+                  />
 
-              <label htmlFor="efficiency">Efficiency</label>
+                  <label htmlFor="efficiency">Efficiency</label>
 
-              <NumberInput
-                id="efficiency"
-                type="number"
-                min="0"
-                name="efficiency"
-                value={this.state.efficiency}
-                onChange={this.handleChange}
-                placeholder="0%"
-                step="0.1"
-                required
-              />
-            </NumberInputContainers>
-            <IngredientsContainer>
-              <SectionContainer>
-                <div>
-                  <IngredientHeader>
-                    <IngredientLogo>
-                      <img
-                        id="logo"
-                        src="../../static/IngredientLogos/grain.svg"
-                        alt="grain"
-                      />
-                      <h2>Fermentables</h2>
-                    </IngredientLogo>
-                    <Add
-                      type="button"
-                      onClick={() => this.addIngredient("fermentables")}
-                    >
-                      Add Fermentable
-                    </Add>
-                  </IngredientHeader>
-                  <IngredientListContainer>
-                    {this.state.fermentables.map((fermentable, index) => (
-                      <IngredientInput
-                        for="fermentables"
-                        selectField="fermentable_id"
-                        value={fermentable.fermentable}
-                        key={index}
-                        updateFunction={(value, field) => {
-                          return this.updateIngredient(
-                            value,
-                            "fermentables",
-                            index,
-                            field
-                          );
-                        }}
-                        deleteFunction={() =>
-                          this.deleteIngredient("fermentables", index)
-                        }
-                        createForm={(name, createFunction) => (
-                          <CreateIngredient
-                            name={name}
-                            for="fermentables"
-                            handleCreate={createFunction}
-                            fields={{
-                              brand: {
-                                type: "text",
-                                placeholder: "Briess...",
-                                help: "Brand of Fermentables",
-                                required: false
-                              },
-                              ppg: {
-                                type: "number",
-                                placeholder: "0",
-                                help:
-                                  "Points Per Pound. Usually found on package",
-                                required: true
-                              },
-                              lovibond: {
-                                type: "number",
-                                placeholder: "0",
-                                help:
-                                  "Lovibond degrees to determine color of beer",
-                                required: true
-                              },
-                              category: {
-                                type: "select",
-                                options: fermentableCategories,
-                                help: "What type of fermentable are you using?",
-                                required: true
-                              }
-                            }}
+                  <NumberInput
+                    id="efficiency"
+                    type="number"
+                    min="0"
+                    name="efficiency"
+                    value={this.state.efficiency}
+                    onChange={this.handleChange}
+                    placeholder="0%"
+                    step="0.1"
+                    required
+                  />
+                </NumberInputContainers>
+                <IngredientsContainer>
+                  <SectionContainer>
+                    <div>
+                      <IngredientHeader>
+                        <IngredientLogo>
+                          <img
+                            id="logo"
+                            src="../../static/IngredientLogos/grain.svg"
+                            alt="grain"
                           />
-                        )}
-                      >
-                        <div>
-                          <label htmlFor="fermentable_amount">
-                            Amount (lbs)
-                          </label>
-                          <input
-                            type="number"
-                            id="fermentable_amount"
-                            name="amount"
-                            min="0"
-                            style={{ width: "75px", fontSize: "1.7rem" }}
-                            placeholder="0.0lbs"
-                            onChange={e =>
-                              this.updateIngredient(
-                                e.target.value,
+                          <h2>Fermentables</h2>
+                        </IngredientLogo>
+                        <Add
+                          type="button"
+                          onClick={() => this.addIngredient("fermentables")}
+                        >
+                          Add Fermentable
+                        </Add>
+                      </IngredientHeader>
+                      <IngredientListContainer>
+                        {this.state.fermentables.map((fermentable, index) => (
+                          <IngredientInput
+                            for="fermentables"
+                            selectField="fermentable_id"
+                            value={fermentable.fermentable}
+                            key={index}
+                            updateFunction={(value, field) => {
+                              return this.updateIngredient(
+                                value,
                                 "fermentables",
                                 index,
-                                "amount"
-                              )
+                                field
+                              );
+                            }}
+                            deleteFunction={() =>
+                              this.deleteIngredient("fermentables", index)
                             }
-                            value={this.state.fermentables[index].amount}
-                            step="0.1"
-                            required
+                            createForm={(name, createFunction) => (
+                              <CreateIngredient
+                                name={name}
+                                for="fermentables"
+                                handleCreate={createFunction}
+                                fields={{
+                                  brand: {
+                                    type: "text",
+                                    placeholder: "Briess...",
+                                    help: "Brand of Fermentables",
+                                    required: false
+                                  },
+                                  ppg: {
+                                    type: "number",
+                                    placeholder: "0",
+                                    help:
+                                      "Points Per Pound. Usually found on package",
+                                    required: true
+                                  },
+                                  lovibond: {
+                                    type: "number",
+                                    placeholder: "0",
+                                    help:
+                                      "Lovibond degrees to determine color of beer",
+                                    required: true
+                                  },
+                                  category: {
+                                    type: "select",
+                                    options: fermentableCategories,
+                                    help:
+                                      "What type of fermentable are you using?",
+                                    required: true
+                                  }
+                                }}
+                              />
+                            )}
+                          >
+                            <div>
+                              <label htmlFor="fermentable_amount">
+                                Amount (lbs)
+                              </label>
+                              <input
+                                type="number"
+                                id="fermentable_amount"
+                                name="amount"
+                                min="0"
+                                style={{ width: "75px", fontSize: "1.7rem" }}
+                                placeholder="0.0lbs"
+                                onChange={e =>
+                                  this.updateIngredient(
+                                    e.target.value,
+                                    "fermentables",
+                                    index,
+                                    "amount"
+                                  )
+                                }
+                                value={this.state.fermentables[index].amount}
+                                step="0.1"
+                                required
+                              />
+                            </div>
+                          </IngredientInput>
+                        ))}
+                      </IngredientListContainer>
+                    </div>
+                  </SectionContainer>
+                  <SectionContainer>
+                    <div>
+                      <IngredientHeader>
+                        <IngredientLogo>
+                          <img
+                            id="logo"
+                            src="../../static/IngredientLogos/hop.svg"
+                            alt="hops"
                           />
-                        </div>
-                      </IngredientInput>
-                    ))}
-                  </IngredientListContainer>
-                </div>
-              </SectionContainer>
-              <SectionContainer>
-                <div>
-                  <IngredientHeader>
-                    <IngredientLogo>
-                      <img
-                        id="logo"
-                        src="../../static/IngredientLogos/hop.svg"
-                        alt="hops"
-                      />
-                      <h2>Hops</h2>
-                    </IngredientLogo>
-                    <Add
-                      type="button"
-                      onClick={() => this.addIngredient("hops")}
-                    >
-                      Add Hops
-                    </Add>
-                  </IngredientHeader>
-                  {this.state.hops.map((hop, index) => (
-                    <IngredientInput
-                      for="hops"
-                      selectField="hop_id"
-                      value={hop.hop}
-                      key={index}
-                      updateFunction={(value, field) =>
-                        this.updateIngredient(value, "hops", index, field)
-                      }
-                      deleteFunction={() =>
-                        this.deleteIngredient("hops", index)
-                      }
-                      createForm={(name, createFunction) => (
-                        <CreateIngredient
+                          <h2>Hops</h2>
+                        </IngredientLogo>
+                        <Add
+                          type="button"
+                          onClick={() => this.addIngredient("hops")}
+                        >
+                          Add Hops
+                        </Add>
+                      </IngredientHeader>
+                      {this.state.hops.map((hop, index) => (
+                        <IngredientInput
                           for="hops"
-                          name={name}
-                          handleCreate={createFunction}
-                          fields={{
-                            aroma: {
-                              type: "text",
-                              placeholder: "Sweet",
-                              help: "What is the aroma of the hops?",
-                              required: false
-                            },
-                            alpha: {
-                              type: "number",
-                              placeholder: "2.7",
-                              help:
-                                "Alpha Acid Units. This can usually be found on package",
-                              required: true
-                            },
-                            typical_beer: {
-                              type: "select",
-                              placeholder: "Saison",
-                              help: "What beer is this typically used on?",
-                              options: beerStyles,
-                              required: true
-                            },
-                            hop_type: {
-                              type: "select",
-                              placeholder: "Pellet",
-                              help: "What form is the hop in? Pellet",
-                              options: hopTypes,
-                              required: true
-                            }
-                          }}
-                        />
-                      )}
-                    >
-                      <div>
-                        <label htmlFor="hops_amount">Amount (oz)</label>
-                        <input
-                          type="number"
-                          id="hops"
-                          name="amount"
-                          min="0"
-                          style={{ width: "75px", fontSize: "1.7rem" }}
-                          placeholder="0.0oz"
-                          onChange={e =>
-                            this.updateIngredient(
-                              e.target.value,
-                              "hops",
-                              index,
-                              "amount"
-                            )
+                          selectField="hop_id"
+                          value={hop.hop}
+                          key={index}
+                          updateFunction={(value, field) =>
+                            this.updateIngredient(value, "hops", index, field)
                           }
-                          value={this.state.hops[index].amount}
-                          step="0.1"
-                          required
-                        />
-                      </div>
-                      <div>
-                        <label htmlFor="hops_schedule">Hop Schedule</label>
-                        <input
-                          type="number"
-                          id="hops"
-                          min="0"
-                          name="hops_schedule"
-                          style={{ width: "75px", fontSize: "1.7rem" }}
-                          placeholder="0 mins"
-                          onChange={e =>
-                            this.updateIngredient(
-                              e.target.value,
-                              "hops",
-                              index,
-                              "hop_schedule"
-                            )
+                          deleteFunction={() =>
+                            this.deleteIngredient("hops", index)
                           }
-                          value={this.state.hops[index].hop_schedule}
-                          required
-                        />
-                      </div>
-                    </IngredientInput>
-                  ))}
-                </div>
-              </SectionContainer>
-              <SectionContainer>
-                <div>
-                  <IngredientHeader>
-                    <IngredientLogo>
-                      <img
-                        id="logo"
-                        src="../../static/IngredientLogos/yeast.svg"
-                        alt="yeast"
-                      />
-                      <h2>Yeasts</h2>
-                    </IngredientLogo>
-                    <Add
-                      type="button"
-                      onClick={() => this.addIngredient("yeasts")}
-                    >
-                      Add Yeast
-                    </Add>
-                  </IngredientHeader>
-                  {this.state.yeasts.map((yeast, index) => (
-                    <IngredientInput
-                      for="yeasts"
-                      selectField="yeast_id"
-                      value={yeast.yeast}
-                      key={index}
-                      updateFunction={(value, field) =>
-                        this.updateIngredient(value, "yeasts", index, field)
-                      }
-                      deleteFunction={() =>
-                        this.deleteIngredient("yeasts", index)
-                      }
-                      createForm={(name, createFunction) => (
-                        <CreateIngredient
+                          createForm={(name, createFunction) => (
+                            <CreateIngredient
+                              for="hops"
+                              name={name}
+                              handleCreate={createFunction}
+                              fields={{
+                                aroma: {
+                                  type: "text",
+                                  placeholder: "Sweet",
+                                  help: "What is the aroma of the hops?",
+                                  required: false
+                                },
+                                alpha: {
+                                  type: "number",
+                                  placeholder: "2.7",
+                                  step: "0.1",
+                                  help:
+                                    "Alpha Acid Units. This can usually be found on package",
+                                  required: true
+                                },
+                                typical_beer: {
+                                  type: "select",
+                                  placeholder: "Saison",
+                                  help: "What beer is this typically used on?",
+                                  options: beerStyles,
+                                  required: true
+                                },
+                                hop_type: {
+                                  type: "select",
+                                  placeholder: "Pellet",
+                                  help: "What form is the hop in? Pellet",
+                                  options: hopTypes,
+                                  required: true
+                                }
+                              }}
+                            />
+                          )}
+                        >
+                          <div>
+                            <label htmlFor="hops_amount">Amount (oz)</label>
+                            <input
+                              type="number"
+                              id="hops"
+                              name="amount"
+                              min="0"
+                              style={{ width: "75px", fontSize: "1.7rem" }}
+                              placeholder="0.0oz"
+                              onChange={e =>
+                                this.updateIngredient(
+                                  e.target.value,
+                                  "hops",
+                                  index,
+                                  "amount"
+                                )
+                              }
+                              value={this.state.hops[index].amount}
+                              step="0.1"
+                              required
+                            />
+                          </div>
+                          <div>
+                            <label htmlFor="hops_schedule">Hop Schedule</label>
+                            <input
+                              type="number"
+                              id="hops"
+                              min="0"
+                              name="hops_schedule"
+                              style={{ width: "75px", fontSize: "1.7rem" }}
+                              placeholder="0 mins"
+                              onChange={e =>
+                                this.updateIngredient(
+                                  e.target.value,
+                                  "hops",
+                                  index,
+                                  "hop_schedule"
+                                )
+                              }
+                              value={this.state.hops[index].hop_schedule}
+                              required
+                            />
+                          </div>
+                        </IngredientInput>
+                      ))}
+                    </div>
+                  </SectionContainer>
+                  <SectionContainer>
+                    <div>
+                      <IngredientHeader>
+                        <IngredientLogo>
+                          <img
+                            id="logo"
+                            src="../../static/IngredientLogos/yeast.svg"
+                            alt="yeast"
+                          />
+                          <h2>Yeasts</h2>
+                        </IngredientLogo>
+                        <Add
+                          type="button"
+                          onClick={() => this.addIngredient("yeasts")}
+                        >
+                          Add Yeast
+                        </Add>
+                      </IngredientHeader>
+                      {this.state.yeasts.map((yeast, index) => (
+                        <IngredientInput
                           for="yeasts"
-                          name={name}
-                          handleCreate={createFunction}
-                          fields={{
-                            brand: {
-                              type: "text",
-                              placeholder: "WyEast",
-                              help: "What brand is the yeast you are using?",
-                              required: true
-                            },
-                            yeast_format: {
-                              type: "select",
-                              help: "What form is the yeast you are using?",
-                              options: yeastFormat,
-                              required: true
-                            },
-                            style: {
-                              type: "select",
-                              help: "What style of yeast are you using?",
-                              options: yeastStyle,
-                              required: true
-                            },
-                            min_temp: {
-                              type: "number",
-                              placeholder: "0°F",
-                              help:
-                                "What is the minimum fermenting temp of the yeast"
-                            },
-                            max_temp: {
-                              type: "number",
-                              placeholder: "0°F",
-                              help:
-                                "What is the maximum fermenting temp of the yeast"
-                            },
-                            avg_attenuation: {
-                              type: "number",
-                              placeholder: "70%",
-                              help:
-                                "What is the average attenutation percentage?",
-                              default_value: 70,
-                              required: true
-                            }
-                          }}
-                        />
-                      )}
-                    >
-                      <div>
-                        <label htmlFor="pitch_temp">Pitch Temp</label>
-                        <input
-                          type="number"
-                          id="pitch_temp"
-                          min="0"
-                          name="pitch_temp"
-                          style={{ width: "75px", fontSize: "1.7rem" }}
-                          placeholder="64°F"
-                          onChange={e =>
-                            this.updateIngredient(
-                              e.target.value,
-                              "yeasts",
-                              index,
-                              "pitch_temp"
-                            )
+                          selectField="yeast_id"
+                          value={yeast.yeast}
+                          key={index}
+                          updateFunction={(value, field) =>
+                            this.updateIngredient(value, "yeasts", index, field)
                           }
-                          value={this.state.yeasts[index].pitch_temp}
-                          required
-                        />
-                      </div>
-                      <div>
-                        <label htmlFor="attenuation">Attenuation</label>
-                        <input
-                          type="number"
-                          id="attenuation"
-                          min="0"
-                          name="attenuation"
-                          style={{ width: "75px", fontSize: "1.7rem" }}
-                          placeholder="70%"
-                          onChange={e =>
-                            this.updateIngredient(
-                              e.target.value,
-                              "yeasts",
-                              index,
-                              "attenuation"
-                            )
+                          deleteFunction={() =>
+                            this.deleteIngredient("yeasts", index)
                           }
-                          value={this.state.yeasts[index].attenuation}
-                          required
-                        />
-                      </div>
-                    </IngredientInput>
-                  ))}
-                </div>
-              </SectionContainer>
-            </IngredientsContainer>
-          </fieldset>
-        </Form>
-      </div>
+                          createForm={(name, createFunction) => (
+                            <CreateIngredient
+                              for="yeasts"
+                              name={name}
+                              handleCreate={createFunction}
+                              fields={{
+                                brand: {
+                                  type: "text",
+                                  placeholder: "WyEast",
+                                  help:
+                                    "What brand is the yeast you are using?",
+                                  required: true
+                                },
+                                yeast_format: {
+                                  type: "select",
+                                  help: "What style of yeast are you using?",
+                                  options: yeastStyle,
+                                  required: true
+                                },
+                                min_temp: {
+                                  type: "number",
+                                  placeholder: "0°F",
+                                  help:
+                                    "What is the minimum fermenting temp of the yeast"
+                                },
+                                max_temp: {
+                                  type: "number",
+                                  placeholder: "0°F",
+                                  help:
+                                    "What is the maximum fermenting temp of the yeast"
+                                },
+                                avg_attenuation: {
+                                  type: "number",
+                                  placeholder: "70%",
+                                  help:
+                                    "What is the average attenutation percentage?",
+                                  default_value: 70,
+                                  required: true
+                                }
+                              }}
+                            />
+                          )}
+                        >
+                          <div>
+                            <label htmlFor="pitch_temp">Pitch Temp</label>
+                            <input
+                              type="number"
+                              id="pitch_temp"
+                              min="0"
+                              name="pitch_temp"
+                              style={{ width: "75px", fontSize: "1.7rem" }}
+                              placeholder="64°F"
+                              onChange={e =>
+                                this.updateIngredient(
+                                  e.target.value,
+                                  "yeasts",
+                                  index,
+                                  "pitch_temp"
+                                )
+                              }
+                              value={this.state.yeasts[index].pitch_temp}
+                              required
+                            />
+                          </div>
+                          <div>
+                            <label htmlFor="attenuation">Attenuation</label>
+                            <input
+                              type="number"
+                              id="attenuation"
+                              min="0"
+                              name="attenuation"
+                              style={{ width: "75px", fontSize: "1.7rem" }}
+                              placeholder="70%"
+                              onChange={e =>
+                                this.updateIngredient(
+                                  e.target.value,
+                                  "yeasts",
+                                  index,
+                                  "attenuation"
+                                )
+                              }
+                              value={this.state.yeasts[index].attenuation}
+                              required
+                            />
+                          </div>
+                        </IngredientInput>
+                      ))}
+                    </div>
+                  </SectionContainer>
+                </IngredientsContainer>
+              </fieldset>
+            </Form>
+          </React.Fragment>
+        )}
+      </User>
     );
   }
 }

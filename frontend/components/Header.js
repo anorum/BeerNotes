@@ -3,6 +3,8 @@ import Link from "next/link";
 import Router from "next/router";
 import NProgress from "nprogress";
 import Nav from "./Nav";
+import AccountMenu from "./AccountMenu";
+import SearchMenu from "./SearchMenu";
 
 Router.onRouteChangeStart = () => {
   NProgress.start();
@@ -15,19 +17,35 @@ Router.onRouteChangeError = () => {
 };
 
 const StyledHeader = styled.header`
-    position: sticky;
-    top: -1px;
-    z-index: 20;
-    height: 73px;
-    
+  position: sticky;
+  top: -1px;
+  z-index: 20;
+  height: 73px;
+  @media only screen and (max-width: ${props => props.theme.desktop}) {
+    height: 100%;
+  }
 
   .bar {
-    display: flex;
+    display: grid;
+    grid-template-columns: 125px 1fr 250px auto auto;
+    grid-template-areas: "logo mainnav search searchicon account";
     align-items: center;
     height: 100%;
     padding: 0px 2%;
     background-color: ${props => props.theme.mainColor};
     transition: all 0.6s cubic-bezier(0.785, 0.135, 0.15, 0.86) 0s;
+
+    @media only screen and (max-width: ${props => props.theme.desktop}) {
+      grid-template-columns: 125px 1fr 50px auto;
+      grid-template-rows: 75px 1fr;
+      grid-template-areas: "logo mainnav searchicon account" "search search search search";
+    }
+
+    @media only screen and (max-width: ${props => props.theme.tablet}) {
+      grid-template-rows: 55px auto 1fr;
+      grid-template-columns: 125px 1fr auto;
+      grid-template-areas: "logo searchicon account" "search search search" "mainnav mainnav mainnav";
+    }
   }
 `;
 
@@ -37,7 +55,7 @@ const Logo = styled.h1`
   margin-left: 2rem;
   flex-shrink: 1;
   margin: 0px;
-
+  grid-area: logo; 
   a {
     padding: 0.5rem 1rem;
     text-decoration: none;
@@ -57,6 +75,8 @@ const Header = () => (
         </Link>
       </Logo>
       <Nav />
+      <SearchMenu />
+      <AccountMenu />
     </div>
   </StyledHeader>
 );

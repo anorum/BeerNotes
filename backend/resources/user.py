@@ -3,17 +3,19 @@ import traceback
 from flask_restful import Resource
 from flask import request, jsonify
 from flask_jwt_extended import (jwt_required,
+                                jwt_optional,
                                 create_access_token,
                                 create_refresh_token,
                                 get_jwt_claims,
                                 fresh_jwt_required,
+                                jwt_refresh_token_required,
                                 set_access_cookies,
                                 set_refresh_cookies,
                                 get_jwt_identity)
 
 from models.user import UserModel
 from models.confirmation import ConfirmationModel
-from schemas.user import user_schema, users_schema
+from schemas.user import user_schema, users_schema, public_user_schema
 
 USER_ALREADY_EXISTS = "Account with this email already exists."
 USER_REGISTERED = "Account successfully created."
@@ -66,6 +68,18 @@ class GetUser(Resource):
                     return {"message": "Please confirm your user account."}, 400
             else:
                 return None, 400
+
+    @classmethod
+    @jwt_refresh_token_required
+    def post(cls):
+        user_id = get_jwt_identity()
+        new_token = create_access_token(identity=user_id, fresh=False)
+        user = UserModel.find_by_id(user_id)
+        ret = jsonify(user_schema.dump(user))
+        set_access_cookies(ret, new_token)
+        ret.status_code = 200
+        return ret
+
 
 
 
@@ -135,3 +149,4 @@ class SetPassword(Resource):
         # TODO SEND AN EMAIL TO USER THAT THEIR PASSWORD CHANGED.
 
         return {"message": USER_PASSWORD_UPDATED}, 201
+

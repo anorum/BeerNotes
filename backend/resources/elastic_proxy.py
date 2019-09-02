@@ -1,4 +1,5 @@
 from flask import request, current_app
+import time
 from flask_restful import Resource
 
 class ElasticProxy(Resource):

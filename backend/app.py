@@ -28,6 +28,7 @@ from db import db
 from mail import mail
 from oa import oauth
 from resources.user import UserRegister, UsersList, UserLogin, UserDelete, SetPassword, GetUser
+from resources.profile_data import  UserProfile
 from resources.grains import Grains
 from resources.fermentables import Fermentable, Fermentables, FermentablesCreate, FermentablesByID
 from resources.hops import Hop, HopsSearch, Hops, HopsCreate
@@ -56,8 +57,29 @@ app.config["PROPAGATE_EXCEPTIONS"] = True
 patch_request_class(app, 10 * 1024 * 1024)
 configure_uploads(app, IMAGE_SET)
 
+""" APPBASE SETUP"""
 
-""" bonsai = os.environ['BONSAI_URL']
+""" appbase = os.environ['APPBASE_URL']
+auth = os.environ['APPBASE_API_ADMIN'].split(':')
+host = "https://" + os.environ['APPBASE_API_ADMIN'] + "@" + appbase
+
+print(host)
+# Connect to cluster over SSL using auth for best security:
+es_header = [{
+ 'host': host,
+ 'port': 443,
+ #'use_ssl': True,
+ #'http_auth': (auth[0],auth[1])
+}]
+
+# Instantiate the new Elasticsearch connection:
+app.elasticsearch = Elasticsearch(host)
+connections.create_connection(hosts=[host]) """
+
+
+""" Bonsai Setup """
+
+bonsai = os.environ['BONSAI_URL']
 auth = re.search('https\:\/\/(.*)\@', bonsai).group(1).split(':')
 host = bonsai.replace('https://%s:%s@' % (auth[0], auth[1]), '')
 
@@ -71,11 +93,11 @@ es_header = [{
 
 # Instantiate the new Elasticsearch connection:
 app.elasticsearch = Elasticsearch(bonsai)
-connections.create_connection(hosts=[bonsai]) """
+connections.create_connection(hosts=[bonsai])
 
 """ AWS SETUP START """
 
-host = os.environ['AWS_ES_HOST']
+""" host = os.environ['AWS_ES_HOST']
 region = os.environ['AWS_REGION']
 
 service = 'es'
@@ -94,7 +116,7 @@ connections.create_connection(hosts = [{'host': host, 'port': 443}],
     http_auth = awsauth,
     use_ssl = True,
     verify_certs = True,
-    connection_class = RequestsHttpConnection)
+    connection_class = RequestsHttpConnection) """
 
 """ AWS SETUP END """
 
@@ -118,16 +140,16 @@ api.add_resource(GetUser, '/user')
 api.add_resource(UserLogin, '/login')
 api.add_resource(UserDelete, '/deregister')
 api.add_resource(SetPassword, '/user/resetpassword')
-api.add_resource(Hop, '/hop/<string:name>')
+api.add_resource(Hop, '/hop/<string:id>')
 api.add_resource(Hops, '/hops/')
 api.add_resource(HopsCreate, '/hops/create')
 api.add_resource(HopsSearch, '/hop/search')
-api.add_resource(Yeast, '/yeast/<string:name>')
+api.add_resource(Yeast, '/yeast/<string:id>')
 api.add_resource(YeastSearch, '/yeast/search')
 api.add_resource(Yeasts, '/yeasts/')
 api.add_resource(YeastsCreate, '/yeasts/create')
 api.add_resource(Grains, '/grains/<string:name>')
-api.add_resource(Fermentable, '/fermentables/<string:fermentableid>')
+api.add_resource(Fermentable, '/fermentable/<string:id>')
 api.add_resource(Fermentables, '/fermentables/')
 api.add_resource(FermentablesCreate, '/fermentables/create')
 api.add_resource(FermentablesByID, '/fermentables/<string:fermentableid>')
@@ -145,6 +167,7 @@ api.add_resource(GithubAuthorize, "/login/github/authorized", endpoint="github.a
 api.add_resource(ElasticProxy, "/elastic/<path:path>", defaults={'path': ''})
 api.add_resource(ResetToken, "/reset/<string:reset_id>")
 api.add_resource(SendResetToken, "/resetpassword")
+api.add_resource(UserProfile, "/user/<string:username>")
 
 # Refresh token endpoint. This will generate a new access token from
 # the refresh token, but will mark that access token as non-fresh,
@@ -154,10 +177,9 @@ api.add_resource(SendResetToken, "/resetpassword")
 def refresh():
     current_user = get_jwt_identity()
     new_token = create_access_token(identity=current_user, fresh=False)
-    ret = jsonify({'access_token': new_token})
+    ret = jsonify({'user': current_user})
     set_access_cookies(ret, new_token)
     ret.status_code = 200
-
     return ret
 
 @app.route('/logout', methods=['POST'])

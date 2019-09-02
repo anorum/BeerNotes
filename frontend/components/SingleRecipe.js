@@ -85,6 +85,14 @@ const Add = styled.button`
 const ButtonContainer = styled.div`
   display: flex;
   margin-left: auto;
+
+  @media screen and (max-width: ${props => props.theme.tablet}) {
+      flex-direction: column-reverse;
+      text-align: center;
+      > * {
+        margin-bottom: 10px;
+      }
+    }
 `;
 
 const RecipeStats = styled.div`
@@ -93,8 +101,10 @@ const RecipeStats = styled.div`
 `;
 
 const Description = styled.div`
-  height: 80px;
+
   padding: 15px;
+  border-bottom: .5px solid ${props => props.theme.lightGrey};
+  margin-bottom: 10px;
 `;
 
 const DetailsContainer = styled.div`
@@ -112,6 +122,7 @@ const Status = styled.div`
   justify-content: center;
   flex-direction: column;
   font-size: 1.5rem;
+  margin-right: 20px;
 `;
 
 class SingleRecipe extends React.Component {
@@ -132,7 +143,8 @@ class SingleRecipe extends React.Component {
       fermentables,
       hops,
       yeasts,
-      published
+      published,
+      private_recipe
     } = this.props.recipe;
     return (
       <RecipeContainer>
@@ -151,7 +163,11 @@ class SingleRecipe extends React.Component {
             <SameUser currentUser={this.props.user} userID={user_id}>
               <Status>
                 <DetailLabel>Status</DetailLabel>
-                {published ? "Published" : "Draft"}
+                {published ? "Published" : "Draft"}    
+              </Status>
+              <Status>
+              <DetailLabel>Privacy</DetailLabel>
+              {private_recipe ? "Private" : "Public"}
               </Status>
               <Link href={{ pathname: `/recipes/edit/${id}` }}>
                 <Add>Edit</Add>

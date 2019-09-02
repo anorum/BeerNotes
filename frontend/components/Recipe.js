@@ -37,11 +37,10 @@ const RecipeName = styled.div`
 `;
 
 const BrewEditContainer = styled.div`
-grid-area: brewit;
-display: flex;
-align-content: center;
-
-`
+  grid-area: brewit;
+  display: flex;
+  align-content: center;
+`;
 
 const StatContainer = styled.div`
   display: flex;
@@ -66,9 +65,14 @@ const Style = styled.div`
 `;
 
 const UserInfo = styled.div`
-padding: 5px;
-grid-area: userinfo
-`
+  padding: 5px;
+  grid-area: userinfo;
+  display: flex;
+  flex-direction: column;
+  > * {
+    margin-top: 5px;
+  }
+`;
 
 const Recipe = props => {
   const {
@@ -82,13 +86,12 @@ const Recipe = props => {
     target_fg,
     target_abv,
     method,
-    IBU
+    IBU,
+    published,
+    private_recipe
   } = props.recipe;
 
-  const {
-    username,
-    profile_pic_link
-  } = props.recipe.user
+  const { username, profile_pic_link } = props.recipe.user;
 
   const Name = styled.div`
     h2 {
@@ -111,7 +114,7 @@ const Recipe = props => {
         )} 130px, rgb(255, 255, 255) 0%)`
       }}
     >
-      <Link href="recipes/[id]" as={`/recipes/${id}`}>
+      <Link href={`/recipes/${id}`} as={`/recipes/${id}`}>
         <RecipeDetails>
           <BeerIcons
             style={{
@@ -134,7 +137,9 @@ const Recipe = props => {
             </div>
           </RecipeName>
           <UserInfo>
-              {username}
+            <span>{username} </span>
+            <span>{published ? "Published" : "Draft"}</span>
+            <span>{private_recipe ? "Private" : "Public"}</span>
           </UserInfo>
           <StatContainer style={{ background: "white", marginLeft: "-10px" }}>
             <RecipeStat

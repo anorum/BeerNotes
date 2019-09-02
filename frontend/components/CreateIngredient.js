@@ -32,6 +32,7 @@ const Container = styled.div`
 
 const Name = styled.input`
   font-size: 2rem;
+  width: 100%;
 `;
 
 class CreateIngredient extends Component {
@@ -95,7 +96,11 @@ class CreateIngredient extends Component {
               background: color[this.props.for](this.state.lovibond),
               color: this.state.lovibond >= 13 && "white"
             }}
-          />
+          >
+            Create{" "}
+            {this.props.for.charAt(0).toUpperCase() +
+              this.props.for.substring(1, this.props.for.length - 1)}
+          </Format>
           <CreateWrapper>
             <NameContainer style={{ borderBottom: "0px" }}>
               <h4>
@@ -154,6 +159,7 @@ class CreateIngredient extends Component {
                         id={field}
                         placeholder={fields[field].placeholder}
                         {...(fields[field].type === "number" ? { min: 0 } : {})}
+                        {...(fields[field].type === "number" ? {step: fields[field].step || 1} : {})}
                         name={field}
                         value={this.state.field}
                         onChange={(e, v) => this.handleChange(e, "swag")}
@@ -171,11 +177,10 @@ class CreateIngredient extends Component {
                   marginRight: "15px"
                 }}
               >
-                <input
-                  type="submit"
-                  value={`Create ${this.props.for.charAt(0).toUpperCase() +
+                <button type="submit">
+                  {`Create ${this.props.for.charAt(0).toUpperCase() +
                     this.props.for.substring(1, this.props.for.length - 1)}`}
-                />
+                </button>
                 <button
                   type="button"
                   onClick={() => this.props.handleCreate(false, this.state)}

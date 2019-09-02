@@ -9,6 +9,15 @@ export const Container = styled.div`
   border-radius: 15px;
   box-shadow: 0 1px 5px rgba(0, 0, 0, 0.1);
   padding: 15px 0;
+
+  @media screen and (max-width: ${props => props.theme.mobile}) {
+    grid-template-columns: auto 0.05fr;
+    grid-template-rows: 50px 1fr;
+
+    & :first-child {
+      grid-column: 1 / -1;
+    }
+  }
 `;
 
 export const ViewContainer = styled.div`
@@ -17,12 +26,35 @@ export const ViewContainer = styled.div`
   grid-template-columns: min-content auto 0.05fr;
   grid-template-rows: 1fr auto;
   padding: 15px 0;
-`
+  @media screen and (max-width: ${props => props.theme.mobile}) {
+    grid-template-columns: 1fr;
+  }
+`;
 
 export const IngredientHeader = styled.div`
   display: flex;
   align-items: center;
   justify-content: space-between;
+  h1 {
+      display: inline-block;
+    }
+  span {
+    padding: 5px;
+    display: inline;
+    background: ${props => props.theme.statColor};
+    border-radius: 5px;
+    align-self: center;
+    margin-left: 5px;
+  }
+
+  &.recipeheader {
+    @media screen and (max-width: ${props => props.theme.mobile}) {
+      flex-direction: column;
+
+    
+    }
+  }
+
 `;
 
 export const IngredientsContainer = styled.div`
@@ -38,14 +70,13 @@ export const IngredientLogo = styled.div`
 `;
 
 export const IngredientListContainer = styled.div`
-display: grid;
-grid: auto / 1fr 1fr;
+  display: grid;
+  grid: auto / 1fr 1fr;
 
-@media only screen and (max-width: ${props => props.theme.ultrawide}) {
+  @media only screen and (max-width: ${props => props.theme.ultrawide}) {
     grid: 1fr / 1fr;
   }
-
-`
+`;
 
 export const InputsContainer = styled.div`
   display: flex;
@@ -54,7 +85,10 @@ export const InputsContainer = styled.div`
   @media only screen and (max-width: ${props => props.theme.desktop}) {
     flex-direction: column;
   }
-
+  @media only screen and (max-width: ${props => props.theme.mobile}) {
+    flex-direction: row;
+    margin-bottom: 20px;
+  }
 `;
 
 export const InputContainer = styled.div`
@@ -78,15 +112,20 @@ export const IngredientContainer = styled.div`
   box-shadow: 0 1px 5px rgba(0, 0, 0, 0.15);
   width: 100%;
 
+  &:hover{
+    box-shadow: 0 1px 5px rgba(0, 0, 0, 0.4);
+    transform: translateY(-2px);
+    transition: all .2s cubic-bezier(0.075, 0.82, 0.165, 1);
+  }
 `;
 
 export const Wrapper = styled.div`
   display: grid;
   align-items: center;
-  grid-template-columns: 0.2fr 1fr;
+  grid-template-columns: auto 1fr;
   @media only screen and (max-width: ${props => props.theme.tablet}) {
     grid-template-columns: 1fr;
-    grid-template-rows: 0.2fr 0.8fr;
+    grid-template-rows: 0.4fr 0.6fr;
   }
 `;
 
