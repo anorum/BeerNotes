@@ -41,7 +41,7 @@ const Description = styled.textarea`
   height: 80px;
 `;
 
-const ButtonContainer = styled.div`
+export const ButtonContainer = styled.div`
   display: flex;
   justify-content: flex-end;
   margin-bottom: 2rem;
@@ -93,7 +93,7 @@ const NumberInput = styled.input`
   width: 80px;
 `;
 
-const Add = styled.button`
+export const Add = styled.button`
   cursor: pointer;
   border-radius: 4px;
   min-width: 85px;

@@ -33,8 +33,11 @@ const AccountPic = styled.div`
     border-top-style: solid;
     border-top-width: 4px;
     display: inline-block;
+    position: absolute;
     height: 0;
     vertical-align: middle;
+    right: -13px;
+    top: 50%;
     width: 0;
   }
 `;
@@ -118,13 +121,22 @@ const AccountDropdown = props => {
 
   return (
     <AccountContainer ref={node}>
-      <AccountPic onClick={() => setShowMenu(!showMenu)}>
         {user.profile_pic_link && user.profile_pic_link ? (
-          <img src={user.profile_pic_link} alt="profile_pic" />
+          <AccountPic
+          onClick={() => setShowMenu(!showMenu)}
+              style={{
+                background: `url(${user.profile_pic_link})`,
+                backgroundSize: "cover",
+                backgroundRepeat: "no-repeat",
+                borderRadius: "5px"
+              }}
+            >
+            </AccountPic>
         ) : (
-          user && user.username.charAt(0).toUpperCase()
+      <AccountPic onClick={() => setShowMenu(!showMenu)}>
+          {user && user.username.charAt(0).toUpperCase()}
+          </AccountPic>
         )}
-      </AccountPic>
       {showMenu && (
         <MenuContainer>
           Signed in as <span style={{ fontWeight: 700 }}>{user.username}</span>

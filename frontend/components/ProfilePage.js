@@ -4,14 +4,14 @@ import styled from "styled-components";
 import SameUser from "./SameUser";
 import ProfileMenu from "./ProfileMenu";
 import StyledButton from "./styles/StyledButton";
-import Button from "./styles/Button"
+import Button from "./styles/Button";
 import Recipes from "./Recipes";
-import Hops from "./Hops"
-import Fermentables from "./Fermentables"
-import Yeasts from "./Yeasts"
-import CreateHop from "../components/ingredientforms/CreateHop"
-import CreateFermentable from "../components/ingredientforms/CreateFermentable"
-import CreateYeast from "../components/ingredientforms/CreateYeast"
+import Hops from "./Hops";
+import Fermentables from "./Fermentables";
+import Yeasts from "./Yeasts";
+import CreateHop from "../components/ingredientforms/CreateHop";
+import CreateFermentable from "../components/ingredientforms/CreateFermentable";
+import CreateYeast from "../components/ingredientforms/CreateYeast";
 import PropTypes from "prop-types";
 
 export const ProfileContainer = styled.div`
@@ -21,7 +21,7 @@ export const ProfileContainer = styled.div`
   grid-template-areas: "sidebar content";
 
   @media screen and (max-width: ${props => props.theme.tablet}) {
-    grid-template-rows: 150px 1fr;
+    grid-template-rows: min-content 1fr;
     grid-template-columns: 1fr;
     grid-template-areas: "sidebar" "content";
   }
@@ -38,12 +38,17 @@ export const SidebarContainer = styled.div`
     flex-direction: row;
     justify-content: flex-start;
     position: relative;
+    align-items: center;
   }
 `;
 
 export const ContentContainer = styled.div`
   grid-area: content;
   padding: 15px;
+  font-weight: 400;
+  label {
+    font-weight: 600;
+  }
   button {
     margin: 15px 0px;
   }
@@ -63,6 +68,7 @@ export const ProfilePic = styled.div`
   img {
     height: 250px;
     width: 250px;
+    overflow: hidden;
   }
 
   @media screen and (max-width: ${props => props.theme.tablet}) {
@@ -78,8 +84,12 @@ export const ProfilePic = styled.div`
 
 const ProfileDetails = styled.div`
   margin-top: -20px;
+  width: 300px;
+  padding: 10px;
   @media screen and (max-width: ${props => props.theme.tablet}) {
     margin-left: 10px;
+    width: 70%;
+    padding: 0px;
   }
 `;
 
@@ -103,14 +113,24 @@ const ProfilePage = props => {
 
   let [selection, setSelection] = useState(page || "recipes");
 
-  let [show, setShow] = useState(false)
+  let [show, setShow] = useState(false);
 
   return (
     <ProfileContainer>
       <SidebarContainer>
         <ProfilePic>
           {profile_pic_link ? (
-            <img src={profile_pic_link} alt="profile_pic" />
+            <div
+              style={{
+                background: `url(${profile_pic_link})`,
+                backgroundSize: "cover",
+                backgroundRepeat: "no-repeat",
+                margin: "0 auto",
+                width: "100%",
+                height: "100%",
+                borderRadius: "15px"
+              }}
+            />
           ) : (
             username && <div>{username.charAt(0).toUpperCase()}</div>
           )}
@@ -120,6 +140,7 @@ const ProfilePage = props => {
           <SameUser userID={id}>
             <p>{email}</p>
             <StyledButton href="/settings">Edit Profile</StyledButton>
+            
           </SameUser>
           <p>{description}</p>
         </ProfileDetails>
