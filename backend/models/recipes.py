@@ -12,47 +12,67 @@ from sqlalchemy.dialects.postgresql import UUID
 
 class RecipeFermentables(db.Model, BaseModel):
     __tablename__ = "recipes_fermentables"
+    id = db.Column(UUID(as_uuid=True), nullable=False,
+                   primary_key=True, default=uuid4)
     recipe_id = db.Column(UUID(as_uuid=True), db.ForeignKey(
-        'recipe.id'), primary_key=True)
+        'recipe.id'))
     fermentable_id = db.Column(UUID(as_uuid=True), db.ForeignKey(
-        'fermentable.id'), primary_key=True)
-    amount = db.Column(db.Float(), nullable=False, primary_key=True)
+        'fermentable.id'))
+    amount = db.Column(db.Float(), nullable=False)
     fermentable = db.relationship("FermentablesModel")
 
 
-#TODO Check to make the primary key the combination of recipe, 
+# TODO Check to make the primary key the combination of recipe,
 # hops, and hop_schedule so that you can add same hop on different schedule.
 class RecipeHops(db.Model, BaseModel):
     __tablename__ = "recipes_hops"
+    id = db.Column(UUID(as_uuid=True), nullable=False,
+                   primary_key=True, default=uuid4)
     recipe_id = db.Column(UUID(as_uuid=True), db.ForeignKey(
-        'recipe.id'), primary_key=True)
+        'recipe.id'))
     hop_id = db.Column(UUID(as_uuid=True), db.ForeignKey(
-        'hop.id'), primary_key=True)
+        'hop.id'))
     amount = db.Column(db.Float(), nullable=False)
-    hop_schedule = db.Column(db.Integer(), primary_key=True)
+    hop_schedule = db.Column(db.Integer())
     hop = db.relationship("HopsModel")
 
 
 class RecipeGrains(db.Model, BaseModel):
     __tablename__ = "recipes_grains"
+    id = db.Column(UUID(as_uuid=True), nullable=False,
+                   primary_key=True, default=uuid4)
     recipe_id = db.Column(UUID(as_uuid=True), db.ForeignKey(
-        'recipe.id'), primary_key=True)
+        'recipe.id'))
     grain_id = db.Column(UUID(as_uuid=True), db.ForeignKey(
-        'grain.id'), primary_key=True)
+        'grain.id'))
     amount = db.Column(db.Float(), nullable=False)
     grain = db.relationship("GrainsModel")
 
 
 class RecipeYeasts(db.Model, BaseModel):
     __tablename__ = "recipes_yeasts"
+    id = db.Column(UUID(as_uuid=True), nullable=False,
+                   primary_key=True, default=uuid4)
     recipe_id = db.Column(UUID(as_uuid=True), db.ForeignKey(
-        'recipe.id'), primary_key=True)
+        'recipe.id'))
     yeast_id = db.Column(UUID(as_uuid=True), db.ForeignKey(
-        'yeast.id'), primary_key=True)
-    pitch_temp = db.Column(db.Integer(), primary_key=True)
+        'yeast.id'))
+    pitch_temp = db.Column(db.Integer(), nullable=False)
     pitch_time = db.Column(db.String(128))
     attenuation = db.Column(db.Integer())
     yeast = db.relationship("YeastModel")
+
+
+class RecipeMashSteps(db.Model, BaseModel):
+    __tablename__ = "recipes_mash"
+    step = db.Column(db.Integer(), primary_key=True, nullable=False)
+    recipe_id = db.Column(UUID(as_uuid=True), db.ForeignKey(
+        'recipe.id'))
+    amount = db.Column(db.Float())
+    notes = db.Column(db.String(240))
+    mash_type = db.Column(db.String(80), nullable=False)
+    temperature = db.Column(db.Integer(), nullable=False)
+    time = db.Column(db.Integer(), nullable=False)
 
 
 class RecipeModel(db.Model, BaseModel, SearchableMixin):
@@ -83,10 +103,13 @@ class RecipeModel(db.Model, BaseModel, SearchableMixin):
     published = db.Column(db.Boolean(), default=False)
     created_date = db.Column(db.DateTime, default=datetime.datetime.utcnow)
     icon = db.Column(db.String(40), nullable=False)
+    finished = db.Column(db.Boolean(), default=False)
+    priming_level = db.Column(db.Float(), nullable=False)
 
     user = db.relationship("UserModel")
-    fermentables = db.relationship("RecipeFermentables", cascade="all, delete-orphan")
+    fermentables = db.relationship(
+        "RecipeFermentables", cascade="all, delete-orphan")
     hops = db.relationship("RecipeHops", cascade="all, delete-orphan")
     grains = db.relationship("RecipeGrains", cascade="all, delete-orphan")
     yeasts = db.relationship("RecipeYeasts", cascade="all, delete-orphan")
-
+    mash_steps = db.relationship("RecipeMashSteps", cascade="all, delete-orphan")

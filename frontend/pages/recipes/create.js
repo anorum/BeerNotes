@@ -1,5 +1,6 @@
 import User from "../../components/User"
 import CreateRecipe from "../../components/CreateRecipe"
+import withAuthSync from "../../components/withAuthSync"
 
 const AddRecipe = props => {
 
@@ -10,4 +11,4 @@ const AddRecipe = props => {
     )
 }
 
-export default AddRecipe
+export default withAuthSync(AddRecipe)

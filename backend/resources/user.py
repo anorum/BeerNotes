@@ -23,7 +23,7 @@ INVALID_PASSWORD = "Password provided is incorrect."
 USER_DOES_NOT_EXIST = "A user with email {} does not exist."
 USER_DELETED = "User for email {} successfully deleted"
 USER_FAILED_TO_CREATE = "An error occurred during creation of account."
-USER_NOT_CONFIRMED = "This user is not confirmed. Please confirm"
+USER_NOT_CONFIRMED = "This user is not confirmed. Please confirm your account by clicking on the confirm link in the email sent."
 INVALID_LOGIN = "The username or password is incorrect."
 USER_PASSWORD_UPDATED = "Your password has been changed."
 USERNAME_ALREADY_EXISTS = "Account with this username already exists."
@@ -73,12 +73,13 @@ class GetUser(Resource):
     @jwt_refresh_token_required
     def post(cls):
         user_id = get_jwt_identity()
-        new_token = create_access_token(identity=user_id, fresh=False)
-        user = UserModel.find_by_id(user_id)
-        ret = jsonify(user_schema.dump(user))
-        set_access_cookies(ret, new_token)
-        ret.status_code = 200
-        return ret
+        if user_id:
+            new_token = create_access_token(identity=user_id, fresh=False)
+            user = UserModel.find_by_id(user_id)
+            ret = jsonify(user_schema.dump(user))
+            set_access_cookies(ret, new_token)
+            ret.status_code = 200
+            return ret
 
 
 

@@ -90,11 +90,11 @@ const RecipesSideSlide = props => {
     return (
         
         <RecipeContainer>
-        {showLeft && <SliderHandle className="left" onClick={slideLeft}> </SliderHandle>}
+        {showLeft && <SliderHandle className="left" onClick={slideLeft}> {"<"} </SliderHandle>}
             <RecipeSlider ref={myRecipeSlider} onScroll={isScrolled}>
             { props.recipes.map(recipe => <Recipe recipe={recipe} key={recipe.id} />) }
             </RecipeSlider>
-        {showRight  && <SliderHandle className="right" onClick={slideRight}> </SliderHandle>}
+        {showRight  && <SliderHandle className="right" onClick={slideRight}> {">"} </SliderHandle>}
         </RecipeContainer>
     );
 };

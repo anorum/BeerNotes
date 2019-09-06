@@ -3,7 +3,7 @@ import styled, { ThemeProvider, createGlobalStyle } from "styled-components";
 import Head from "./Head";
 import Header from "./Header";
 import {NotificationContainer} from 'react-notifications';
-
+import 'react-notifications/lib/notifications.css'
 
 
 const theme = {

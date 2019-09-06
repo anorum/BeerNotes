@@ -1,13 +1,21 @@
-import Forgot from "../components/Forgot"
-import ResendConfirm from "../components/ResendConfirm"
+import Forgot from "../components/Forgot";
+import styled from "styled-components";
+import ResendConfirm from "../components/ResendConfirm";
+
+const TroubleContainer = styled.div`
+  display: flex;
+  @media screen and (max-width: ${props => props.theme.tablet}) {
+    flex-direction: column;
+  }
+`;
 
 const forgot = props => {
-    return (
-        <div style={{display: "flex"}}> 
-        <Forgot />
-        <ResendConfirm />
-        </div>
-    )
-}
+  return (
+    <TroubleContainer>
+      <Forgot />
+      <ResendConfirm />
+    </TroubleContainer>
+  );
+};
 
-export default forgot
+export default forgot;

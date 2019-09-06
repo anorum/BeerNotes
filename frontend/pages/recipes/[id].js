@@ -1,21 +1,28 @@
 import React from "react";
 import axios from "axios";
-import SingleRecipe from "../../components/SingleRecipe"
-
+import SingleRecipe from "../../components/SingleRecipe";
+import Error from "next/error";
 
 class Recipe extends React.Component {
   static async getInitialProps({ req, query: { id } }) {
     const recipe = await axios
       .get(`/recipe/${id}`)
       .then(res => res.data)
-      .catch(err => err.message);
+      .catch(err => {
+        return { ...err.response.data, status: err.response.status };
+      });
 
-      return { recipe }
+    return { recipe };
   }
 
   render() {
-    return (
-        <SingleRecipe recipe={this.props.recipe} user={this.props.user} />
+    return this.props.recipe.status ? (
+      <Error
+        statusCode={this.props.recipe.status}
+        title={this.props.recipe.message}
+      />
+    ) : (
+      <SingleRecipe recipe={this.props.recipe} user={this.props.user} />
     );
   }
 }

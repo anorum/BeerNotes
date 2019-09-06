@@ -10,7 +10,7 @@ const Profile = props => {
 
   return (
     <React.Fragment>
-      {user.username ? (
+      {user && user.username ? (
         <ProfilePage
           user={props.user}
           user_profile={user}

@@ -126,11 +126,11 @@ cors = CORS(app, resources={r"*": {"origins": ["http://localhost:3000", "http://
 ########### End of Configurations ###########
 
 
-@jwt.user_claims_loader
+""" @jwt.user_claims_loader
 def add_claims_to_access_token(identity):
     return {
         "is_admin": UserModel.user_is_admin(identity)
-    }
+    } """
 
 
 ### Resources and end points ###
