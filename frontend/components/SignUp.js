@@ -120,6 +120,21 @@ class SignUp extends Component {
                   required
                 />
               </Label>
+              <Label htmlFor="username">
+                Username
+                <MyInput
+                  name="username"
+                  type="username"
+                  placeholder="Choose a username"
+                  validations={{
+                    matchRegexp: /^(?=.{5,20}$)(?![_.])(?!.*[_.]{2})[a-zA-Z0-9._]+(?<![_.])$/
+                  }}
+                  validationError="Your username must be 5 - 20 characters long and have no __, _., ._ or .."
+                  
+                  
+                  required
+                />
+              </Label>
               <Label htmlFor="password">
                 Password
                 <MyInput

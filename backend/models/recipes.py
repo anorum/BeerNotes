@@ -7,7 +7,7 @@ from models.hops import HopsModel
 from models.grains import GrainsModel
 from models.yeast import YeastModel
 from models.searchableMixIn import SearchableMixin
-from sqlalchemy.dialects.postgresql import UUID
+from sqlalchemy.dialects.postgresql import UUID, ARRAY
 
 
 class RecipeFermentables(db.Model, BaseModel):
@@ -17,7 +17,7 @@ class RecipeFermentables(db.Model, BaseModel):
     recipe_id = db.Column(UUID(as_uuid=True), db.ForeignKey(
         'recipe.id'))
     fermentable_id = db.Column(UUID(as_uuid=True), db.ForeignKey(
-        'fermentable.id'))
+        'fermentable.id'), nullable=False)
     amount = db.Column(db.Float(), nullable=False)
     fermentable = db.relationship("FermentablesModel")
 
@@ -96,15 +96,15 @@ class RecipeModel(db.Model, BaseModel, SearchableMixin):
     SRM = db.Column(db.Float(precision=3))
     hex_color = db.Column(db.String(10))
     description = db.Column(db.UnicodeText())
-    style = db.Column(db.String(240))
-    method = db.Column(db.String(240))
-    instructions = db.Column(db.UnicodeText())
+    style = db.Column(db.String(240), nullable=False)
+    method = db.Column(db.String(240), nullable=False)
+    instructions = db.Column(ARRAY(db.String(800)))
     private_recipe = db.Column(db.Boolean(), default=False)
     published = db.Column(db.Boolean(), default=False)
     created_date = db.Column(db.DateTime, default=datetime.datetime.utcnow)
     icon = db.Column(db.String(40), nullable=False)
-    finished = db.Column(db.Boolean(), default=False)
-    priming_level = db.Column(db.Float(), nullable=False)
+    brewable = db.Column(db.Boolean(), default=False)
+    priming_level = db.Column(db.Float())
 
     user = db.relationship("UserModel")
     fermentables = db.relationship(

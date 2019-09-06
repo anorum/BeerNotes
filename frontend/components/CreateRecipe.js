@@ -273,6 +273,9 @@ class CreateRecipe extends Component {
           message || `Recipe ${res.data.name} has been saved.`,
           message ? "Recipe Unpublished" : "Recipe Saved."
         );
+        if (!this.props.edit) {
+          Router.replace(`/recipes/edit/${res.data.id}`)
+        }
       })
       .catch(err =>
         NotificationManager.error(
