@@ -13,7 +13,7 @@ from libs.clean_recipe_elastic import clean_recipe_elastic
 from libs.recipe_calculations import targetGravity, finalGravity, ABV, IBU, SRM
 
 
-ERROR_INSERTING = "An error occurred while inserting the recipe."
+ERROR_INSERTING = "An error occurred while saving the recipe. \n {}"
 RECIPE_NOT_FOUND = "Uh Oh. This recipe was not found."
 NO_RECIPES_FOUND = "There are no recipes"
 
@@ -94,15 +94,19 @@ class RecipeCreate(Resource):
             data.pop('id', None)
             loaded_data = recipe_schema.load(data, session=db.session)
         else:
-            loaded_data = recipe_schema.load(data, instance=recipe)
-            if loaded_data.user_id != current_user.id:
-                return {"message": "You can not edit other users recipes"}, 403
+            try:
+                loaded_data = recipe_schema.load(data, instance=recipe)
+                if loaded_data.user_id != current_user.id:
+                    return {"message": "You can not edit other users recipes"}, 403
+            except Exception as e:
+                return {"message": ERROR_INSERTING.format(e)}, 500
         santized_recipe = recipe_schema.dump(loaded_data)
         loaded_data.target_og = targetGravity(santized_recipe)
         loaded_data.target_fg = finalGravity(santized_recipe)
         loaded_data.target_abv = ABV(santized_recipe)
         loaded_data.IBU = IBU(santized_recipe)
         loaded_data.SRM = SRM(santized_recipe)
+        print(santized_recipe)
         try:
             loaded_data.save_to_db()
         except Exception as e:
