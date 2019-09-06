@@ -25,8 +25,8 @@ class RecipesByID(Resource):
         recipes = RecipeModel.find_by_id(recipeid)
 
         if recipes:
-            return recipe_schema.dump(recipes)
-        return {"message": RECIPE_NOT_FOUND}
+            return recipe_schema.dump(recipes), 200
+        return {"message": RECIPE_NOT_FOUND}, 404
 
 
 class Recipes(Resource):
@@ -35,7 +35,7 @@ class Recipes(Resource):
         recipes = RecipeModel.query.paginate(page=page, per_page=2)
         if recipes.items:
             return recipes_schema.dump(recipes.items)
-        return {"message": NO_RECIPES_FOUND}
+        return {"message": NO_RECIPES_FOUND}, 404
 
 
 class MyRecipes(Resource):
@@ -44,10 +44,10 @@ class MyRecipes(Resource):
     def get(cls, page):
         user_id = get_jwt_identity()
         recipes = RecipeModel.query.filter_by(
-            user_id=user_id).paginate(page=page, per_page=40)
+            user_id=user_id).paginate(page=page, per_page=20)
         if recipes.items:
             return recipes_schema.dump(recipes.items)
-        return {"message": NO_RECIPES_FOUND}
+        return {"message": "No Recipes Created Yet! Get started homebrewing with the Add Recipe button."}, 404
 
 
 class RecipeSearch(Resource):
@@ -81,6 +81,7 @@ class RecipeCreate(Resource):
     @classmethod
     @jwt_required
     def put(cls):
+        # TODO MAKE A FINISHED COLUMN SO WHEN A RECIPE HAS ALL IT NEEDS TO BE BREWED MARK IT AS FINISHED
         data = request.get_json()
         data["user_id"] = get_jwt_identity()
         current_user = UserModel.find_by_id(get_jwt_identity())

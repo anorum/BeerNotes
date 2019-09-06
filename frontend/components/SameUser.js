@@ -7,7 +7,7 @@ const SameUser = props => {
   const currentUser = userContext.user
   return (
     <React.Fragment>
-      {props.userID && currentUser.id === props.userID && props.children}
+      {currentUser && props.userID && currentUser.id === props.userID && props.children}
     </React.Fragment>
   );
 };

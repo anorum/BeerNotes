@@ -4,10 +4,13 @@ from flask import request, send_file
 from flask_jwt_extended import jwt_required, get_jwt_identity
 import os
 import traceback
+import boto3
+
 
 from libs import image_helper
-from schemas.image import image_schema, images_schema
+from schemas.image import image_schema, images_schema, profile_update_schema
 from models.user import UserModel
+
 
 IMAGE_UPLOADED = "{} has been uploaded successfully."
 IMAGE_ILLEGAL_EXTENSION = "{} files are not allowed."
@@ -18,6 +21,10 @@ IMAGE_DELETE_FAILED = "Failed to delete image {}"
 AVATAR_DELETE_FAILED = "Failed to delete profile picture."
 AVATAR_UPLOADED = "Profile picture uploaded."
 AVATAR_NOT_FOUND = "No Profile Image"
+
+s3 = boto3.client('s3')
+bucket_name = 'brewcipes'
+allowed_extensions = [".jpg", ".png", ".jpeg"]
 
 
 class ImageUpload(Resource):
@@ -78,32 +85,58 @@ class AvatarUpload(Resource):
         """ This endpoint is used to upload user_avatars. 
         All avatars are named after the User's ID.
         """
-        data = image_schema.load(request.files)
+        data = profile_update_schema.load(request.files)
+        description = request.form["description"]
         filename = f"user_{get_jwt_identity()}"
         user = UserModel.find_by_id(get_jwt_identity())
-        folder = "avatars"
-        avatar_path = image_helper.find_image_any_format(filename, folder)
-        if avatar_path:
+        if description:
             try:
-                os.remove(avatar_path)
-                user.profile_pic_link = None
+                user.description = description
                 user.save_to_db()
             except:
-                return {"message": AVATAR_DELETE_FAILED}
+                return {"message": "There was an issue updating your profile."}
+        if "image" in data.keys():
+            try:
+                if not image_helper.is_filename_safe(data["image"].filename):
+                    return {"message": "Your file name is invalid."}, 401
+                ext = image_helper.get_extension(data["image"].filename)
+                if ext not in allowed_extensions:
+                    return {"message": "Please Only Upload .jpg, .png, or .jpeg files."}, 401
+                for ext in allowed_extensions:
+                    try:
+                        if s3.get_object(Bucket="brewcipes", Key="profile_pics/"+filename+ext):
+                            s3.delete_object(
+                                Bucket="brewcipes", Key="profile_pics/"+filename+ext)
+                            user.profile_pic_link = None
+                            user.save_to_db()
+                        break
+                    except:
+                        continue
+
+                avatar = filename + ext
+                s3.upload_fileobj(
+                    data["image"], bucket_name, "profile_pics/"+avatar)
+                user.profile_pic_link = "https://brewcipes.s3-us-west-2.amazonaws.com/profile_pics/{}".format(
+                    avatar)
+                user.save_to_db()
+            except UploadNotAllowed:
+                extension = image_helper.get_extension(data["image"])
+                return {"message": IMAGE_ILLEGAL_EXTENSION.format(extension)}, 400
+        return {"message": "Profile successfully updated."}, 200
+
+    @jwt_required
+    def delete(self):
+        user = UserModel.find_by_id(get_jwt_identity())
+        filename = user.profile_pic_link[user.profile_pic_link.rindex("/")+1:]
         try:
-            ext = image_helper.get_extension(data["image"].filename)
-            avatar = filename + ext
-            avatar_path = image_helper.save_image(
-                data["image"], folder=folder, name=avatar
-            )
-            basename = image_helper.get_basename(avatar_path)
-            user.profile_pic_link = image_helper.find_image_any_format(
-                filename, folder)
-            user.save_to_db()
-            return {"message": AVATAR_UPLOADED}, 200
-        except UploadNotAllowed:
-            extension = image_helper.get_extension(data["image"])
-            return {"message": IMAGE_ILLEGAL_EXTENSION.format(extension)}, 400
+            if s3.get_object(Bucket="brewcipes", Key="profile_pics/"+filename):
+                s3.delete_object(
+                    Bucket="brewcipes", Key="profile_pics/"+filename)
+                user.profile_pic_link = None
+                user.save_to_db()
+                return {"message": "Your profile picture has been deleted."}
+        except:
+            return {"message": "An Error occurred while deleting profile picture."}
 
 
 class Avatar(Resource):

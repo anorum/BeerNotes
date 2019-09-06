@@ -72,7 +72,7 @@ class SignIn extends Component {
       .then(res => {
         Router.back();
       })
-      .catch(err => NotificationManager.error(err.response.data.message));
+      .catch(err => NotificationManager.error(err.response.data.message, "Login Error"));
 
     return req;
   }

@@ -17,6 +17,7 @@ class FermentablesModel(BaseModel, db.Model, SearchableMixin):
     ppg = db.Column(db.Integer(), nullable=False)
     lovibond = db.Column(db.Float(), nullable=False)
     category = db.Column(db.String(80), nullable=False)
+    country = db.Column(db.String(80))
     user_id = db.Column(UUID(as_uuid=True), db.ForeignKey(
         "user.id"), nullable=False)
     custom = db.Column(db.Boolean(), default=True)

@@ -1,7 +1,7 @@
 from marshmallow import fields
 from ma import ma
 from models.recipes import (
-    RecipeModel, RecipeFermentables, RecipeHops, RecipeGrains, RecipeYeasts)
+    RecipeModel, RecipeFermentables, RecipeHops, RecipeGrains, RecipeYeasts, RecipeMashSteps)
 from schemas.user import UserRecipeSchema, UserSchema, UserPrivate
 from schemas.fermentables import FermentablesSchema
 from schemas.hops import HopsSchema
@@ -74,6 +74,16 @@ recipe_yeast_schema = RecipeYeastsSchema()
 recipe_yeasts_schema = RecipeYeastsSchema(many=True)
 
 
+class RecipeMashSteps(ma.ModelSchema):
+    recipe_id = fields.UUID()
+    step = fields.Integer()
+
+    class Meta:
+        model = RecipeMashSteps
+        fields = ("step", "amount", "notes",
+                  "mash_type", "temperature", "time")
+
+
 class RecipeSchema(ma.ModelSchema):
     id = fields.UUID()
     user_id = fields.UUID()
@@ -81,6 +91,7 @@ class RecipeSchema(ma.ModelSchema):
     hops = fields.Nested(RecipeHopsSchema, many=True)
     grains = fields.Nested(RecipeGrainsSchema, many=True)
     yeasts = fields.Nested(RecipeYeastsSchema, many=True)
+    mash_steps = fields.Nested(RecipeMashSteps, many=True)
     user = fields.Nested(UserRecipeSchema)
 
     class Meta:
@@ -90,7 +101,7 @@ class RecipeSchema(ma.ModelSchema):
                   "hops", "grains", "yeasts", "batch_size",
                   "efficiency", "boil_time",
                   "target_abv", "actual_abv", "target_og",
-                  "actual_og", "target_fg", "actual_fg", "IBU", "SRM",
+                  "actual_og", "target_fg", "actual_fg", "IBU", "SRM", "finsihed",
                   "description", "method", "instructions", "private_recipe", "style", "published", "icon"
                   )
         dump_only = ("user",)

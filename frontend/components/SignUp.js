@@ -115,8 +115,8 @@ class SignUp extends Component {
                     isEmail: true
                   }}
                   validationError="This is not a valid email"
-                  onChange={this.saveToState}
-                  value={this.state.email}
+                  
+                  
                   required
                 />
               </Label>

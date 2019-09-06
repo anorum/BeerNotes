@@ -35,9 +35,7 @@ class Fermentables(Resource):
 
     @classmethod
     def get(cls):
-        fermentables = FermentablesModel.query.all()
-        if fermentables:
-            return fermentables_schema.dump(fermentables)
+        return fermentables_schema.dump(FermentablesModel.query.all())
 
 
 class FermentablesCreate(Resource):
@@ -47,6 +45,7 @@ class FermentablesCreate(Resource):
         data = request.get_json()
         data["user_id"] = get_jwt_identity()
         fermentables = fermentable_schema.load(data, session=db.session)
+        fermentables.custom = True
         try:
             fermentables.save_to_db()
         except Exception as e:

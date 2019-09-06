@@ -126,11 +126,11 @@ cors = CORS(app, resources={r"*": {"origins": ["http://localhost:3000", "http://
 ########### End of Configurations ###########
 
 
-@jwt.user_claims_loader
+""" @jwt.user_claims_loader
 def add_claims_to_access_token(identity):
     return {
         "is_admin": UserModel.user_is_admin(identity)
-    }
+    } """
 
 
 ### Resources and end points ###
@@ -155,7 +155,7 @@ api.add_resource(FermentablesCreate, '/fermentables/create')
 api.add_resource(FermentablesByID, '/fermentables/<string:fermentableid>')
 api.add_resource(Confirmation, '/confirm/<string:confirmation_id>')
 api.add_resource(ConfirmationByUser, '/confirm/resend')
-api.add_resource(AvatarUpload, "/upload/profilepicture")
+api.add_resource(AvatarUpload, "/user/update")
 api.add_resource(Avatar, "/avatar/<string:user_id>")
 api.add_resource(RecipesByID, "/recipe/<string:recipeid>")
 api.add_resource(RecipeCreate, "/recipe/create")

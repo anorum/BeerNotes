@@ -19,6 +19,11 @@ class FileStorageField(fields.Field):
 class ImageSchema(Schema):
     image = FileStorageField(required=True)
 
+class ProfileUpdate(Schema):
+    image = FileStorageField()
+    description = fields.String()
+
 
 image_schema = ImageSchema()
 images_schema = ImageSchema(many=True)
+profile_update_schema = ProfileUpdate()
