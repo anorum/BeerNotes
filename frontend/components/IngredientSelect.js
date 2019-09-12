@@ -9,38 +9,6 @@ const FormContainer = styled.div`
   margin: 5px 0;
 `;
 
-const styles = {
-  singleValue: (provided, state) => {
-    return {
-      width: "98%"
-    };
-  },
-  container: (provided, state) => {
-    return {
-      ...provided,
-      width: "100%",
-      alignSelf: "center"
-    };
-  },
-  valueContainer: (provided, state) => {
-    return {
-      ...provided
-    };
-  },
-  control: (provided, state) => {
-    return {
-      ...provided,
-      minHeight: "90px",
-      boxShadow: 0,
-      borderWidth: "0 0 0 0",
-      borderColor: state.isFocused ? "#FEDC00" : provided.borderColor,
-      "&:hover": {
-        borderColor: state.isFocused ? "#FEDC00" : provided.borderColor
-      }
-    };
-  }
-};
-
 class IngredientSelect extends Component {
   constructor(props) {
     super(props);
@@ -52,6 +20,40 @@ class IngredientSelect extends Component {
       error: null
     };
   }
+
+  styles = {
+    singleValue: (provided, state) => {
+      return {
+        width: "98%"
+      };
+    },
+    container: (provided, state) => {
+      return {
+        ...provided,
+        width: "100%",
+        alignSelf: "center",
+        borderBottom: `${this.props.invalid && "2px solid"}`,
+        borderColor: `${this.props.invalid && "#ED5E67"}`
+      };
+    },
+    valueContainer: (provided, state) => {
+      return {
+        ...provided
+      };
+    },
+    control: (provided, state) => {
+      return {
+        ...provided,
+        minHeight: "90px",
+        boxShadow: 0,
+        borderWidth: "0 0 0 0",
+        borderColor: state.isFocused ? "#FEDC00" : provided.borderColor,
+        "&:hover": {
+          borderColor: state.isFocused ? "#FEDC00" : provided.borderColor
+        }
+      };
+    }
+  };
 
   handleCreate = inputValue => {
     this.setState({ isLoading: true, showAdd: true, newValue: inputValue });
@@ -91,7 +93,7 @@ class IngredientSelect extends Component {
     return (
       <React.Fragment>
         <Creatable
-          styles={styles}
+          styles={this.styles}
           isClearable
           isLoading={this.state.isLoading}
           isDisabled={this.state.isLoading}
@@ -112,6 +114,7 @@ class IngredientSelect extends Component {
         />
         <input
           tabIndex={-1}
+          name={this.props.for.for}
           autoComplete="off"
           style={{ opacity: 0, height: 0 }}
           value={this.props.value}

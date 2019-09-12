@@ -35,7 +35,7 @@ from resources.hops import Hop, HopsSearch, Hops, HopsCreate
 from resources.yeast import Yeast, YeastSearch, Yeasts, YeastsCreate
 from resources.confirmation import Confirmation, ConfirmationByUser
 from resources.image import AvatarUpload, Avatar
-from resources.recipes import RecipesByID, Recipes, RecipeSearch, RecipeCreate, MyRecipes
+from resources.recipes import RecipesByID, Recipes, RecipeSearch, RecipeCreate, MyRecipes, RecipeDelete
 from resources.github_login import GithubLogin, GithubAuthorize
 from resources.reset_password import ResetToken, SendResetToken
 from models.user import UserModel
@@ -168,6 +168,7 @@ api.add_resource(ElasticProxy, "/elastic/<path:path>", defaults={'path': ''})
 api.add_resource(ResetToken, "/reset/<string:reset_id>")
 api.add_resource(SendResetToken, "/resetpassword")
 api.add_resource(UserProfile, "/user/<string:username>")
+api.add_resource(RecipeDelete, "/recipe/delete/<string:recipeid>")
 
 # Refresh token endpoint. This will generate a new access token from
 # the refresh token, but will mark that access token as non-fresh,
@@ -199,6 +200,14 @@ def create_tables():
 @app.errorhandler(ValidationError)
 def handle_marshmallow_validation(err):
     return jsonify(err.messages), 400
+
+
+@jwt.expired_token_loader
+def my_expired_token_callback(expired_token):
+    token_type = expired_token['type']
+    return jsonify({
+        'msg': 'Your login has expired. Please refresh the page and try again.'
+    }), 401
 
 
 if __name__ == "__main__":

@@ -66,16 +66,37 @@ class SignIn extends Component {
     this.setState({ [e.target.name]: e.target.value });
   };
 
-  submit(model) {
+  submit = model => {
     const req = axios
       .post("/login", JSON.stringify(model))
       .then(res => {
         Router.back();
       })
-      .catch(err => NotificationManager.error(err.response.data.message, "Login Error"));
+      .catch(err => {
+        NotificationManager.error(err.response.data.message, "Login Error");
+
+        switch (err.response.data.message) {
+          case "Account with this email does not exists.":
+            this.refs.form.updateInputsWithError(
+              {
+                email: "Account with this email does not exists."
+              },
+              true
+            );
+            break;
+          case "Password provided is incorrect.":
+            this.refs.form.updateInputsWithError(
+              {
+                password: "Password incorrect."
+              },
+              true
+            );
+            break;
+        }
+      });
 
     return req;
-  }
+  };
 
   render() {
     return (
@@ -90,6 +111,7 @@ class SignIn extends Component {
             onValidSubmit={this.submit}
             onValid={this.enableButton}
             onInvalid={this.disableButton}
+            ref="form"
           >
             <fieldset>
               <Label htmlFor="email">
@@ -104,6 +126,7 @@ class SignIn extends Component {
                   validationError="Please enter a valid email"
                   value={this.state.email}
                   onChange={this.saveToState}
+                  required
                 />
               </Label>
               <Label htmlFor="password">
@@ -119,7 +142,12 @@ class SignIn extends Component {
                 />
               </Label>
               <div style={{ marginTop: "15px" }}>
-                <Button type="submit" background="#FEDD00" color="#FFF" disabled={!this.state.canSubmit}>
+                <Button
+                  type="submit"
+                  background="#FEDD00"
+                  color="#FFF"
+                  disabled={!this.state.canSubmit}
+                >
                   Sign In
                 </Button>
               </div>

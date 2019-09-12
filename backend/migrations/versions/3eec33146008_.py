@@ -1,8 +1,8 @@
 """empty message
 
-Revision ID: f32f0d36c1cd
+Revision ID: 3eec33146008
 Revises: 
-Create Date: 2019-09-06 11:44:50.942679
+Create Date: 2019-09-11 09:55:31.224955
 
 """
 from alembic import op
@@ -10,7 +10,7 @@ import sqlalchemy as sa
 from sqlalchemy.dialects import postgresql
 
 # revision identifiers, used by Alembic.
-revision = 'f32f0d36c1cd'
+revision = '3eec33146008'
 down_revision = None
 branch_labels = None
 depends_on = None
@@ -153,21 +153,22 @@ def upgrade():
     sa.Column('recipe_id', postgresql.UUID(as_uuid=True), nullable=True),
     sa.Column('hop_id', postgresql.UUID(as_uuid=True), nullable=True),
     sa.Column('amount', sa.Float(), nullable=False),
-    sa.Column('hop_schedule', sa.Integer(), nullable=True),
+    sa.Column('hop_schedule', sa.Integer(), nullable=False),
     sa.ForeignKeyConstraint(['hop_id'], ['hop.id'], name=op.f('fk_recipes_hops_hop_id_hop')),
     sa.ForeignKeyConstraint(['recipe_id'], ['recipe.id'], name=op.f('fk_recipes_hops_recipe_id_recipe')),
     sa.PrimaryKeyConstraint('id', name=op.f('pk_recipes_hops'))
     )
     op.create_table('recipes_mash',
-    sa.Column('step', sa.Integer(), nullable=False),
+    sa.Column('id', postgresql.UUID(as_uuid=True), nullable=False),
+    sa.Column('step', sa.Integer(), nullable=True),
     sa.Column('recipe_id', postgresql.UUID(as_uuid=True), nullable=True),
     sa.Column('amount', sa.Float(), nullable=True),
-    sa.Column('notes', sa.String(length=240), nullable=True),
+    sa.Column('notes', sa.String(length=240), nullable=False),
     sa.Column('mash_type', sa.String(length=80), nullable=False),
     sa.Column('temperature', sa.Integer(), nullable=False),
     sa.Column('time', sa.Integer(), nullable=False),
     sa.ForeignKeyConstraint(['recipe_id'], ['recipe.id'], name=op.f('fk_recipes_mash_recipe_id_recipe')),
-    sa.PrimaryKeyConstraint('step', name=op.f('pk_recipes_mash'))
+    sa.PrimaryKeyConstraint('id', name=op.f('pk_recipes_mash'))
     )
     op.create_table('recipes_yeasts',
     sa.Column('id', postgresql.UUID(as_uuid=True), nullable=False),
@@ -175,7 +176,7 @@ def upgrade():
     sa.Column('yeast_id', postgresql.UUID(as_uuid=True), nullable=True),
     sa.Column('pitch_temp', sa.Integer(), nullable=False),
     sa.Column('pitch_time', sa.String(length=128), nullable=True),
-    sa.Column('attenuation', sa.Integer(), nullable=True),
+    sa.Column('attenuation', sa.Integer(), nullable=False),
     sa.ForeignKeyConstraint(['recipe_id'], ['recipe.id'], name=op.f('fk_recipes_yeasts_recipe_id_recipe')),
     sa.ForeignKeyConstraint(['yeast_id'], ['yeast.id'], name=op.f('fk_recipes_yeasts_yeast_id_yeast')),
     sa.PrimaryKeyConstraint('id', name=op.f('pk_recipes_yeasts'))

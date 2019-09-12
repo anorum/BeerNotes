@@ -7,12 +7,14 @@ import {
   IngredientLogo,
   InputsContainer,
   InputContainer,
-  ViewContainer
+  ViewContainer,
+  IngredientContainer
 } from "./styles/IngredientForm";
 import SectionContainer from "./styles/SectionContainer";
 import Ingredient from "./Ingredient";
 import SameUser from "./SameUser";
-import User from "./User"
+import User from "./User";
+import srmToHex from "../data/srmToHex";
 
 const RecipeContainer = styled.div`
   box-shadow: 0 0 5px 3px rgba(0, 0, 0, 0.05);
@@ -87,12 +89,12 @@ const ButtonContainer = styled.div`
   margin-left: auto;
 
   @media screen and (max-width: ${props => props.theme.tablet}) {
-      flex-direction: column-reverse;
-      text-align: center;
-      > * {
-        margin-bottom: 10px;
-      }
+    flex-direction: column-reverse;
+    text-align: center;
+    > * {
+      margin-bottom: 10px;
     }
+  }
 `;
 
 const RecipeStats = styled.div`
@@ -101,14 +103,19 @@ const RecipeStats = styled.div`
 `;
 
 const Description = styled.div`
-
   padding: 15px;
-  border-bottom: .5px solid ${props => props.theme.lightGrey};
+  border-bottom: 0.5px solid ${props => props.theme.lightGrey};
   margin-bottom: 10px;
 `;
 
 const DetailsContainer = styled.div`
   display: flex;
+  justify-content: space-around;
+  text-align: center;
+
+  p {
+    font-size: 2rem;
+  }
 `;
 
 const DetailLabel = styled.span`
@@ -135,6 +142,9 @@ class SingleRecipe extends React.Component {
       description,
       style,
       method,
+      boil_time,
+      batch_size,
+      efficiency,
       target_og,
       target_fg,
       target_abv,
@@ -144,7 +154,10 @@ class SingleRecipe extends React.Component {
       hops,
       yeasts,
       published,
-      private_recipe
+      private_recipe,
+      mash_steps,
+      brewable,
+      instructions
     } = this.props.recipe;
     return (
       <RecipeContainer>
@@ -156,26 +169,30 @@ class SingleRecipe extends React.Component {
             alt={icon}
           />
           <Name>
-            <h1>{name}</h1>
+            <IngredientHeader>
+              <h1>{name}</h1>
+              <SameUser userID={user_id}>
+                {published ? (
+                  <span style={{ background: "#3ECF8E", color: "white" }}>
+                    Published
+                  </span>
+                ) : (
+                  <span>Draft</span>
+                )}
+              </SameUser>
+            </IngredientHeader>
             <Style>{style}</Style>
           </Name>
           <ButtonContainer>
             <SameUser currentUser={this.props.user} userID={user_id}>
               <Status>
-                <DetailLabel>Status</DetailLabel>
-                {published ? "Published" : "Draft"}    
-              </Status>
-              <Status>
-              <DetailLabel>Privacy</DetailLabel>
-              {private_recipe ? "Private" : "Public"}
+                <DetailLabel>Privacy</DetailLabel>
+                {private_recipe ? "Private" : "Public"}
               </Status>
               <Link href={{ pathname: `/recipes/edit/${id}` }}>
                 <Add>Edit</Add>
               </Link>
             </SameUser>
-            <User>
-              <Add>Brew It</Add>
-            </User>
           </ButtonContainer>
         </RecipeHeader>
         <Description>{description}</Description>
@@ -185,9 +202,26 @@ class SingleRecipe extends React.Component {
           <RecipeStat stat="Final Gravity" value={target_fg} />
           <RecipeStat stat="Alchohol By Volume" value={target_abv} unit="%" />
           <RecipeStat stat="International Bittering Units" value={IBU} />
-          <RecipeStat stat="Standard Reference Method" value={SRM} />
+          <RecipeStat
+            stat="Standard Reference Method"
+            value={SRM}
+            background={srmToHex(SRM)}
+          />
         </RecipeStats>
-        <DetailsContainer />
+        <DetailsContainer>
+          <div>
+            <h3>Boil Size</h3>
+            <p>{boil_time} mins</p>
+          </div>
+          <div>
+            <h3>Batch Size</h3>
+            <p>{batch_size} lbs</p>
+          </div>
+          <div>
+            <h3>Efficiency</h3>
+            <p>{efficiency}%</p>
+          </div>
+        </DetailsContainer>
         <SectionContainer>
           <IngredientHeader>
             <IngredientLogo>
@@ -269,6 +303,72 @@ class SingleRecipe extends React.Component {
                 </InputsContainer>
                 <Ingredient ingredient={yeast.yeast} for="yeasts" />
               </ViewContainer>
+            ))}
+        </SectionContainer>
+        {mash_steps.length > 0 && (
+          <SectionContainer>
+            <IngredientHeader>
+              <IngredientLogo>
+                <img
+                  id="logo"
+                  src="../../static/IngredientLogos/mash.svg"
+                  alt="mash"
+                />
+                <h2>Mash Steps</h2>
+              </IngredientLogo>
+            </IngredientHeader>
+            {mash_steps &&
+              mash_steps.map(step => (
+                <ViewContainer key={step.id}>
+                  <InputsContainer>
+                    <InputContainer>
+                      <DetailLabel>Amount</DetailLabel>
+                      {step.amount} lb
+                    </InputContainer>
+                    <InputContainer>
+                      <DetailLabel>Temp</DetailLabel>
+                      {step.temperature}°F
+                    </InputContainer>
+                    <InputContainer>
+                      <DetailLabel>Time</DetailLabel>
+                      {step.time} min
+                    </InputContainer>
+                    <InputContainer>
+                      <DetailLabel>Type</DetailLabel>
+                      {step.mash_type}
+                    </InputContainer>
+                  </InputsContainer>
+                  <IngredientContainer>
+                    <InputContainer>
+                      <DetailLabel>Notes</DetailLabel>
+                      {step.notes}
+                    </InputContainer>
+                  </IngredientContainer>
+                </ViewContainer>
+              ))}
+          </SectionContainer>
+        )}
+        <SectionContainer>
+          <IngredientHeader>
+            <IngredientLogo>
+              <img
+                id="logo"
+                src="../../static/IngredientLogos/instructions.svg"
+                alt="instructions"
+              />
+              <h2>General Instructions</h2>
+            </IngredientLogo>
+          </IngredientHeader>
+          {instructions &&
+            instructions.map((instruction, index) => (
+              <div style={{ display: "flex", width: "100%", margin: "10px auto" }}>
+                <div style={{ alignSelf: "center", margin: "0 15px" }}>
+                  <h3>{index + 1}</h3>
+                </div>
+                  <IngredientContainer style={{alignSelf: "center"}}>
+                    {instruction}
+                  </IngredientContainer>
+              </div>
             ))}
         </SectionContainer>
       </RecipeContainer>

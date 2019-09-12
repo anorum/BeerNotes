@@ -44,13 +44,15 @@ class IngredientInput extends Component {
   render() {
     return (
       <React.Fragment>
-          <Container>
-            <InputsContainer>
-              {React.Children.map(this.props.children, child => (
-                <InputContainer>{child}</InputContainer>
-              ))}
-            </InputsContainer>
+        <Container style={this.props.containerStyle}>
+          <InputsContainer>
+            {React.Children.map(this.props.children, child => (
+              <InputContainer>{child}</InputContainer>
+            ))}
+          </InputsContainer>
+          {this.props.selectField ? (
             <IngredientSelect
+              invalid={this.props.invalid}
               for={this.props.for}
               selectField={this.props.selectField}
               options={this.state.options}
@@ -58,12 +60,14 @@ class IngredientInput extends Component {
               createForm={this.props.createForm}
               value={this.props.value}
             />
-            <DeleteButtonContainer>
-              <button type="button" onClick={this.props.deleteFunction}>
-                X
-              </button>
-            </DeleteButtonContainer>
-          </Container>
+          ) : (this.props.mainField)}
+
+          <DeleteButtonContainer>
+            <button type="button" onClick={this.props.deleteFunction}>
+              X
+            </button>
+          </DeleteButtonContainer>
+        </Container>
       </React.Fragment>
     );
   }

@@ -1,6 +1,7 @@
 import Forgot from "../components/Forgot";
 import styled from "styled-components";
 import ResendConfirm from "../components/ResendConfirm";
+import withoutAuthSync from "../components/withoutAuthSync"
 
 const TroubleContainer = styled.div`
   display: flex;
@@ -18,4 +19,4 @@ const forgot = props => {
   );
 };
 
-export default forgot;
+export default withoutAuthSync(forgot);

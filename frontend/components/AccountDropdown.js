@@ -134,7 +134,7 @@ const AccountDropdown = props => {
             </AccountPic>
         ) : (
       <AccountPic onClick={() => setShowMenu(!showMenu)}>
-          {user && user.username.charAt(0).toUpperCase()}
+          {user && user.username && user.username.charAt(0).toUpperCase()}
           </AccountPic>
         )}
       {showMenu && (

@@ -5,20 +5,20 @@ import axios from "axios";
 const Yeast = props => {
   const { yeast, your_recipes, all_recipes } = props.yeasts_data;
   return (
-    <div style={{ marginTop: "15px" }}>
+    <div style={{ marginTop: "15px", marginBottom: "35px" }}>
       <Ingredient for="yeasts" ingredient={yeast} />
       {your_recipes && your_recipes.length > 0 && (
         <div>
-          <h1>Your Recipes Using This yeast</h1>
+          <h1>Your Recipes Using This Yeast</h1>
           <Recipes recipes={your_recipes} />
         </div>
       )}
-      <h1> All Recipes Using This yeast</h1>
+      <h1> All Recipes Using This Yeast</h1>
       {all_recipes.length > 0 ? (
         <Recipes recipes={all_recipes} />
       ) : (
         <div>
-          No recipes are using this yeast. Perhaps you should create one!
+          No public recipes are using this yeast. Perhaps you should create one!
         </div>
       )}
     </div>

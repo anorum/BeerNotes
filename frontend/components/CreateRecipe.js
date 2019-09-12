@@ -17,7 +17,8 @@ import {
   hopTypes,
   yeastFormat,
   yeastStyle,
-  methods
+  methods,
+  mashType
 } from "../data/recipeOptions";
 import srmToHex from "../data/srmToHex";
 import {
@@ -31,6 +32,8 @@ import User from "./User";
 import { NotificationManager } from "react-notifications";
 import axios from "axios";
 import Error from "next/error";
+import Button from "./styles/Button";
+import FormErrors from "./FormErrors";
 
 const Name = styled.input`
   border-bottom: 1px solid black;
@@ -39,6 +42,13 @@ const Name = styled.input`
 
 const Description = styled.textarea`
   height: 80px;
+`;
+
+const Instructions = styled.textarea`
+  height: 45px;
+  font-size: 1.5rem;
+  resize: vertical;
+  align-self: center;
 `;
 
 export const ButtonContainer = styled.div`
@@ -73,6 +83,8 @@ const StyleMethodContainer = styled.div`
     }
   }
 `;
+
+const MashInput = styled(IngredientInput)``;
 
 const NumberInputContainers = styled.div`
   display: flex;
@@ -140,17 +152,44 @@ class CreateRecipe extends Component {
       grains: [],
       hops: [],
       yeasts: [],
-      loading: false
+      mash_steps: [],
+      instructions: [],
+      loading: false,
+      errors: {
+        fermentables: {},
+        hops: {},
+        yeasts: {},
+        mash_steps: {},
+        instructions: []
+      },
+      touched: {
+        fermentables: []
+      }
     };
   }
 
   componentWillMount() {
     this.setState({
-      ...this.props.recipe
+      ...this.props.recipe,
+      instructions: this.props.recipe && this.props.recipe.instructions || []
     });
   }
 
   /*** Computed Values ***/
+
+  validatePublish = () => {
+    if (
+      this.state.name &&
+      this.state.boil_time &&
+      this.state.fermentables.length > 0 &&
+      this.state.yeasts.length > 0 &&
+      this.state.batch_size &&
+      this.state.efficiency
+    ) {
+      return true;
+    }
+    return false;
+  };
 
   targetGravity = () => {
     let targetGravity;
@@ -265,6 +304,38 @@ class CreateRecipe extends Component {
     Router.back();
   };
 
+  deleteRecipe = e => {
+    if (
+      confirm(
+        "Are you sure you want to delete this recipe? This can not be undone."
+      )
+    ) {
+      axios
+        .delete(`/recipe/delete/${this.state.id}`)
+        .then(res => {
+          NotificationManager.success(
+            `Recipe has been deleted.`,
+            "Recipe Deleted."
+          );
+          Router.push("/recipes/");
+        })
+        .catch(err => {
+          NotificationManager.error(
+            err.response,
+            Object.keys(err.response.data).map(
+              field => `${field} : ${err.response.data[field]}`
+            ),
+            5000,
+            () => {
+              return;
+            }
+          );
+        });
+    } else {
+      return;
+    }
+  };
+
   saveRecipe = (e, message) => {
     axios
       .put("/recipe/create", this.state)
@@ -274,21 +345,20 @@ class CreateRecipe extends Component {
           message ? "Recipe Unpublished" : "Recipe Saved."
         );
         if (!this.props.edit) {
-          Router.replace(`/recipes/edit/${res.data.id}`)
+          Router.replace(`/recipes/edit/${res.data.id}`);
         }
       })
-      .catch(err =>
+      .catch(err => {
+        this.setState({ errors: err.response.data });
         NotificationManager.error(
-          err.response.message,
-          Object.keys(err.response.data).map(
-            field => `${field} : ${err.response.data[field]}`
-          ),
+          <FormErrors error={err.response.data} />,
+          "Please correct the below errors before saving.",
           5000,
           () => {
             return;
           }
-        )
-      );
+        );
+      });
   };
 
   unpublishRecipe = async () => {
@@ -345,11 +415,42 @@ class CreateRecipe extends Component {
   };
 
   addIngredient = ingredient => {
-    let newIngredient = this.state[ingredient].concat([{}]);
+    let newIngredient = this.state[ingredient].concat([
+      { [`${ingredient.substring(0, ingredient.length - 1)}_id`]: null }
+    ]);
     this.setState({ [ingredient]: newIngredient });
   };
 
+  handleInstructionChange = (e, index) => {
+    console.log(e)
+    let newInstructions = [...this.state.instructions]
+    newInstructions[index] = e.target.value
+    this.setState({instructions: newInstructions})
+  }
+
+  addMash = index => {
+    let newStep = this.state["mash_steps"].concat({ step: index });
+    this.setState({ mash_steps: newStep });
+  };
+
+  addInstruction = index => {
+    let newInstruction = this.state["instructions"].concat("");
+    this.setState({ instructions: newInstruction });
+  };
+
   updateIngredient = (value, ingredient, index, field) => {
+    //Clear Errors if Any Exists
+    this.state.errors[ingredient] &&
+      this.state.errors[ingredient][index] &&
+      this.state.errors[ingredient][index][field] &&
+      this.setState({
+        errors: {
+          [ingredient]: update(this.state.errors[ingredient], {
+            [index]: { [field]: { $set: null } }
+          })
+        }
+      });
+    //Update the state of the field
     this.setState({
       [ingredient]: update(this.state[ingredient], {
         [index]: { [field]: { $set: value } }
@@ -362,6 +463,19 @@ class CreateRecipe extends Component {
     if (index !== -1) {
       ingredients.splice(index, 1);
       this.setState({ [ingredient]: ingredients });
+    }
+  };
+
+  deleteMash = index => {
+    let steps = this.state.mash_steps;
+    if (index !== -1) {
+      steps.splice(index, 1);
+      let i = 1;
+      steps.forEach(step => {
+        step.step = i;
+        i += 1;
+      });
+      this.setState({ mash_steps: steps });
     }
   };
 
@@ -382,7 +496,13 @@ class CreateRecipe extends Component {
                 ) : (
                   <h1>New Recipe</h1>
                 )}
-                <span>{this.state.published ? "Published" : "Draft"}</span>
+                {this.state.published ? (
+                  <span style={{ background: "#3ECF8E", color: "white" }}>
+                    Published
+                  </span>
+                ) : (
+                  <span>Draft</span>
+                )}
               </div>
 
               <ButtonContainer>
@@ -397,13 +517,15 @@ class CreateRecipe extends Component {
                 >
                   Cancel
                 </Add>
-                <Add
-                  type="button"
-                  onClick={this.cancelRecipe}
-                  style={{ background: "#ED5E67" }}
-                >
-                  Delete
-                </Add>
+                {this.props.edit && (
+                  <Add
+                    type="button"
+                    onClick={this.deleteRecipe}
+                    style={{ background: "#ED5E67" }}
+                  >
+                    Delete
+                  </Add>
+                )}
                 {this.state.published && (
                   <Add
                     type="button"
@@ -416,9 +538,13 @@ class CreateRecipe extends Component {
                 <Add type="button" onClick={this.saveRecipe}>
                   Save
                 </Add>
-                <Add type="submit" onClick={this.publishRecipe}>
+                <Button
+                  type="submit"
+                  onClick={this.publishRecipe}
+                  disabled={!this.validatePublish()}
+                >
                   Publish
-                </Add>
+                </Button>
               </ButtonContainer>
             </IngredientHeader>
             <Form ref={this.form}>
@@ -439,6 +565,9 @@ class CreateRecipe extends Component {
                     required
                     value={this.state.name}
                     onChange={this.handleChange}
+                    data-error={
+                      this.state.touched.name || this.state.errors.name
+                    }
                     required
                   />
                   <InputContainer>
@@ -462,12 +591,27 @@ class CreateRecipe extends Component {
                     <Select
                       id="beerstyle"
                       name="style"
+                      styles={{
+                        valueContainer: (provided, state) => {
+                          return {
+                            ...provided,
+                            border: `${this.state.errors.style && "1px solid"}`,
+                            borderColor: `${this.state.errors.style &&
+                              "#ED5E67"}`
+                          };
+                        }
+                      }}
                       options={beerStyles}
                       getOptionLabel={option => option.label}
                       getOptionValue={option => option.value}
                       formatOptionLabel={option => option.label}
                       placeholder={"Select Beer Style..."}
                       onChange={(value, { action }) => {
+                        this.setState({
+                          errors: update(this.state.errors, {
+                            style: { $set: null }
+                          })
+                        });
                         action !== "clear"
                           ? this.setState({ style: value.value })
                           : this.setState({ style: null });
@@ -476,13 +620,6 @@ class CreateRecipe extends Component {
                       value={beerStyles.filter(
                         ({ value }) => value === this.state.style
                       )}
-                    />
-                    <input
-                      tabIndex={-1}
-                      autoComplete="off"
-                      style={{ opacity: 0, height: 0 }}
-                      value={this.state.style}
-                      required
                     />
                   </div>
                   <label htmlFor="brewmethod" style={{ margin: "0 10px" }}>
@@ -493,11 +630,27 @@ class CreateRecipe extends Component {
                       id="brewmethod"
                       name="method"
                       options={methods}
+                      styles={{
+                        valueContainer: (provided, state) => {
+                          return {
+                            ...provided,
+                            border: `${this.state.errors.method &&
+                              "1px solid"}`,
+                            borderColor: `${this.state.errors.method &&
+                              "#ED5E67"}`
+                          };
+                        }
+                      }}
                       getOptionLabel={option => option.label}
                       getOptionValue={option => option.value}
                       formatOptionLabel={option => option.value}
                       placeholder={"Select Method..."}
                       onChange={(value, { action }) => {
+                        this.setState({
+                          errors: update(this.state.errors, {
+                            method: { $set: null }
+                          })
+                        });
                         action !== "clear"
                           ? this.setState({ method: value.value })
                           : this.setState({ method: null });
@@ -506,13 +659,6 @@ class CreateRecipe extends Component {
                       value={methods.filter(
                         ({ value }) => value === this.state.method
                       )}
-                    />
-                    <input
-                      tabIndex={-1}
-                      autoComplete="off"
-                      style={{ opacity: 0, height: 0 }}
-                      value={this.state.method}
-                      required
                     />
                   </div>
                 </StyleMethodContainer>
@@ -549,6 +695,10 @@ class CreateRecipe extends Component {
                   required
                   value={this.state.description}
                   onChange={this.handleChange}
+                  data-error={
+                    this.state.touched.description ||
+                    this.state.errors.description
+                  }
                   required
                 />
                 <NumberInputContainers>
@@ -618,6 +768,12 @@ class CreateRecipe extends Component {
                             selectField="fermentable_id"
                             value={fermentable.fermentable}
                             key={index}
+                            invalid={
+                              this.state.errors.fermentables &&
+                              this.state.errors.fermentables[index] &&
+                              this.state.errors.fermentables[index]
+                                .fermentable_id
+                            }
                             updateFunction={(value, field) => {
                               return this.updateIngredient(
                                 value,
@@ -685,6 +841,13 @@ class CreateRecipe extends Component {
                                     "amount"
                                   )
                                 }
+                                data-error={
+                                  this.state.errors.fermentables &&
+                                  this.state.errors.fermentables[index] &&
+                                  this.state.errors.fermentables[index].amount
+                                    ? true
+                                    : false
+                                }
                                 value={this.state.fermentables[index].amount}
                                 step="0.1"
                                 required
@@ -719,6 +882,11 @@ class CreateRecipe extends Component {
                           selectField="hop_id"
                           value={hop.hop}
                           key={index}
+                          invalid={
+                            this.state.errors.hops &&
+                            this.state.errors.hops[index] &&
+                            this.state.errors.hops[index].hop_id
+                          }
                           updateFunction={(value, field) =>
                             this.updateIngredient(value, "hops", index, field)
                           }
@@ -783,15 +951,22 @@ class CreateRecipe extends Component {
                               value={this.state.hops[index].amount}
                               step="0.1"
                               required
+                              data-error={
+                                this.state.errors.hops &&
+                                this.state.errors.hops[index] &&
+                                this.state.errors.hops[index].amount
+                                  ? true
+                                  : false
+                              }
                             />
                           </div>
                           <div>
-                            <label htmlFor="hops_schedule">Hop Schedule</label>
+                            <label htmlFor="hop_schedule">Hop Schedule</label>
                             <input
                               type="number"
                               id="hops"
                               min="0"
-                              name="hops_schedule"
+                              name="hop_schedule"
                               style={{ width: "75px", fontSize: "1.7rem" }}
                               placeholder="0 mins"
                               onChange={e =>
@@ -803,6 +978,13 @@ class CreateRecipe extends Component {
                                 )
                               }
                               value={this.state.hops[index].hop_schedule}
+                              data-error={
+                                this.state.errors.hops &&
+                                this.state.errors.hops[index] &&
+                                this.state.errors.hops[index].hop_schedule
+                                  ? true
+                                  : false
+                              }
                               required
                             />
                           </div>
@@ -832,6 +1014,11 @@ class CreateRecipe extends Component {
                         <IngredientInput
                           for="yeasts"
                           selectField="yeast_id"
+                          invalid={
+                            this.state.errors.yeasts &&
+                            this.state.errors.yeasts[index] &&
+                            this.state.errors.yeasts[index].yeast_id
+                          }
                           value={yeast.yeast}
                           key={index}
                           updateFunction={(value, field) =>
@@ -900,6 +1087,13 @@ class CreateRecipe extends Component {
                                   "pitch_temp"
                                 )
                               }
+                              data-error={
+                                this.state.errors.yeasts &&
+                                this.state.errors.yeasts[index] &&
+                                this.state.errors.yeasts[index].pitch_temp
+                                  ? true
+                                  : false
+                              }
                               value={this.state.yeasts[index].pitch_temp}
                               required
                             />
@@ -921,6 +1115,13 @@ class CreateRecipe extends Component {
                                   "attenuation"
                                 )
                               }
+                              data-error={
+                                this.state.errors.yeasts &&
+                                this.state.errors.yeasts[index] &&
+                                this.state.errors.yeasts[index].attenuation
+                                  ? true
+                                  : false
+                              }
                               value={this.state.yeasts[index].attenuation}
                               required
                             />
@@ -928,6 +1129,298 @@ class CreateRecipe extends Component {
                         </IngredientInput>
                       ))}
                     </div>
+                  </SectionContainer>
+                  <SectionContainer>
+                    <IngredientHeader>
+                      <IngredientLogo>
+                        <img
+                          id="logo"
+                          src="../../static/IngredientLogos/mash.svg"
+                          alt="mash"
+                        />
+                        <h2>Mash Steps</h2>
+                      </IngredientLogo>
+                      <Add
+                        type="button"
+                        onClick={() =>
+                          this.addMash(this.state.mash_steps.length + 1)
+                        }
+                      >
+                        Add Mash Step
+                      </Add>
+                    </IngredientHeader>
+                    {this.state.mash_steps.map((step, index) => (
+                      <div style={{ display: "flex", width: "100%" }}>
+                        <div
+                          style={{ alignSelf: "center", marginLeft: "15px" }}
+                        >
+                          <h3>{index + 1}</h3>
+                        </div>
+                        <IngredientInput
+                          containerStyle={{ width: "100%" }}
+                          for="mash_steps"
+                          value={index}
+                          key={index}
+                          invalid={
+                            this.state.errors.mash_steps &&
+                            this.state.errors.mash_steps[index]
+                          }
+                          updateFunction={(value, field) =>
+                            this.updateIngredient(
+                              value,
+                              "mash_steps",
+                              index,
+                              field
+                            )
+                          }
+                          deleteFunction={() => this.deleteMash(index)}
+                          mainField={
+                            <React.Fragment>
+                              <div style={{ alignSelf: "center" }}>
+                                <label htmlFor="notes">Notes</label>
+                                <input
+                                  type="text"
+                                  id="notes"
+                                  name="notes"
+                                  style={{ width: "100%", fontSize: "1.7rem" }}
+                                  placeholder="Enter Mash Step"
+                                  data-error={
+                                    this.state.errors.mash_steps &&
+                                    this.state.errors.mash_steps[index] &&
+                                    this.state.errors.mash_steps[index].notes
+                                      ? true
+                                      : false
+                                  }
+                                  onChange={e =>
+                                    this.updateIngredient(
+                                      e.target.value,
+                                      "mash_steps",
+                                      index,
+                                      "notes"
+                                    )
+                                  }
+                                  value={this.state.mash_steps[index].notes}
+                                  required
+                                />
+                              </div>
+                              <div></div>
+                            </React.Fragment>
+                          }
+                        >
+                          <div>
+                            <label htmlFor="amount">Amount</label>
+                            <input
+                              type="number"
+                              id="Amount"
+                              min="0"
+                              name="amount"
+                              style={{ width: "75px", fontSize: "1.7rem" }}
+                              placeholder="0.0lb"
+                              onChange={e =>
+                                this.updateIngredient(
+                                  e.target.value,
+                                  "mash_steps",
+                                  index,
+                                  "amount"
+                                )
+                              }
+                              data-error={
+                                this.state.errors.mash_steps &&
+                                this.state.errors.mash_steps[index] &&
+                                this.state.errors.mash_steps[index].amount
+                                  ? true
+                                  : false
+                              }
+                              value={this.state.mash_steps[index].amount}
+                              required
+                              step="0.1"
+                            />
+                          </div>
+                          <div>
+                            <label htmlFor="time">Time</label>
+                            <input
+                              type="number"
+                              id="time"
+                              min="0"
+                              name="time"
+                              style={{ width: "75px", fontSize: "1.7rem" }}
+                              placeholder="0min"
+                              onChange={e =>
+                                this.updateIngredient(
+                                  e.target.value,
+                                  "mash_steps",
+                                  index,
+                                  "time"
+                                )
+                              }
+                              data-error={
+                                this.state.errors.mash_steps &&
+                                this.state.errors.mash_steps[index] &&
+                                this.state.errors.mash_steps[index].time
+                                  ? true
+                                  : false
+                              }
+                              value={this.state.mash_steps[index].time}
+                              required
+                            />
+                          </div>
+                          <div>
+                            <label htmlFor="temperature">Temp</label>
+                            <input
+                              type="number"
+                              id="temperature"
+                              min="0"
+                              name="temperature"
+                              style={{ width: "75px", fontSize: "1.7rem" }}
+                              placeholder="0°"
+                              data-error={
+                                this.state.errors.mash_steps &&
+                                this.state.errors.mash_steps[index] &&
+                                this.state.errors.mash_steps[index].temperature
+                                  ? true
+                                  : false
+                              }
+                              onChange={e =>
+                                this.updateIngredient(
+                                  e.target.value,
+                                  "mash_steps",
+                                  index,
+                                  "temperature"
+                                )
+                              }
+                              value={this.state.mash_steps[index].temperature}
+                              required
+                            />
+                          </div>
+                          <div style={{ width: "150px" }}>
+                            <label htmlFor="mash_type">Type</label>
+                            <Select
+                              id="mash_type"
+                              name="mash_type"
+                              options={mashType}
+                              styles={{
+                                valueContainer: (provided, state) => {
+                                  return {
+                                    ...provided,
+                                    border: `${this.state.errors.mash_steps &&
+                                      this.state.errors.mash_steps[index] &&
+                                      this.state.errors.mash_steps[index]
+                                        .mash_type &&
+                                      "1px solid"}`,
+                                    borderColor: `${this.state.errors
+                                      .mash_steps &&
+                                      this.state.errors.mash_steps[index] &&
+                                      this.state.errors.mash_steps[index]
+                                        .mash_type &&
+                                      "#ED5E67"}`
+                                  };
+                                }
+                              }}
+                              getOptionLabel={option => option.label}
+                              getOptionValue={option => option.value}
+                              formatOptionLabel={option => option.label}
+                              placeholder={"Mash Type"}
+                              onChange={(value, { action }) => {
+                                action !== "clear"
+                                  ? this.updateIngredient(
+                                      value.value,
+                                      "mash_steps",
+                                      index,
+                                      "mash_type"
+                                    )
+                                  : this.updateIngredient(
+                                      null,
+                                      "mash_steps",
+                                      index,
+                                      "mash_type"
+                                    );
+                              }}
+                              isClearable
+                              value={mashType.filter(
+                                ({ value }) =>
+                                  value ===
+                                  this.state.mash_steps[index].mash_type
+                              )}
+                            />
+                          </div>
+                        </IngredientInput>
+                      </div>
+                    ))}
+                  </SectionContainer>
+                  <SectionContainer>
+                    <IngredientHeader>
+                      <IngredientLogo>
+                        <img
+                          id="logo"
+                          src="../../static/IngredientLogos/instructions.svg"
+                          alt="instructions"
+                        />
+                        <h2>General Instructions</h2>
+                      </IngredientLogo>
+                      <Add
+                        type="button"
+                        onClick={() =>
+                          this.addInstruction(
+                            this.state.instructions.length + 1
+                          )
+                        }
+                      >
+                        Add Instruction Step
+                      </Add>
+                    </IngredientHeader>
+                    {this.state.instructions.map((step, index) => (
+                      <div style={{ display: "flex", width: "100%" }}>
+                        <div
+                          style={{ alignSelf: "center", marginLeft: "15px" }}
+                        >
+                          <h3>{index + 1}</h3>
+                        </div>
+                        <IngredientInput
+                          containerStyle={{ width: "100%" }}
+                          for="instructions"
+                          value={index}
+                          key={index}
+                          invalid={
+                            this.state.errors.instructions &&
+                            this.state.errors.instructions[index]
+                          }
+                          updateFunction={(value, field) =>
+                            this.updateIngredient(
+                              value,
+                              "instructions",
+                              index,
+                              field
+                            )
+                          }
+                          deleteFunction={() => this.deleteIngredient("instructions", index)}
+                          mainField={
+                            <React.Fragment>
+                              <div
+                                style={{ alignSelf: "center", padding: "10px" }}
+                              >
+                                <Instructions
+                                  type="text"
+                                  id="instructions"
+                                  name="instructions"
+                                  style={{ width: "100%", fontSize: "1.7rem" }}
+                                  placeholder="Enter Instruction"
+                                  data-error={
+                                    this.state.errors.instructions &&
+                                    this.state.errors.instructions[index]
+                                      ? true
+                                      : false
+                                  }
+                                  onChange={(e) => this.handleInstructionChange(e, index)}
+                                  value={this.state.instructions[index]}
+                                  required
+                                />
+                              </div>
+                              <div></div>
+                            </React.Fragment>
+                          }
+                        ></IngredientInput>
+                      </div>
+                    ))}
                   </SectionContainer>
                 </IngredientsContainer>
               </fieldset>

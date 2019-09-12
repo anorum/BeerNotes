@@ -13,6 +13,7 @@ import {
 } from "./styles/IngredientForm";
 import HoverTip from "./HoverTip";
 import Select from "react-select";
+import Button from "./styles/Button"
 
 const color = {
   fermentables: value => srmToHex(value) || "#EEAF4B",
@@ -174,19 +175,22 @@ class CreateIngredient extends Component {
                   display: "flex",
                   alignSelf: "flex-end",
                   marginLeft: "auto",
-                  marginRight: "15px"
+                  marginRight: "15px",
+
                 }}
               >
-                <button type="submit">
+                <Button type="submit">
                   {`Create ${this.props.for.charAt(0).toUpperCase() +
                     this.props.for.substring(1, this.props.for.length - 1)}`}
-                </button>
-                <button
+                </Button>
+                <Button
                   type="button"
+                  style={{marginLeft: "15px", color: "#706F6A"}}
+                  background="#EFEEEE"
                   onClick={() => this.props.handleCreate(false, this.state)}
                 >
                   Cancel
-                </button>
+                </Button>
               </div>
             </DetailsContainer>
           </CreateWrapper>
