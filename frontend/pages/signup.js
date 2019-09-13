@@ -1,4 +1,6 @@
 import SignUp from "../components/SignUp"
+import withoutAuthSync from "../components/withoutAuthSync"
+
 
 const signup = props => {
     return (
@@ -8,4 +10,4 @@ const signup = props => {
     )
 }
 
-export default signup
+export default withoutAuthSync(signup)

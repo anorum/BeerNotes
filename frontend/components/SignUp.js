@@ -9,6 +9,7 @@ import FormStyles from "./styles/FormStyle";
 import Button from "./styles/Button";
 import Formsy from "formsy-react";
 import MyInput from "./MyInput";
+import FormErrors from "./FormErrors";
 
 const LoginContainer = styled.div`
   max-width: 450px;
@@ -68,7 +69,7 @@ class SignUp extends Component {
     this.setState({ [e.target.name]: e.target.value });
   };
 
-  submit(model) {
+  submit = model => {
     const req = axios
       .post("/register", JSON.stringify(model))
       .then(res => {
@@ -80,13 +81,45 @@ class SignUp extends Component {
         Router.replace("/");
       })
       .catch(err => {
-        NotificationManager.error(err.response.data.message);
+        NotificationManager.error(
+          <FormErrors error={err.response.data} />,
+          "Uh Oh! A Problem Occurred",
+          5000,
+          () => {
+            return;
+          }
+        );
+        switch (err.response.data.message) {
+
+          case "Email and username already exists.":
+            this.refs.form.updateInputsWithError(
+              {
+                email: "Email already taken.",
+                username: "This username is already in use."
+              },
+              true
+            );
+            break
+          case "Account with this email already exists.":
+            this.refs.form.updateInputsWithError(
+              {
+                email: "Email already taken."              },
+              true
+            );
+            break
+          case "Account with this username already exists.":
+            this.refs.form.updateInputsWithError(
+              {
+                username: "This username is already in use."
+              },
+              true
+            );
+            break
+        }
       });
 
     return req;
-  }
-
-  handleValidations() {}
+  };
 
   render() {
     return (
@@ -96,13 +129,14 @@ class SignUp extends Component {
           Join Brewcipes to start creating, brewing, and sharing great beer
           recipes!
         </p>
-        <FormStyle >
+        <FormStyle>
           <Formsy
             onValidSubmit={this.submit}
             onValid={this.enableButton}
             onInvalid={this.disableButton}
             style={{ background: "#FFF" }}
             method="post"
+            ref="form"
           >
             <fieldset aria-busy={this.state.isLoading}>
               <Label htmlFor="email">
@@ -115,11 +149,25 @@ class SignUp extends Component {
                     isEmail: true
                   }}
                   validationError="This is not a valid email"
-                  
-                  
                   required
                 />
               </Label>
+<<<<<<< HEAD
+=======
+              <Label htmlFor="username">
+                Username
+                <MyInput
+                  name="username"
+                  type="username"
+                  placeholder="Choose a username"
+                  validations={{
+                    matchRegexp: /^(?=.{5,20}$)(?![_.])(?!.*[_.]{2})[a-zA-Z0-9._]+(?<![_.])$/
+                  }}
+                  validationError="Your username must be 5 - 20 characters long and have no __, _., ._ or .."
+                  required
+                />
+              </Label>
+>>>>>>> mash
               <Label htmlFor="password">
                 Password
                 <MyInput

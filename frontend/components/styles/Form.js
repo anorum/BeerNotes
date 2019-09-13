@@ -36,6 +36,10 @@ const Form = styled.form`
       border-color: ${props => props.theme.mainColor};
     }
 
+    &:invalid[data-error = "true"] {
+      border-color: #ED5E67;
+    }
+
   }
 
   fieldset {
@@ -46,6 +50,8 @@ const Form = styled.form`
     }
     
   }
+
+
 `;
 
 export default Form;

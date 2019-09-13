@@ -24,7 +24,7 @@ class MyInput extends React.Component {
       <div>
         <input
           onChange={this.changeValue}
-          className={this.props.isValid() ? "valid" : "invalid"}
+          className={this.props.isPristine() ? null : this.props.isValid() ? "valid" : "invalid"}
           type={this.props.type}
           placeholder={this.props.placeholder}
           value={this.props.getValue() || ''}

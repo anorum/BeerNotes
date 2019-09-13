@@ -33,7 +33,7 @@ class RecipeHops(db.Model, BaseModel):
     hop_id = db.Column(UUID(as_uuid=True), db.ForeignKey(
         'hop.id'))
     amount = db.Column(db.Float(), nullable=False)
-    hop_schedule = db.Column(db.Integer())
+    hop_schedule = db.Column(db.Integer(), nullable=False)
     hop = db.relationship("HopsModel")
 
 
@@ -59,17 +59,19 @@ class RecipeYeasts(db.Model, BaseModel):
         'yeast.id'))
     pitch_temp = db.Column(db.Integer(), nullable=False)
     pitch_time = db.Column(db.String(128))
-    attenuation = db.Column(db.Integer())
+    attenuation = db.Column(db.Integer(), nullable=False)
     yeast = db.relationship("YeastModel")
 
 
 class RecipeMashSteps(db.Model, BaseModel):
     __tablename__ = "recipes_mash"
-    step = db.Column(db.Integer(), primary_key=True, nullable=False)
+    id = db.Column(UUID(as_uuid=True), nullable=False,
+                   primary_key=True, default=uuid4)
+    step = db.Column(db.Integer())
     recipe_id = db.Column(UUID(as_uuid=True), db.ForeignKey(
         'recipe.id'))
     amount = db.Column(db.Float())
-    notes = db.Column(db.String(240))
+    notes = db.Column(db.String(240), nullable=False)
     mash_type = db.Column(db.String(80), nullable=False)
     temperature = db.Column(db.Integer(), nullable=False)
     time = db.Column(db.Integer(), nullable=False)
@@ -96,9 +98,9 @@ class RecipeModel(db.Model, BaseModel, SearchableMixin):
     SRM = db.Column(db.Float(precision=3))
     hex_color = db.Column(db.String(10))
     description = db.Column(db.UnicodeText())
-    style = db.Column(db.String(240))
-    method = db.Column(db.String(240))
-    instructions = db.Column(db.UnicodeText())
+    style = db.Column(db.String(240), nullable=False)
+    method = db.Column(db.String(240), nullable=False)
+    instructions = db.Column(ARRAY(db.String(1200)))
     private_recipe = db.Column(db.Boolean(), default=False)
     published = db.Column(db.Boolean(), default=False)
     created_date = db.Column(db.DateTime, default=datetime.datetime.utcnow)

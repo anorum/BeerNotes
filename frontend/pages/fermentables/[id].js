@@ -5,7 +5,7 @@ import axios from "axios";
 const Fermentable = props => {
   const { fermentable, your_recipes, all_recipes } = props.fermentables_data;
   return (
-    <div style={{ marginTop: "15px" }}>
+    <div style={{ marginTop: "15px", marginBottom: "35px" }}>
       <Ingredient for="fermentables" ingredient={fermentable} />
       {your_recipes && your_recipes.length > 0 && (
         <div>
@@ -18,7 +18,7 @@ const Fermentable = props => {
         <Recipes recipes={all_recipes} />
       ) : (
         <div>
-          No recipes are using this fermentable. Perhaps you should create one!
+          No public recipes are using this fermentable. Perhaps you should create one!
         </div>
       )}
     </div>

@@ -24,7 +24,7 @@ USER_DOES_NOT_EXIST = "A user with email {} does not exist."
 USER_DELETED = "User for email {} successfully deleted"
 USER_FAILED_TO_CREATE = "An error occurred during creation of account."
 USER_NOT_CONFIRMED = "This user is not confirmed. Please confirm your account by clicking on the confirm link in the email sent."
-INVALID_LOGIN = "The username or password is incorrect."
+INVALID_LOGIN = "Account with this email does not exists."
 USER_PASSWORD_UPDATED = "Your password has been changed."
 USERNAME_ALREADY_EXISTS = "Account with this username already exists."
 
@@ -34,10 +34,14 @@ class UserRegister(Resource):
     @classmethod
     def post(cls):
         user = user_schema.load(request.get_json())
-        if UserModel.find_by_email(user.email.lower()):
+        EmailExist = UserModel.find_by_email(user.email.lower())
+        UsernameExist = UserModel.find_by_username(user.username.lower())
+        print(EmailExist)
+        if EmailExist and UsernameExist:
+            return {"message": "Email and username already exists."}, 400
+        elif EmailExist:
             return {"message": USER_ALREADY_EXISTS}, 400
-        
-        if UserModel.find_by_username(user.username.lower()):
+        elif UsernameExist:
             return {"message": USERNAME_ALREADY_EXISTS}, 400
 
         try:
@@ -50,7 +54,7 @@ class UserRegister(Resource):
             return {"message": USER_REGISTERED}, 201
         except:
             user.delete_from_db()
-            return {"message": USER_FAILED_TO_CREATE}
+            return {"message": USER_FAILED_TO_CREATE}, 405
 
 
 class GetUser(Resource):

@@ -1,4 +1,5 @@
 import SignIn from "../components/SignIn"
+import withoutAuthSync from "../components/withoutAuthSync"
 
 const Login = props => {
     return (
@@ -8,4 +9,4 @@ const Login = props => {
     )
 }
 
-export default Login
+export default withoutAuthSync(Login)

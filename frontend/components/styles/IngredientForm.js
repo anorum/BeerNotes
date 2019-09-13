@@ -11,12 +11,9 @@ export const Container = styled.div`
   padding: 15px 0;
 
   @media screen and (max-width: ${props => props.theme.mobile}) {
-    grid-template-columns: auto 0.05fr;
-    grid-template-rows: 50px 1fr;
 
-    & :first-child {
-      grid-column: 1 / -1;
-    }
+    grid-template-columns: 1fr;
+  grid-template-rows: min-content auto 0 0.05fr;
   }
 `;
 
@@ -36,8 +33,8 @@ export const IngredientHeader = styled.div`
   align-items: center;
   justify-content: space-between;
   h1 {
-      display: inline-block;
-    }
+    display: inline-block;
+  }
   span {
     padding: 5px;
     display: inline;
@@ -50,11 +47,8 @@ export const IngredientHeader = styled.div`
   &.recipeheader {
     @media screen and (max-width: ${props => props.theme.mobile}) {
       flex-direction: column;
-
-    
     }
   }
-
 `;
 
 export const IngredientsContainer = styled.div`
@@ -82,11 +76,12 @@ export const InputsContainer = styled.div`
   display: flex;
   flex-direction: row;
   align-self: center;
-  @media only screen and (max-width: ${props => props.theme.desktop}) {
+  @media only screen and (max-width: ${props => props.theme.tablet}) {
     flex-direction: column;
   }
   @media only screen and (max-width: ${props => props.theme.mobile}) {
     flex-direction: row;
+    flex-wrap: wrap;
     margin-bottom: 20px;
   }
 `;
@@ -96,12 +91,37 @@ export const InputContainer = styled.div`
   flex-direction: column;
   white-space: nowrap;
   margin: 0 2rem;
+
 `;
 
 export const DeleteButtonContainer = styled.div`
   align-self: center;
   margin-right: 20px;
   justify-self: flex-end;
+  button {
+    border-radius: 20%;
+    padding: 5px 9px;
+    background: #ed5e67;
+    color: white;
+    font-weight: 700;
+    text-shadow: 0 1px 3px rgba(36, 180, 126, 0.4);
+    box-shadow: 0 4px 6px rgba(50, 50, 93, 0.11), 0 1px 3px rgba(0, 0, 0, 0.08);
+    display: inline-block;
+    line-height: 20px;
+    text-transform: uppercase;
+    color: ${props => props.color || "#FFF"};
+    transition: all 0.15s ease;
+    font-size: 1.5rem;
+
+    :hover {
+      box-shadow: 0 7px 14px rgba(50, 50, 93, 0.1),
+        0 3px 6px rgba(0, 0, 0, 0.08);
+      transform: translateY(-1px);
+    }
+    :focus {
+      outline: 0;
+    }
+  }
 `;
 
 export const IngredientContainer = styled.div`
@@ -112,10 +132,15 @@ export const IngredientContainer = styled.div`
   box-shadow: 0 1px 5px rgba(0, 0, 0, 0.15);
   width: 100%;
 
-  &:hover{
+  &:hover {
     box-shadow: 0 1px 5px rgba(0, 0, 0, 0.4);
     transform: translateY(-2px);
-    transition: all .2s cubic-bezier(0.075, 0.82, 0.165, 1);
+    transition: all 0.2s cubic-bezier(0.075, 0.82, 0.165, 1);
+  }
+
+  @media screen and (max-width: ${props => props.theme.mobile}) {
+    padding: .5rem .5rem;
+    overflow: hidden;
   }
 `;
 

@@ -80,8 +80,9 @@ class RecipeMashSteps(ma.ModelSchema):
 
     class Meta:
         model = RecipeMashSteps
-        fields = ("step", "amount", "notes",
+        fields = ("step", "amount", "notes", "recipe_id",
                   "mash_type", "temperature", "time")
+        load_only = ("recipe_id",)
 
 
 class RecipeSchema(ma.ModelSchema):

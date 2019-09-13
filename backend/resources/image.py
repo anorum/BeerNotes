@@ -95,6 +95,9 @@ class AvatarUpload(Resource):
                 user.save_to_db()
             except:
                 return {"message": "There was an issue updating your profile."}
+        else:
+            user.description = None
+            user.save_to_db()
         if "image" in data.keys():
             try:
                 if not image_helper.is_filename_safe(data["image"].filename):

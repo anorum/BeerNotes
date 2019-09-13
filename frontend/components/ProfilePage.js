@@ -142,7 +142,7 @@ const ProfilePage = props => {
             <StyledButton href="/settings">Edit Profile</StyledButton>
             
           </SameUser>
-          <p>{description}</p>
+          {description && <p> {description}</p>}
         </ProfileDetails>
       </SidebarContainer>
       <ContentContainer>

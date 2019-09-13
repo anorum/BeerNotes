@@ -26,8 +26,8 @@ export const auth = async ctx => {
       .then(res => res.data)
       .catch(err => err.response.data);
 
-    if (user.msg) {
-      if (user.msg === "Token has expired") {
+    if (user && user.msg) {
+      if (user.msg === "Your login has expired. Please refresh the page and try again.") {
         user = await axios
           .post(
             "/user",
@@ -82,7 +82,7 @@ export const auth = async ctx => {
       .then(res => res.data)
       .catch(err => err.response.data);
 
-    if (user.msg) {
+    if (user && user.msg) {
       if (user.msg === "Token has expired") {
         user = await axios
           .post(
