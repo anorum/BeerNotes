@@ -20,11 +20,12 @@ const styles = {
       ...provided,
       width: "100%",
       alignSelf: "center"
+      
     };
   },
   valueContainer: (provided, state) => {
     return {
-      ...provided
+      ...provided,
     };
   },
   control: (provided, state) => {
@@ -33,9 +34,13 @@ const styles = {
       minHeight: "90px",
       boxShadow: 0,
       borderWidth: "0 0 0 0",
-      borderColor: state.isFocused ? "#FEDC00" : provided.borderColor,
+      borderColor: state.isFocused
+        ? "#FEDC00"
+        : provided.borderColor,
       "&:hover": {
-        borderColor: state.isFocused ? "#FEDC00" : provided.borderColor
+        borderColor: state.isFocused
+          ? "#FEDC00"
+          : provided.borderColor
       }
     };
   }
@@ -65,8 +70,8 @@ class IngredientSelect extends Component {
         newValue: null,
         value: { ...val }
       });
-      await this.props.onChange(val.id, this.props.selectField);
-      await this.props.onChange(val, this.props.for.slice(0, -1));
+      await this.props.onChange(val.id, this.props.selectField)
+      await this.props.onChange(val, this.props.for.slice(0,-1));
     } else {
       this.setState({
         isLoading: false,
@@ -80,10 +85,10 @@ class IngredientSelect extends Component {
   handleChange = async (val, { action }) => {
     if (action !== "clear") {
       await this.props.onChange(val.id, this.props.selectField);
-      await this.props.onChange(val, this.props.for.slice(0, -1));
+      await this.props.onChange(val, this.props.for.slice(0,-1))
     } else {
       await this.props.onChange(null, this.props.selectField);
-      await this.props.onChange(null, this.props.for.slice(0, -1));
+      await this.props.onChange(null, this.props.for.slice(0,-1))
     }
   };
 
@@ -110,19 +115,11 @@ class IngredientSelect extends Component {
             __isNew__: true
           })}
         />
-        <input
-          tabIndex={-1}
-          autoComplete="off"
-          style={{ opacity: 0, height: 0 }}
-          value={this.props.value}
-          required
-        />
         {this.state.showAdd && (
           <FormContainer>
             {this.props.createForm(this.state.newValue, this.handleCreateDone)}
           </FormContainer>
         )}
-        
       </React.Fragment>
     );
   }

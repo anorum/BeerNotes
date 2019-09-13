@@ -3,7 +3,7 @@ import styled from "styled-components";
 export const Container = styled.div`
   display: grid;
   margin: 0.5rem 23px;
-  grid-template-columns: min-content auto 0 0.05fr;
+  grid-template-columns: min-content auto 0.05fr;
   grid-template-rows: 1fr auto;
   border: 0.5px solid #f0f0f0;
   border-radius: 15px;
@@ -11,7 +11,7 @@ export const Container = styled.div`
   padding: 15px 0;
 
   @media screen and (max-width: ${props => props.theme.mobile}) {
-    grid-template-columns: auto 0 0.05fr;
+    grid-template-columns: auto 0.05fr;
     grid-template-rows: 50px 1fr;
 
     & :first-child {

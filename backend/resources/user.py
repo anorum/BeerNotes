@@ -60,8 +60,8 @@ class GetUser(Resource):
         user_id = get_jwt_identity()
         if user_id:
             user = UserModel.find_by_id(user_id)
+            confirmation = user.most_recent_confirmation
             if user:
-                confirmation = user.most_recent_confirmation
                 if confirmation and confirmation.confirmed:
                     return user_schema.dump(user), 200
                 else:
@@ -139,7 +139,9 @@ class SetPassword(Resource):
         user = UserModel.find_by_id(user)
         if not user:
             return {"message": USER_DOES_NOT_EXIST.format(user)}, 400
+        print(user)
         user_passwords = request.get_json()
+        print(user_passwords['password'])
         if not user.check_password(user_passwords['password']):
             return {"message": INVALID_PASSWORD}
         user.set_password(user_passwords['newpassword'])

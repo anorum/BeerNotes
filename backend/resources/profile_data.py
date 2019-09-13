@@ -54,6 +54,7 @@ class UserProfile(Resource):
             data['hops'] = hops
             data['fermentables'] = fermentables
             data['yeasts'] = yeast
+            print(data)
             return profile_recipe_public.dump(data)
         else:
             return {"msg": "Username doesn't exists"}
