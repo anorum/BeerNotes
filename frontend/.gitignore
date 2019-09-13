@@ -5,6 +5,7 @@
 
 # testing
 /coverage
+/backend/__pycache__
 
 # production
 /build
