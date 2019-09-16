@@ -15,7 +15,6 @@ export const Container = styled.div`
     grid-template-columns: 1fr;
     grid-template-rows: min-content auto;
 }
-  }
 `;
 
 export const ViewContainer = styled.div`
