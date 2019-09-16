@@ -35,7 +35,6 @@ const ProfileMenu = props => {
                 <FilterButton aria-active={props.selected === "hops"} onClick={() => props.handleClick("hops")}>Hops</FilterButton>
                 <FilterButton aria-active={props.selected === "fermentables"} onClick={() => props.handleClick("fermentables")}>Fermentables</FilterButton>
                 <FilterButton aria-active={props.selected === "yeasts"} onClick={() => props.handleClick("yeasts")}>Yeasts</FilterButton>
-                <FilterButton aria-active={props.selected === "brewhistory"} onClick={() => props.handleClick("brewhistory")}>Brew History</FilterButton>
             </LabelContainer>
         </Container>
     );

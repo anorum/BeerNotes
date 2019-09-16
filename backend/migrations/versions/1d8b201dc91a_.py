@@ -1,8 +1,8 @@
 """empty message
 
-Revision ID: 3eec33146008
+Revision ID: 1d8b201dc91a
 Revises: 
-Create Date: 2019-09-11 09:55:31.224955
+Create Date: 2019-09-15 21:30:27.677800
 
 """
 from alembic import op
@@ -10,7 +10,7 @@ import sqlalchemy as sa
 from sqlalchemy.dialects import postgresql
 
 # revision identifiers, used by Alembic.
-revision = '3eec33146008'
+revision = '1d8b201dc91a'
 down_revision = None
 branch_labels = None
 depends_on = None
@@ -96,13 +96,13 @@ def upgrade():
     sa.Column('description', sa.UnicodeText(), nullable=True),
     sa.Column('style', sa.String(length=240), nullable=False),
     sa.Column('method', sa.String(length=240), nullable=False),
-    sa.Column('instructions', postgresql.ARRAY(sa.String(length=800)), nullable=True),
+    sa.Column('instructions', postgresql.ARRAY(sa.String(length=1200)), nullable=True),
     sa.Column('private_recipe', sa.Boolean(), nullable=True),
     sa.Column('published', sa.Boolean(), nullable=True),
     sa.Column('created_date', sa.DateTime(), nullable=True),
     sa.Column('icon', sa.String(length=40), nullable=False),
-    sa.Column('brewable', sa.Boolean(), nullable=True),
-    sa.Column('priming_level', sa.Float(), nullable=True),
+    sa.Column('finished', sa.Boolean(), nullable=True),
+    sa.Column('priming_level', sa.Float(), nullable=False),
     sa.ForeignKeyConstraint(['user_id'], ['user.id'], name=op.f('fk_recipe_user_id_user')),
     sa.PrimaryKeyConstraint('id', name=op.f('pk_recipe'))
     )
@@ -133,7 +133,7 @@ def upgrade():
     op.create_table('recipes_fermentables',
     sa.Column('id', postgresql.UUID(as_uuid=True), nullable=False),
     sa.Column('recipe_id', postgresql.UUID(as_uuid=True), nullable=True),
-    sa.Column('fermentable_id', postgresql.UUID(as_uuid=True), nullable=False),
+    sa.Column('fermentable_id', postgresql.UUID(as_uuid=True), nullable=True),
     sa.Column('amount', sa.Float(), nullable=False),
     sa.ForeignKeyConstraint(['fermentable_id'], ['fermentable.id'], name=op.f('fk_recipes_fermentables_fermentable_id_fermentable')),
     sa.ForeignKeyConstraint(['recipe_id'], ['recipe.id'], name=op.f('fk_recipes_fermentables_recipe_id_recipe')),

@@ -92,13 +92,9 @@ class RecipeCreate(Resource):
         recipe = RecipeModel.find_by_id(recipeid)
         if not recipe:
             data.pop('id', None)
-            loaded_data = recipe_schema.load(data, session=db.session)
+            loaded_data = recipe_schema.load(data)
         else:
-<<<<<<< HEAD
             loaded_data = recipe_schema.load(data, instance=recipe)
-=======
-            loaded_data = recipe_schema.load(data, instance=recipe, session=db.session)
->>>>>>> mash
             if loaded_data.user_id != current_user.id:
                 return {"message": "You can not edit other users recipes"}, 403
         santized_recipe = recipe_schema.dump(loaded_data)
@@ -107,17 +103,15 @@ class RecipeCreate(Resource):
         loaded_data.target_abv = ABV(santized_recipe)
         loaded_data.IBU = IBU(santized_recipe)
         loaded_data.SRM = SRM(santized_recipe)
-<<<<<<< HEAD
-=======
         if (len(santized_recipe['fermentables']) > 0 and len(santized_recipe['yeasts']) > 0 and santized_recipe['boil_time']):
-            loaded_data.brewable = True
+            loaded_data.finished = True
         else:
             loaded_data.published = False
-            loaded_data.brewable = False
->>>>>>> mash
+            loaded_data.finished = False
         try:
             loaded_data.save_to_db()
         except Exception as e:
+            print("SWAGGGY BOY")
             return e, 500
         if loaded_data.private_recipe or (not loaded_data.published):
             if len(RecipeModel.elastic_find_by_id(loaded_data.id)) > 0:

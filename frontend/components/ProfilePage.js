@@ -148,12 +148,12 @@ const ProfilePage = props => {
       <ContentContainer>
         <ProfileMenu selected={selection} handleClick={setSelection} />
         {selection === "recipes" && (
-          <React.Fragment>
+          <div style={{margin: "5px auto"}}>
             <SameUser userID={id}>
               <StyledButton href="/recipes/create"> Create Recipe</StyledButton>
             </SameUser>
             <Recipes recipes={props.recipes} />
-          </React.Fragment>
+          </div>
         )}
         {selection === "hops" && (
           <React.Fragment>

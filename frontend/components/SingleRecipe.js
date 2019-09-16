@@ -156,8 +156,9 @@ class SingleRecipe extends React.Component {
       published,
       private_recipe,
       mash_steps,
-      brewable,
-      instructions
+      finished,
+      instructions,
+      priming_level
     } = this.props.recipe;
     return (
       <RecipeContainer>
@@ -206,6 +207,7 @@ class SingleRecipe extends React.Component {
             stat="Standard Reference Method"
             value={SRM}
             background={srmToHex(SRM)}
+            color={SRM > 13 && "white"}
           />
         </RecipeStats>
         <DetailsContainer>
@@ -220,6 +222,10 @@ class SingleRecipe extends React.Component {
           <div>
             <h3>Efficiency</h3>
             <p>{efficiency}%</p>
+          </div>
+          <div>
+            <h3>Priming Level</h3>
+            <p>{priming_level}</p>
           </div>
         </DetailsContainer>
         <SectionContainer>
@@ -305,7 +311,7 @@ class SingleRecipe extends React.Component {
               </ViewContainer>
             ))}
         </SectionContainer>
-        {mash_steps.length > 0 && (
+        {mash_steps && mash_steps.length > 0 && (
           <SectionContainer>
             <IngredientHeader>
               <IngredientLogo>
@@ -348,29 +354,37 @@ class SingleRecipe extends React.Component {
               ))}
           </SectionContainer>
         )}
-        <SectionContainer>
-          <IngredientHeader>
-            <IngredientLogo>
-              <img
-                id="logo"
-                src="../../static/IngredientLogos/instructions.svg"
-                alt="instructions"
-              />
-              <h2>General Instructions</h2>
-            </IngredientLogo>
-          </IngredientHeader>
-          {instructions &&
-            instructions.map((instruction, index) => (
-              <div style={{ display: "flex", width: "100%", margin: "10px auto" }}>
-                <div style={{ alignSelf: "center", margin: "0 15px" }}>
-                  <h3>{index + 1}</h3>
-                </div>
-                  <IngredientContainer style={{alignSelf: "center"}}>
+        {instructions.length > 0 && (
+          <SectionContainer>
+            <IngredientHeader>
+              <IngredientLogo>
+                <img
+                  id="logo"
+                  src="../../static/IngredientLogos/instructions.svg"
+                  alt="instructions"
+                />
+                <h2>General Instructions</h2>
+              </IngredientLogo>
+            </IngredientHeader>
+            {instructions &&
+              instructions.map((instruction, index) => (
+                <div
+                  style={{
+                    display: "flex",
+                    width: "100%",
+                    margin: "10px auto"
+                  }}
+                >
+                  <div style={{ alignSelf: "center", margin: "0 15px" }}>
+                    <h3>{index + 1}</h3>
+                  </div>
+                  <IngredientContainer style={{ alignSelf: "center" }}>
                     {instruction}
                   </IngredientContainer>
-              </div>
-            ))}
-        </SectionContainer>
+                </div>
+              ))}
+          </SectionContainer>
+        )}
       </RecipeContainer>
     );
   }

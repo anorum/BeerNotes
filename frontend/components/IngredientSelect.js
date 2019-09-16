@@ -9,46 +9,6 @@ const FormContainer = styled.div`
   margin: 5px 0;
 `;
 
-<<<<<<< HEAD
-const styles = {
-  singleValue: (provided, state) => {
-    return {
-      width: "98%"
-    };
-  },
-  container: (provided, state) => {
-    return {
-      ...provided,
-      width: "100%",
-      alignSelf: "center"
-      
-    };
-  },
-  valueContainer: (provided, state) => {
-    return {
-      ...provided,
-    };
-  },
-  control: (provided, state) => {
-    return {
-      ...provided,
-      minHeight: "90px",
-      boxShadow: 0,
-      borderWidth: "0 0 0 0",
-      borderColor: state.isFocused
-        ? "#FEDC00"
-        : provided.borderColor,
-      "&:hover": {
-        borderColor: state.isFocused
-          ? "#FEDC00"
-          : provided.borderColor
-      }
-    };
-  }
-};
-
-=======
->>>>>>> mash
 class IngredientSelect extends Component {
   constructor(props) {
     super(props);
@@ -152,17 +112,6 @@ class IngredientSelect extends Component {
             __isNew__: true
           })}
         />
-<<<<<<< HEAD
-=======
-        <input
-          tabIndex={-1}
-          name={this.props.for.for}
-          autoComplete="off"
-          style={{ opacity: 0, height: 0 }}
-          value={this.props.value}
-          required
-        />
->>>>>>> mash
         {this.state.showAdd && (
           <FormContainer>
             {this.props.createForm(this.state.newValue, this.handleCreateDone)}

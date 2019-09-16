@@ -174,14 +174,6 @@ const AccountDropdown = props => {
           >
             <a>Your Yeasts</a>
           </Link>
-          <Link
-            href={{
-              pathname: `/profile/${user.username}`,
-              query: { page: "brewhistory" }
-            }}
-          >
-            <a>Your Brew History</a>
-          </Link>
           <DropdownDivider />
           <Link href="/settings/">Account Settings</Link>
           <DropdownDivider />

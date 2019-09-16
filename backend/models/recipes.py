@@ -7,7 +7,7 @@ from models.hops import HopsModel
 from models.grains import GrainsModel
 from models.yeast import YeastModel
 from models.searchableMixIn import SearchableMixin
-from sqlalchemy.dialects.postgresql import UUID
+from sqlalchemy.dialects.postgresql import UUID, ARRAY
 
 
 class RecipeFermentables(db.Model, BaseModel):

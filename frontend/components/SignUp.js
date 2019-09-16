@@ -152,8 +152,6 @@ class SignUp extends Component {
                   required
                 />
               </Label>
-<<<<<<< HEAD
-=======
               <Label htmlFor="username">
                 Username
                 <MyInput
@@ -167,7 +165,6 @@ class SignUp extends Component {
                   required
                 />
               </Label>
->>>>>>> mash
               <Label htmlFor="password">
                 Password
                 <MyInput

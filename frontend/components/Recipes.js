@@ -5,7 +5,7 @@ import Recipe from "./Recipe"
 
 const RecipeContainer = styled.div`
 width: 100%;
-margin: 0 auto;
+margin: 10px auto;
 `
 
 const RecipeGrid = styled.div`

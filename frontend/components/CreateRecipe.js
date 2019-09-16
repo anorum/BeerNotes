@@ -146,8 +146,7 @@ class CreateRecipe extends Component {
       private_recipe: true,
       published: false,
       icon: "pilsner",
-      batch_size: 5,
-      efficiency: 35,
+      efficiency: 70,
       fermentables: [],
       grains: [],
       hops: [],
@@ -171,7 +170,7 @@ class CreateRecipe extends Component {
   componentWillMount() {
     this.setState({
       ...this.props.recipe,
-      instructions: this.props.recipe && this.props.recipe.instructions || []
+      instructions: (this.props.recipe && this.props.recipe.instructions) || []
     });
   }
 
@@ -422,11 +421,11 @@ class CreateRecipe extends Component {
   };
 
   handleInstructionChange = (e, index) => {
-    console.log(e)
-    let newInstructions = [...this.state.instructions]
-    newInstructions[index] = e.target.value
-    this.setState({instructions: newInstructions})
-  }
+    console.log(e);
+    let newInstructions = [...this.state.instructions];
+    newInstructions[index] = e.target.value;
+    this.setState({ instructions: newInstructions });
+  };
 
   addMash = index => {
     let newStep = this.state["mash_steps"].concat({ step: index });
@@ -567,6 +566,8 @@ class CreateRecipe extends Component {
                     onChange={this.handleChange}
                     data-error={
                       this.state.touched.name || this.state.errors.name
+                        ? true
+                        : false
                     }
                     required
                   />
@@ -698,6 +699,8 @@ class CreateRecipe extends Component {
                   data-error={
                     this.state.touched.description ||
                     this.state.errors.description
+                      ? true
+                      : false
                   }
                   required
                 />
@@ -737,7 +740,32 @@ class CreateRecipe extends Component {
                     name="efficiency"
                     value={this.state.efficiency}
                     onChange={this.handleChange}
+                    data-error={
+                      this.state.touched.efficiency ||
+                      this.state.errors.efficiency
+                        ? true
+                        : false
+                    }
                     placeholder="0%"
+                    step="0.1"
+                    required
+                  />
+                  <label htmlFor="priming_level">Priming Level</label>
+
+                  <NumberInput
+                    id="priming_level"
+                    type="number"
+                    min="0"
+                    name="priming_level"
+                    value={this.state.priming_level}
+                    onChange={this.handleChange}
+                    data-error={
+                      this.state.touched.priming_level ||
+                      this.state.errors.priming_level
+                        ? true
+                        : false
+                    }
+                    placeholder="0"
                     step="0.1"
                     required
                   />
@@ -1203,7 +1231,6 @@ class CreateRecipe extends Component {
                                   required
                                 />
                               </div>
-                              <div></div>
                             </React.Fragment>
                           }
                         >
@@ -1392,7 +1419,9 @@ class CreateRecipe extends Component {
                               field
                             )
                           }
-                          deleteFunction={() => this.deleteIngredient("instructions", index)}
+                          deleteFunction={() =>
+                            this.deleteIngredient("instructions", index)
+                          }
                           mainField={
                             <React.Fragment>
                               <div
@@ -1410,12 +1439,13 @@ class CreateRecipe extends Component {
                                       ? true
                                       : false
                                   }
-                                  onChange={(e) => this.handleInstructionChange(e, index)}
+                                  onChange={e =>
+                                    this.handleInstructionChange(e, index)
+                                  }
                                   value={this.state.instructions[index]}
                                   required
                                 />
                               </div>
-                              <div></div>
                             </React.Fragment>
                           }
                         ></IngredientInput>

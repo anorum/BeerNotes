@@ -13,7 +13,8 @@ export const Container = styled.div`
   @media screen and (max-width: ${props => props.theme.mobile}) {
 
     grid-template-columns: 1fr;
-  grid-template-rows: min-content auto 0 0.05fr;
+    grid-template-rows: min-content auto;
+}
   }
 `;
 

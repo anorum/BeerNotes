@@ -102,7 +102,7 @@ class RecipeSchema(ma.ModelSchema):
                   "hops", "grains", "yeasts", "batch_size",
                   "efficiency", "boil_time",
                   "target_abv", "actual_abv", "target_og",
-                  "actual_og", "target_fg", "actual_fg", "IBU", "SRM", "finsihed",
+                  "actual_og", "target_fg", "actual_fg", "IBU", "SRM", "finished", "priming_level",
                   "description", "method", "instructions", "private_recipe", "style", "published", "icon"
                   )
         dump_only = ("user",)
